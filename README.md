@@ -1,6 +1,6 @@
 <div align="center">
 
-# 👋 Hi, I'm Tankou (たんこう)
+# 👋 Hi, I'm Kosei Tanno (丹野康世)
 
 [![Typing SVG](https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=2F81F7&center=true&vCenter=true&width=600&lines=Software+Engineer;Indie+iOS+App+Developer;Shipping+ideas+to+the+App+Store)](https://github.com/KoseiTanno)
 
@@ -78,6 +78,16 @@
 <div align="center">
 
 [![Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=KoseiTanno&theme=tokyo-night&hide_border=true&area=true&color=2F81F7&line=2F81F7&point=FFFFFF)](https://github.com/KoseiTanno)
+
+</div>
+
+---
+
+## 💬 Quote of the Moment
+
+<div align="center">
+
+![Dev Quote](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
 
 </div>
 
