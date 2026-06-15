@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 230" role="img" aria-label="Rotating engineering quotes">
+  <style>
+    .card{fill:#1a1b27;stroke:#2F81F7;stroke-width:2}
+    text{font-family:'Segoe UI','Hiragino Sans','Noto Sans JP','Yu Gothic',sans-serif;text-anchor:middle}
+    .en{font-style:italic;font-size:19px;fill:#c8d3f5}
+    .ja{font-size:16px;fill:#9aa5ce}
+    .au{font-size:14px;font-weight:bold;fill:#7aa2f7}
+    .q{opacity:0;animation:cyc 60s infinite}
+    .q0{animation-delay:0s}.q1{animation-delay:6s}.q2{animation-delay:12s}.q3{animation-delay:18s}.q4{animation-delay:24s}
+    .q5{animation-delay:30s}.q6{animation-delay:36s}.q7{animation-delay:42s}.q8{animation-delay:48s}.q9{animation-delay:54s}
+    @keyframes cyc{0%{opacity:0}2%{opacity:1}8%{opacity:1}10%{opacity:0}100%{opacity:0}}
+  </style>
+  <rect class="card" x="8" y="8" width="824" height="214" rx="14"/>
+
+  <g class="q q0">
+    <text class="en" x="420" y="92">"Talk is cheap. Show me the code."</text>
+    <text class="ja" x="420" y="140">「御託はいい。コードを見せろ。」</text>
+    <text class="au" x="420" y="195">— Linus Torvalds · creator of Linux</text>
+  </g>
+
+  <g class="q q1">
+    <text class="en" x="420" y="62">"Any fool can write code that a computer can understand.</text>
+    <text class="en" x="420" y="88">Good programmers write code that humans can understand."</text>
+    <text class="ja" x="420" y="132">コンピュータに分かるコードは誰でも書ける。</text>
+    <text class="ja" x="420" y="156">優れたプログラマは、人間に分かるコードを書く。</text>
+    <text class="au" x="420" y="200">— Martin Fowler · Chief Scientist, Thoughtworks</text>
+  </g>
+
+  <g class="q q2">
+    <text class="en" x="420" y="66">"The most dangerous phrase in the language is,</text>
+    <text class="en" x="420" y="92">'We've always done it this way.'"</text>
+    <text class="ja" x="420" y="142">最も危険な言葉は「ずっとこうしてきた」である。</text>
+    <text class="au" x="420" y="198">— Grace Hopper · computer scientist &amp; US Navy Rear Admiral</text>
+  </g>
+
+  <g class="q q3">
+    <text class="en" x="420" y="92">"Everything fails all the time."</text>
+    <text class="ja" x="420" y="140">あらゆるものは、いつか必ず壊れる。</text>
+    <text class="au" x="420" y="195">— Werner Vogels · CTO, Amazon</text>
+  </g>
+
+  <g class="q q4">
+    <text class="en" x="420" y="92">"Make it work, make it right, make it fast."</text>
+    <text class="ja" x="420" y="140">まず動かし、次に正しくし、それから速くする。</text>
+    <text class="au" x="420" y="195">— Kent Beck · creator of Extreme Programming</text>
+  </g>
+
+  <g class="q q5">
+    <text class="en" x="420" y="92">"Premature optimization is the root of all evil."</text>
+    <text class="ja" x="420" y="140">早すぎる最適化は諸悪の根源である。</text>
+    <text class="au" x="420" y="195">— Donald Knuth · author of The Art of Computer Programming</text>
+  </g>
+
+  <g class="q q6">
+    <text class="en" x="420" y="62">"There are only two hard things in Computer Science:</text>
+    <text class="en" x="420" y="88">cache invalidation and naming things."</text>
+    <text class="ja" x="420" y="132">コンピュータ科学で本当に難しいのは二つだけ。</text>
+    <text class="ja" x="420" y="156">キャッシュの無効化と、名前を付けることだ。</text>
+    <text class="au" x="420" y="200">— Phil Karlton · engineer, Netscape</text>
+  </g>
+
+  <g class="q q7">
+    <text class="en" x="420" y="92">"The best code is no code at all."</text>
+    <text class="ja" x="420" y="140">最高のコードとは、コードが存在しないことだ。</text>
+    <text class="au" x="420" y="195">— Jeff Atwood · co-founder, Stack Overflow</text>
+  </g>
+
+  <g class="q q8">
+    <text class="en" x="420" y="62">"Debugging is twice as hard as writing</text>
+    <text class="en" x="420" y="88">the code in the first place."</text>
+    <text class="ja" x="420" y="140">デバッグはコードを書くことの二倍難しい。</text>
+    <text class="au" x="420" y="198">— Brian Kernighan · co-author of The C Programming Language</text>
+  </g>
+
+  <g class="q q9">
+    <text class="en" x="420" y="92">"Simplicity is prerequisite for reliability."</text>
+    <text class="ja" x="420" y="140">単純さは信頼性の前提条件である。</text>
+    <text class="au" x="420" y="195">— Edsger W. Dijkstra · computer scientist</text>
+  </g>
+</svg>
