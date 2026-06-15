@@ -87,7 +87,7 @@
 
 <div align="center">
 
-![Dev Quote](https://quotes-github-readme.vercel.app/api?type=horizontal&theme=tokyonight)
+![Engineering quotes](https://raw.githubusercontent.com/KoseiTanno/KoseiTanno/main/quotes.svg)
 
 </div>
 
