@@ -38,8 +38,8 @@
 | アプリ | 概要 | 主な技術 |
 | --- | --- | --- |
 | **[おねがいごはん](https://apps.apple.com/jp/app/id6776159686)** | カップルで「作って／食べたい」を送り合う料理リクエストアプリ | Expo · TypeScript · Firebase |
-| **[寝坊知らず](https://apps.apple.com/jp/app/id6776589674)** | 仲間と起床時刻を共有し、寝坊を検知して遠隔で起こすグループアラーム | Expo · TypeScript · Firebase |
-| **脳内メモ帳（Mind Bubbles）** 🔍 _審査中_ | 頭の中のタスクを画面に浮かぶバブルとして可視化するメモアプリ | Expo · Reanimated |
+| **[ヨアケ（Yoake）](https://apps.apple.com/jp/app/id6776589674)** | 仲間と起床時刻を共有し、みんなで一緒に起きるグループアラーム | Expo · TypeScript · Firebase |
+| **[脳内メモ帳（Mind Bubbles）](https://apps.apple.com/jp/app/id6776687355)** | 頭の中のタスクを画面に浮かぶバブルとして可視化するメモアプリ | Expo · Reanimated |
 
 ---
 
