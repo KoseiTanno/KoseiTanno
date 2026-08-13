@@ -31,6 +31,25 @@
 
 ---
 
+## 📦 Published Package
+
+**[firestore-lint](https://github.com/KoseiTanno/firestore-lint)** — Firebase Firestore / Storage
+セキュリティルールの静的解析 CLI（[npm](https://www.npmjs.com/package/firestore-lint)）
+
+[![npm version](https://img.shields.io/npm/v/firestore-lint.svg?style=flat-square&color=2F81F7)](https://www.npmjs.com/package/firestore-lint)
+[![CI](https://img.shields.io/github/actions/workflow/status/KoseiTanno/firestore-lint/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/KoseiTanno/firestore-lint/actions/workflows/ci.yml)
+[![License](https://img.shields.io/npm/l/firestore-lint.svg?style=flat-square&color=2F81F7)](https://github.com/KoseiTanno/firestore-lint/blob/main/LICENSE)
+
+セキュリティルールは `firebase deploy` した瞬間に全ユーザーへ効き、段階的ロールアウトがありません。
+テストモードの期限切れルールが本番を全開放していた、といった事故を**デプロイ前に**検出します。
+
+- **字句解析器とパーサを自作** — 条件式は式木に変換せずトークン列のまま保持し、
+  9つの検出ルールを軽量に実装（設計判断は [ADR](https://github.com/KoseiTanno/firestore-lint/tree/main/docs/adr) に記録）
+- **自作アプリの本番ルールで dogfooding** — 実際に課金読み取りの多発箇所を検出
+- TypeScript (ESM) · vitest · Biome · Changesets による自動リリース
+
+---
+
 ## 📱 Released Apps
 
 個人で企画・設計・実装・ストア申請まで行い、App Store で公開中です。
@@ -43,9 +62,9 @@
 
 ---
 
-## 🌟 Open Source
+## 🌟 Open Source Contributions
 
-実プロダクトに **マージされた** Pull Request：
+他プロジェクトへの、実プロダクトに **マージされた** Pull Request：
 
 - **[pylint](https://github.com/pylint-dev/pylint)** — 静的解析の誤検知・見逃しを修正
   ([#11081](https://github.com/pylint-dev/pylint/pull/11081) ·
