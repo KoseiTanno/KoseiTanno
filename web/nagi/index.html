@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ホテル凪</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600&family=Murecho:wght@200;300;400&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap">
+</head>
+<body>
+<style>
+/* ══ 実務側の色。明るいときは 15:00、暗いときは 21:00 の光で組む ══ */
+:root{
+  --page:#E4E4DC;
+  --panel:#EDEDE7;
+  --text:#1A2028;
+  --dim:#5D646A;
+  --line:#C6C7BC;
+  --line-soft:#DBDBD2;
+  --sun:#C2703A;
+  --range:#D2D6CB;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --page:#181D23;
+    --panel:#1F252C;
+    --text:#DFE5E4;
+    --dim:#98A2A6;
+    --line:#303A43;
+    --line-soft:#252D35;
+    --sun:#D79A5E;
+    --range:#2A333C;
+  }
+}
+:root[data-theme="dark"]{
+  --page:#181D23;
+  --panel:#1F252C;
+  --text:#DFE5E4;
+  --dim:#98A2A6;
+  --line:#303A43;
+  --line-soft:#252D35;
+  --sun:#D79A5E;
+  --range:#2A333C;
+}
+
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  background:var(--page);
+  color:var(--text);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
+  font-size:16px;
+  line-height:1.9;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.disp{
+  font-family:"Murecho","Zen Kaku Gothic New","Hiragino Sans",system-ui,sans-serif;
+  font-weight:200;
+  letter-spacing:.14em;
+  line-height:1.35;
+}
+.dat{
+  font-family:"Barlow Condensed","Zen Kaku Gothic New",system-ui,sans-serif;
+  font-weight:500;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:.04em;
+}
+.lbl{
+  font-family:"Barlow Condensed",system-ui,sans-serif;
+  font-weight:600;
+  font-size:12px;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+}
+.wrap{width:min(1160px,100% - clamp(32px,8vw,140px));margin-inline:auto;}
+a{color:inherit;}
+:focus-visible{outline:2px solid var(--sun);outline-offset:3px;}
+
+/* ══ 一日。ここだけ色が時刻の関数になる ══════════════════════ */
+#day{height:760vh;position:relative;}
+#day .stage{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  overflow:hidden;
+  background:var(--lit-page,#12161B);
+  color:var(--lit-text,#D8E0E0);
+}
+#room{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.veil{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,
+    color-mix(in srgb, var(--lit-page,#12161B) 62%, transparent) 0%,
+    transparent 26%, transparent 62%,
+    color-mix(in srgb, var(--lit-page,#12161B) 72%, transparent) 100%);
+  pointer-events:none;
+}
+.overlay{
+  position:absolute;inset:0;
+  display:grid;
+  grid-template-rows:auto 1fr auto;
+  padding:clamp(20px,4vh,48px) 0;
+}
+.ov-row{width:min(1160px,100% - clamp(32px,8vw,140px));margin-inline:auto;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
+.brand{margin:0;font-size:clamp(1.5rem,3.6vw,2.4rem);letter-spacing:.34em;}
+.brand small{display:block;margin-top:.35rem;font-size:11px;letter-spacing:.34em;opacity:.72;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;}
+.clock{text-align:right;}
+.clock .t{font-size:clamp(2rem,5vw,3.4rem);line-height:1;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:400;font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+.clock .arc{margin-top:.5rem;width:clamp(90px,14vw,150px);height:2px;background:currentColor;opacity:.28;position:relative;}
+.clock .arc i{position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:currentColor;opacity:1;transform:translateX(-4px);}
+.hours{
+  align-self:end;
+  width:min(1160px,100% - clamp(32px,8vw,140px));
+  margin-inline:auto;
+  position:relative;
+  min-height:clamp(170px,26vh,240px);
+}
+.hour{
+  position:absolute;left:0;bottom:0;
+  max-width:34ch;
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+.hour.on{opacity:1;transform:none;}
+.hour .at{font-size:13px;letter-spacing:.2em;opacity:.8;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;}
+.hour h2{margin:.35rem 0 .5rem;font-size:clamp(1.5rem,4.2vw,2.6rem);font-weight:200;letter-spacing:.1em;font-family:"Murecho",system-ui,sans-serif;}
+.hour p{margin:0;font-size:clamp(.86rem,1.9vw,1rem);line-height:1.95;opacity:.9;}
+.scrollcue{
+  position:absolute;right:0;bottom:.2rem;
+  font-size:11px;letter-spacing:.24em;opacity:.6;
+  font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;
+}
+
+/* ══ 実務側 ══════════════════════════════════════════════ */
+.band{padding:clamp(64px,12vh,140px) 0;border-top:1px solid var(--line-soft);}
+.band:first-of-type{border-top:0;}
+.head{display:flex;justify-content:space-between;align-items:baseline;gap:1.5rem;flex-wrap:wrap;margin-bottom:clamp(24px,5vh,52px);}
+h3.sec{margin:0;font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:200;letter-spacing:.16em;font-family:"Murecho",system-ui,sans-serif;}
+.sub{margin:0;color:var(--dim);font-size:.9rem;max-width:44ch;}
+
+/* 客室 */
+.rooms{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:clamp(18px,2.6vw,34px);}
+.room{display:grid;gap:.85rem;}
+.room canvas{display:block;width:100%;height:auto;border:1px solid var(--line);}
+.room-top{display:flex;justify-content:space-between;align-items:baseline;gap:.8rem;}
+.room h4{margin:0;font-size:1.16rem;font-weight:300;letter-spacing:.12em;font-family:"Murecho",system-ui,sans-serif;}
+.room .en{font-size:11px;letter-spacing:.26em;color:var(--dim);font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;}
+.room .meta{display:flex;gap:1rem;font-size:.82rem;color:var(--dim);}
+.room p{margin:0;font-size:.87rem;line-height:1.85;color:var(--dim);}
+.room .rate{font-size:1.5rem;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:500;font-variant-numeric:tabular-nums;}
+.room .rate small{font-size:.72rem;letter-spacing:.1em;color:var(--dim);margin-left:.3rem;}
+
+/* 予約 */
+.book{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.85fr);gap:clamp(22px,4vw,54px);align-items:start;}
+.pick{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;}
+.pick button{
+  appearance:none;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--text);
+  font:inherit;font-size:.85rem;padding:.42rem 1rem;
+  transition:background .2s,border-color .2s,color .2s;
+}
+.pick button[aria-pressed="true"]{background:var(--text);color:var(--page);border-color:var(--text);}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.7rem;}
+.cal-head .mo{font-size:1.05rem;letter-spacing:.16em;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:500;}
+.nav{display:flex;gap:.4rem;}
+.nav button{
+  appearance:none;cursor:pointer;width:34px;height:34px;
+  border:1px solid var(--line);background:transparent;color:var(--text);
+  font:inherit;line-height:1;
+}
+.nav button:disabled{opacity:.3;cursor:default;}
+.dow{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;margin-bottom:1px;}
+.dow span{text-align:center;font-size:11px;letter-spacing:.16em;color:var(--dim);padding:.3rem 0;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;}
+.dow span.sat{color:#4C7FA8;}
+.dow span.sun{color:var(--sun);}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);}
+.cell{
+  background:var(--page);
+  min-height:clamp(52px,7.4vh,70px);
+  padding:.32rem .4rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  font:inherit;text-align:left;
+  border:0;color:var(--text);
+  cursor:pointer;
+  transition:background .15s;
+}
+.cell:disabled{cursor:default;color:var(--dim);opacity:.42;}
+.cell.blank{background:transparent;cursor:default;}
+.cell .d{font-size:.95rem;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:500;font-variant-numeric:tabular-nums;}
+.cell .r{font-size:.68rem;color:var(--dim);font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:500;letter-spacing:.02em;}
+.cell.full .r{color:var(--sun);}
+.cell:not(:disabled):hover{background:var(--panel);}
+.cell.in-range{background:var(--range);}
+.cell.edge{background:var(--text);color:var(--page);}
+.cell.edge .r{color:var(--page);opacity:.75;}
+.legend{display:flex;gap:1.2rem;margin-top:.8rem;font-size:.76rem;color:var(--dim);flex-wrap:wrap;}
+.legend i{display:inline-block;width:10px;height:10px;margin-right:.35rem;vertical-align:-1px;border:1px solid var(--line);}
+.legend i.e{background:var(--text);border-color:var(--text);}
+.legend i.p{background:var(--range);border-color:var(--range);}
+
+.summary{border:1px solid var(--line);padding:clamp(18px,2.4vw,26px);display:grid;gap:.9rem;position:sticky;top:24px;}
+.summary .row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;font-size:.9rem;}
+.summary .row.total{border-top:1px solid var(--line);padding-top:.8rem;align-items:baseline;}
+.summary .row.total b{font-size:1.9rem;font-weight:500;font-family:"Barlow Condensed",system-ui,sans-serif;font-variant-numeric:tabular-nums;}
+.nights{margin:0;padding:0;list-style:none;display:grid;gap:.2rem;font-size:.8rem;color:var(--dim);max-height:9.2rem;overflow-y:auto;}
+.nights li{display:flex;justify-content:space-between;gap:.8rem;font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:400;letter-spacing:.03em;}
+.msg{margin:0;font-size:.82rem;color:var(--sun);min-height:1.4em;}
+.cta{
+  appearance:none;cursor:pointer;
+  border:1px solid var(--text);background:var(--text);color:var(--page);
+  font:inherit;font-size:.9rem;letter-spacing:.1em;padding:.85rem 1rem;width:100%;
+}
+.cta:disabled{opacity:.35;cursor:default;}
+
+/* 施設 */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:clamp(18px,3vw,44px);}
+.facts dt{font-family:"Barlow Condensed",system-ui,sans-serif;font-weight:600;font-size:11px;letter-spacing:.26em;color:var(--dim);margin-bottom:.3rem;}
+.facts dd{margin:0 0 1.3rem;font-size:.92rem;line-height:1.85;}
+footer{padding:0 0 clamp(36px,7vh,72px);color:var(--dim);font-size:.78rem;}
+
+@media (max-width:860px){
+  .book{grid-template-columns:1fr;}
+  .summary{position:static;}
+  .ov-row{align-items:flex-start;}
+  .clock .t{font-size:1.7rem;}
+  .hours{min-height:210px;}
+  /* 狭い画面では、案内が本文の上に重なっていた */
+  .scrollcue{bottom:auto;top:-1.5rem;}
+  #day{height:900vh;}
+}
+@media (prefers-reduced-motion:reduce){
+  #day{height:auto;}
+  #day .stage{position:static;height:auto;}
+  .overlay{position:static;padding:clamp(24px,5vh,56px) 0;gap:2rem;}
+  #room{position:static;height:clamp(280px,52vh,520px);}
+  .veil{display:none;}
+  .hours{min-height:0;display:grid;gap:2rem;}
+  .hour{position:static;opacity:1;transform:none;max-width:60ch;}
+  .scrollcue{display:none;}
+  .hour,.cell,.pick button{transition:none;}
+}
+</style>
+
+<!-- ══ 一日 ═════════════════════════════════════════════════ -->
+<section id="day">
+  <div class="stage">
+    <canvas id="room" aria-hidden="true"></canvas>
+    <div class="veil" aria-hidden="true"></div>
+    <div class="overlay">
+      <div class="ov-row">
+        <p class="brand disp">凪<small>HOTEL NAGI — ONOMICHI</small></p>
+        <div class="clock">
+          <div class="t" id="clock">05:20</div>
+          <div class="arc" aria-hidden="true"><i id="arcDot"></i></div>
+        </div>
+      </div>
+      <div></div>
+      <div class="hours" id="hours">
+        <p class="scrollcue">SCROLL — 一日が進みます</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 客室 ═════════════════════════════════════════════════ -->
+<section class="band">
+  <div class="wrap">
+    <div class="head">
+      <h3 class="sec">客室</h3>
+      <p class="sub">全14室。窓の向きが違うので、光の来る時間が部屋ごとに違います。絵は、その部屋の光がいちばんいい時刻のものです。</p>
+    </div>
+    <div class="rooms" id="rooms"></div>
+  </div>
+</section>
+
+<!-- ══ 料金と空室 ═══════════════════════════════════════════ -->
+<section class="band">
+  <div class="wrap">
+    <div class="head">
+      <h3 class="sec">料金と空室</h3>
+      <p class="sub">日付を選ぶと、泊数と合計が出ます。金・土と休前日は料金が上がります。「満」は満室です。</p>
+    </div>
+    <div class="book">
+      <div>
+        <div class="pick" id="pick" role="group" aria-label="部屋タイプ"></div>
+        <div class="cal-head">
+          <div class="mo" id="month"></div>
+          <div class="nav">
+            <button type="button" id="prev" aria-label="前の月">‹</button>
+            <button type="button" id="next" aria-label="次の月">›</button>
+          </div>
+        </div>
+        <div class="dow" aria-hidden="true">
+          <span class="sun">SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span class="sat">SAT</span>
+        </div>
+        <div class="grid" id="grid" role="grid" aria-label="空室カレンダー"></div>
+        <div class="legend">
+          <span><i class="e"></i>選んだ日</span>
+          <span><i class="p"></i>宿泊する夜</span>
+          <span><i></i>空室あり</span>
+          <span style="color:var(--sun)">満 — 満室</span>
+        </div>
+      </div>
+      <div class="summary">
+        <div class="row"><span id="sumRoom">凪 / ツイン</span><span class="dat" id="sumRange">日付を選んでください</span></div>
+        <ul class="nights" id="nights"></ul>
+        <div class="row total"><span>合計<small class="dat" id="sumNights"></small></span><b class="dat" id="sumTotal">—</b></div>
+        <p class="msg" id="msg"></p>
+        <button type="button" class="cta" id="cta" disabled>この日程で問い合わせる</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 施設 ═════════════════════════════════════════════════ -->
+<section class="band">
+  <div class="wrap">
+    <div class="head">
+      <h3 class="sec">泊まる前に</h3>
+    </div>
+    <dl class="facts">
+      <div>
+        <dt>Check in</dt><dd>15:00 — 22:00<br>チェックアウト 11:00</dd>
+        <dt>Rooms</dt><dd>全14室 / 全室禁煙<br>エレベーターは1基</dd>
+      </div>
+      <div>
+        <dt>Access</dt><dd>JR尾道駅から徒歩12分。<br>途中に坂と階段があります。大きな荷物は駅からお運びします。</dd>
+        <dt>Parking</dt><dd>4台（要予約・無料）</dd>
+      </div>
+      <div>
+        <dt>Bar</dt><dd>18:00 — 24:00<br>宿泊されていない方も入れます。灯りは絞ってあります。</dd>
+        <dt>Breakfast</dt><dd>7:00 — 10:00 / ¥2,200<br>パンは坂の下のパン屋から届きます。</dd>
+      </div>
+    </dl>
+    <footer>
+      <p>架空のホテルです。スクロール連動演出と予約UIの実装デモとして制作しました。実在の施設・ブランドとは関係ありません。</p>
+    </footer>
+  </div>
+</section>
+
+<script>
+(function(){
+  document.documentElement.lang = 'ja';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+  function clamp(v, a, b){ return v < a ? a : v > b ? b : v; }
+  function clamp01(v){ return clamp(v, 0, 1); }
+
+  /* ══ 光のランプ。一日ぶんの色を手で置いて、間を補間する ══════ */
+  var STOPS = [
+    { h:4.4,  page:'#12161B', text:'#D6DEDE', wall:'#1A2028', floor:'#141A20', skyT:'#0C1420', skyB:'#1E2E48', sun:'#48597A', sea:'#0D1720', lamp:.9 },
+    { h:5.4,  page:'#1D242C', text:'#DEE5E2', wall:'#262E38', floor:'#1C232B', skyT:'#233350', skyB:'#7A5E68', sun:'#C4785C', sea:'#1A2630', lamp:.45 },
+    { h:6.4,  page:'#4A4249', text:'#EDE6DE', wall:'#514850', floor:'#3C353C', skyT:'#3E5273', skyB:'#E8A06A', sun:'#F0A264', sea:'#33404C', lamp:.12 },
+    { h:8.0,  page:'#CBD6D4', text:'#1A242A', wall:'#C4D0D0', floor:'#AFBBBB', skyT:'#7FA2C0', skyB:'#E9D6BC', sun:'#FFDCA8', sea:'#5F8090', lamp:0 },
+    { h:11.0, page:'#DFE5E0', text:'#151F29', wall:'#D9DFDA', floor:'#C3CAC4', skyT:'#6294C0', skyB:'#CBDFE6', sun:'#FFF9E8', sea:'#4E7C92', lamp:0 },
+    { h:14.0, page:'#E4E9E3', text:'#131D27', wall:'#DEE3DE', floor:'#C9CFC9', skyT:'#5A90BE', skyB:'#C4DAE3', sun:'#FFFCF2', sea:'#4A768C', lamp:0 },
+    { h:16.6, page:'#E5E3D9', text:'#1B2028', wall:'#DFDDD2', floor:'#C9C7BB', skyT:'#7BA0BC', skyB:'#E7D6BE', sun:'#FFEDC0', sea:'#527688', lamp:0 },
+    { h:18.7, page:'#E7D3C0', text:'#2C1F18', wall:'#DFC7B0', floor:'#C6A991', skyT:'#A85E74', skyB:'#F2A462', sun:'#EE7238', sea:'#8E6E72', lamp:.15 },
+    { h:19.8, page:'#5E4E54', text:'#EFE4DC', wall:'#665560', floor:'#4A3E46', skyT:'#3A3A5E', skyB:'#B0707C', sun:'#D2807C', sea:'#3C3540', lamp:.5 },
+    { h:21.0, page:'#232A33', text:'#DEE5E4', wall:'#2A323C', floor:'#1E252D', skyT:'#141E2C', skyB:'#26364A', sun:'#3A4C68', sea:'#16222E', lamp:.92 },
+    { h:22.5, page:'#141A20', text:'#DAE2E2', wall:'#1B222A', floor:'#151B21', skyT:'#0B121C', skyB:'#18263A', sun:'#2A3A54', sea:'#0A121A', lamp:1 }
+  ];
+  function hex(c){ return [parseInt(c.slice(1,3),16), parseInt(c.slice(3,5),16), parseInt(c.slice(5,7),16)]; }
+  function mix(a, b, t){
+    var A = hex(a), B = hex(b);
+    return 'rgb(' + Math.round(A[0]+(B[0]-A[0])*t) + ',' + Math.round(A[1]+(B[1]-A[1])*t) + ',' + Math.round(A[2]+(B[2]-A[2])*t) + ')';
+  }
+  var KEYS = ['page','text','wall','floor','skyT','skyB','sun','sea'];
+  function lightAt(h){
+    var i = 0;
+    while (i < STOPS.length - 2 && h > STOPS[i+1].h) i++;
+    var a = STOPS[i], b = STOPS[i+1];
+    var t = clamp01((h - a.h) / (b.h - a.h));
+    t = t * t * (3 - 2 * t);           // 端をなめらかに
+    var out = { lamp: a.lamp + (b.lamp - a.lamp) * t };
+    for (var k = 0; k < KEYS.length; k++) out[KEYS[k]] = mix(a[KEYS[k]], b[KEYS[k]], t);
+    return out;
+  }
+
+  /* ══ 部屋。窓のそと・床を滑る光・家具の影 ═══════════════════ */
+  var noisePat = (function(){
+    var n = 80, c = document.createElement('canvas');
+    c.width = c.height = n;
+    var g = c.getContext('2d'), im = g.createImageData(n, n), d = im.data;
+    for (var i = 0; i < n * n; i++){
+      d[i*4] = d[i*4+1] = d[i*4+2] = 128;
+      d[i*4+3] = Math.random() * 26;
+    }
+    g.putImageData(im, 0, 0);
+    return g.createPattern(c, 'repeat');
+  })();
+
+  function fit(cv){
+    var r = cv.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+    if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+
+  // 太陽は 5:00 に昇り 19:6 に沈む。高度はその弧の sin
+  function sunPos(h){
+    var t = (h - 5.0) / (19.1 - 5.0);
+    return { t: t, up: t > 0 && t < 1, alt: t > 0 && t < 1 ? Math.sin(Math.PI * t) : 0 };
+  }
+
+  function drawRoom(cv, h, opt){
+    var st = fit(cv);
+    if (!st) return;
+    opt = opt || {};
+    var ctx = st.ctx, W = st.w, H = st.h;
+    var L = lightAt(h), S = sunPos(h);
+    var FY = H * (opt.floor || .66);          // 床の見切り
+    var wx0 = W * (opt.wx0 || .21), wx1 = W * (opt.wx1 || .79);
+    var wy0 = H * (opt.wy0 || .16), wy1 = H * (opt.wy1 || .53);
+    var wW = wx1 - wx0, wH = wy1 - wy0;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = L.wall; ctx.fillRect(0, 0, W, H);
+    // 窓まわりは壁が明るい
+    var wg = ctx.createRadialGradient((wx0+wx1)/2, (wy0+wy1)/2, 0, (wx0+wx1)/2, (wy0+wy1)/2, W * .62);
+    wg.addColorStop(0, 'rgba(255,255,255,.10)');
+    wg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = wg; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = L.floor; ctx.fillRect(0, FY, W, H - FY);
+    ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.fillRect(0, FY - Math.max(1, H * .004), W, Math.max(1, H * .004));
+
+    var seaY = wy0 + wH * .52;
+
+    // 窓のそと
+    var sky = ctx.createLinearGradient(0, wy0, 0, wy1);
+    sky.addColorStop(0, L.skyT);
+    sky.addColorStop(1, L.skyB);
+    ctx.fillStyle = sky;
+    ctx.fillRect(wx0, wy0, wW, wH);
+
+    var Sp = sunPos(h);
+    ctx.save();
+    ctx.beginPath(); ctx.rect(wx0, wy0, wW, wH); ctx.clip();
+
+    // 対岸の山。水平線より上に出る
+    ctx.fillStyle = L.sea;
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.moveTo(wx0, seaY);
+    ctx.lineTo(wx0 + wW * .16, seaY - wH * .085);
+    ctx.lineTo(wx0 + wW * .34, seaY - wH * .035);
+    ctx.lineTo(wx0 + wW * .52, seaY - wH * .105);
+    ctx.lineTo(wx0 + wW * .72, seaY - wH * .045);
+    ctx.lineTo(wx1, seaY - wH * .075);
+    ctx.lineTo(wx1, seaY); ctx.lineTo(wx0, seaY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,.34)';
+    ctx.fill();
+
+    // 海面
+    ctx.fillStyle = L.sea;
+    ctx.fillRect(wx0, seaY, wW, wy1 - seaY);
+    var sg = ctx.createLinearGradient(0, seaY, 0, wy1);
+    sg.addColorStop(0, 'rgba(255,255,255,.10)');
+    sg.addColorStop(1, 'rgba(0,0,0,.22)');
+    ctx.fillStyle = sg; ctx.fillRect(wx0, seaY, wW, wy1 - seaY);
+
+    // 日の道。太陽の真下だけ光る
+    if (Sp.up){
+      var gx = wx0 + Sp.t * wW, gh = wy1 - seaY;
+      ctx.globalCompositeOperation = 'lighter';
+      // まず柱状にぼかし、その上に不揃いな縞を置く
+      var gg = ctx.createLinearGradient(0, seaY, 0, wy1);
+      gg.addColorStop(0, L.sun);
+      gg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = (.18 + (1 - Sp.alt) * .26);
+      ctx.fillStyle = gg;
+      ctx.beginPath();
+      ctx.moveTo(gx - wW * .012, seaY);
+      ctx.lineTo(gx + wW * .012, seaY);
+      ctx.lineTo(gx + wW * .13, wy1);
+      ctx.lineTo(gx - wW * .13, wy1);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = L.sun;
+      for (var g2 = 0; g2 < 22; g2++){
+        var f = (g2 + .5) / 22;
+        var gy = seaY + gh * f * f;                       // 手前ほど間隔があく
+        var jig = ((g2 * 53) % 17) / 17 - .5;
+        var gwid = wW * (.010 + f * .13) * (.5 + ((g2 * 29) % 11) / 11 * .85);
+        ctx.globalAlpha = (.10 + (1 - Sp.alt) * .17) * (1 - f * .6);
+        ctx.fillRect(gx - gwid / 2 + jig * wW * .05, gy, gwid, Math.max(1, gh * .012 * (.5 + f)));
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+    }
+
+    // 水平線
+    ctx.fillStyle = 'rgba(255,255,255,.22)';
+    ctx.fillRect(wx0, seaY - 1, wW, 1);
+
+    // 夜は対岸に灯りが灯る
+    if (L.lamp > .2){
+      ctx.globalAlpha = clamp01((L.lamp - .2) * 1.7);
+      ctx.fillStyle = '#EFCB90';
+      for (var q = 0; q < 26; q++){
+        var qx = wx0 + ((q * 41) % 100) / 100 * wW;
+        ctx.fillRect(qx, seaY - wH * .012 - (q % 3) * 1.8, 1.7, 1.7);
+      }
+      ctx.globalAlpha = 1;
+    }
+    ctx.restore();
+
+    // 太陽
+    if (S.up){
+      var sx = wx0 + S.t * wW;
+      var sy = seaY - Math.sin(Math.PI * S.t) * (seaY - wy0) * .86;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(wx0, wy0, wW, wH); ctx.clip();
+      var gl = ctx.createRadialGradient(sx, sy, 0, sx, sy, wH * .55);
+      gl.addColorStop(0, L.sun);
+      gl.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.globalAlpha = .55; ctx.fillStyle = gl;
+      ctx.fillRect(wx0, wy0, wW, wH);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = L.sun;
+      ctx.beginPath(); ctx.arc(sx, sy, Math.max(4, wH * .045), 0, 6.2832); ctx.fill();
+      ctx.restore();
+    }
+
+    // 床の光。日が低いほど長く伸び、太陽と反対側へ流れる
+    if (S.alt > .04){
+      var len = (H - FY) * (.30 + 2.1 * (1 - S.alt));
+      var shear = (.5 - S.t) * W * 1.15;
+      var a = clamp01(S.alt * 1.6) * .62;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, FY, W, H - FY); ctx.clip();
+      ctx.globalCompositeOperation = 'lighter';
+      // 窓ぎわが濃く、手前ほど薄くなる
+      var pg = ctx.createLinearGradient(0, FY, shear * .3, FY + len);
+      pg.addColorStop(0, L.sun);
+      pg.addColorStop(.55, L.sun);
+      pg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.globalAlpha = a * .42;
+      ctx.fillStyle = pg;
+      ctx.beginPath();
+      ctx.moveTo(wx0, FY); ctx.lineTo(wx1, FY);
+      ctx.lineTo(wx1 + shear, FY + len); ctx.lineTo(wx0 + shear, FY + len);
+      ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = a * .34;
+      var ins = wW * .07;
+      ctx.beginPath();
+      ctx.moveTo(wx0 + ins, FY); ctx.lineTo(wx1 - ins, FY);
+      ctx.lineTo(wx1 - ins + shear * .9, FY + len * .9); ctx.lineTo(wx0 + ins + shear * .9, FY + len * .9);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // 桟の影
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, FY, W, H - FY); ctx.clip();
+      ctx.globalAlpha = a * .55;
+      ctx.fillStyle = L.floor;
+      for (var m = 1; m <= 2; m++){
+        var mx = wx0 + wW * m / 3, bw = Math.max(2, wW * .012);
+        ctx.beginPath();
+        ctx.moveTo(mx - bw / 2, FY); ctx.lineTo(mx + bw / 2, FY);
+        ctx.lineTo(mx + bw / 2 + shear, FY + len); ctx.lineTo(mx - bw / 2 + shear, FY + len);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // 窓の桟
+    ctx.fillStyle = L.wall;
+    var fw = Math.max(2, wW * .012);
+    for (var v = 1; v <= 2; v++) ctx.fillRect(wx0 + wW * v / 3 - fw / 2, wy0, fw, wH);
+    ctx.fillRect(wx0, seaY - fw / 2, wW, fw);
+    ctx.strokeStyle = 'rgba(0,0,0,.30)';
+    ctx.lineWidth = Math.max(1, W * .0022);
+    ctx.strokeRect(wx0, wy0, wW, wH);
+
+    // ベンチと影。光があるときだけ影が出る
+    var bx0 = W * .34, bx1 = W * .62, by = FY - H * .085, bt = Math.max(3, H * .011);
+    if (S.alt > .04){
+      var sl = (H - FY) * (.30 + 2.1 * (1 - S.alt)) * .5;
+      var ss = (.5 - S.t) * W * 1.15 * .5;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(0, FY, W, H - FY); ctx.clip();
+      ctx.globalAlpha = clamp01(S.alt * 1.6) * .34;
+      ctx.fillStyle = L.floor;
+      ctx.beginPath();
+      ctx.moveTo(bx0, FY); ctx.lineTo(bx1, FY);
+      ctx.lineTo(bx1 + ss, FY + sl); ctx.lineTo(bx0 + ss, FY + sl);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+    ctx.fillStyle = 'rgba(0,0,0,.55)';
+    ctx.fillRect(bx0, by, bx1 - bx0, bt);
+    ctx.fillRect(bx0 + (bx1 - bx0) * .08, by + bt, bt * .7, FY - by - bt);
+    ctx.fillRect(bx1 - (bx1 - bx0) * .08 - bt * .7, by + bt, bt * .7, FY - by - bt);
+
+    // 室内灯
+    if (L.lamp > .18){
+      var lx = W * .80, ly = FY + (H - FY) * .30;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = L.lamp * .55;
+      var lg = ctx.createRadialGradient(lx, ly, 0, lx, ly, W * .26);
+      lg.addColorStop(0, '#E9C083');
+      lg.addColorStop(1, 'rgba(233,192,131,0)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(0, 0, W, H);
+      ctx.restore();
+      var lampY = FY - H * .175, sh = H * .05, sw = W * .035;
+      ctx.fillStyle = 'rgba(0,0,0,.42)';
+      ctx.fillRect(lx - Math.max(1, W * .0016), lampY, Math.max(2, W * .0032), FY - lampY);
+      ctx.fillRect(lx - sw * .5, FY - Math.max(2, H * .006), sw, Math.max(2, H * .006));
+      ctx.beginPath();                       // 笠
+      ctx.moveTo(lx - sw * .38, lampY);
+      ctx.lineTo(lx + sw * .38, lampY);
+      ctx.lineTo(lx + sw * .62, lampY + sh);
+      ctx.lineTo(lx - sw * .62, lampY + sh);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(239,203,144,' + (L.lamp * .8) + ')';
+      ctx.fillRect(lx - sw * .6, lampY + sh - Math.max(1, H * .004), sw * 1.2, Math.max(2, H * .006));
+    }
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.globalAlpha = .5;
+    ctx.fillStyle = noisePat;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+    return L;
+  }
+
+  /* ══ 一日の文 ═══════════════════════════════════════════ */
+  var HOURS = [
+    { h:5.35, t:'夜が明ける', p:'空より先に、海の色が変わります。この時間に起きられるのは、旅先にいるあいだだけです。' },
+    { h:7.20, t:'朝食',       p:'パンは坂の下のパン屋から、7時に届きます。焼きあがりの時間に合わせて配達をお願いしています。' },
+    { h:10.6, t:'光が壁を昇る', p:'床にあった光が離れて、壁を昇りはじめます。掃除はこの時間に。部屋にはどなたも入れません。' },
+    { h:14.2, t:'テラスが開く', p:'庇の影ができるのは、この時間からです。日が回りきるまで、ここがいちばん涼しい場所になります。' },
+    { h:18.7, t:'夕凪',        p:'陸から吹く風と、海から吹く風が入れ替わる三十分。そのあいだ、風がぴたりと止まります。この宿の名前は、ここから取りました。' },
+    { h:21.2, t:'バー',        p:'灯りは絞ってあります。対岸の家々の明かりが、そのぶんよく見えます。24時まで。' }
+  ];
+  var hoursEl = document.getElementById('hours');
+  HOURS.forEach(function(o, i){
+    var d = document.createElement('div');
+    d.className = 'hour';
+    d.innerHTML = '<div class="at"></div><h2></h2><p></p>';
+    d.querySelector('.at').textContent = fmt(o.h);
+    d.querySelector('h2').textContent = o.t;
+    d.querySelector('p').textContent = o.p;
+    hoursEl.appendChild(d);
+    o.el = d;
+  });
+  function fmt(h){
+    var hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+    if (mm === 60){ hh++; mm = 0; }
+    return String(hh).padStart(2, '0') + ':' + String(mm).padStart(2, '0');
+  }
+
+  var dayEl = document.getElementById('day');
+  var roomCv = document.getElementById('room');
+  var stage = dayEl.firstElementChild;
+  var clockEl = document.getElementById('clock');
+  var arcDot = document.getElementById('arcDot');
+  var H0 = 5.0, H1 = 22.2;
+
+  // 見出しのある時刻で足を止め、あいだは速く送る。
+  // 等速だと「14:12 テラスが開く」を 15:40 に読ませることになる
+  var KNOTS = (function(){
+    var n = HOURS.length, k = [[0, H0]];
+    for (var i = 0; i < n; i++){
+      k.push([(i + .18) / n, HOURS[i].h]);
+      k.push([(i + .82) / n, HOURS[i].h]);
+    }
+    k.push([1, H1]);
+    return k;
+  })();
+  function hourAt(p){
+    for (var i = 0; i < KNOTS.length - 1; i++){
+      var a = KNOTS[i], b = KNOTS[i+1];
+      if (p <= b[0]){
+        var t = b[0] === a[0] ? 0 : (p - a[0]) / (b[0] - a[0]);
+        return a[1] + (b[1] - a[1]) * clamp01(t);
+      }
+    }
+    return H1;
+  }
+
+  function paintDay(p){
+    var h = hourAt(p);
+    var L = drawRoom(roomCv, h) || lightAt(h);
+    stage.style.setProperty('--lit-page', L.page);
+    stage.style.setProperty('--lit-text', L.text);
+    clockEl.textContent = fmt(h);
+    arcDot.style.transform = 'translateX(-4px) translateX(' + (p * 100) + '%)';
+    var best = clamp(Math.floor(p * HOURS.length), 0, HOURS.length - 1);
+    for (var j = 0; j < HOURS.length; j++) HOURS[j].el.classList.toggle('on', j === best);
+  }
+
+  /* ══ 客室 ═══════════════════════════════════════════════ */
+  var ROOMS = [
+    { key:'asanagi', ja:'朝凪', en:'ASA-NAGI', type:'ダブル', sqm:26, rate:22000, hour:5.67,
+      opt:{ wx0:.24, wx1:.76, wy0:.16, wy1:.58 },
+      p:'東向き。5時40分ごろ、枕元まで光が届きます。朝に強い人のための部屋です。' },
+    { key:'nagi', ja:'凪', en:'NAGI', type:'ツイン', sqm:32, rate:28000, hour:14.0,
+      opt:{ wx0:.14, wx1:.86, wy0:.13, wy1:.60 },
+      p:'海に正対しています。昼のあいだ、光は床の手前で止まります。奥まで届くのは夕方から。' },
+    { key:'yunagi', ja:'夕凪', en:'YU-NAGI', type:'スイート', sqm:48, rate:46000, hour:18.7,
+      opt:{ wx0:.10, wx1:.90, wy0:.11, wy1:.62 },
+      p:'角部屋で窓が二面あります。光が一日じゅう部屋を回るので、時間の経つのが見えます。' }
+  ];
+  var roomsEl = document.getElementById('rooms');
+  ROOMS.forEach(function(r){
+    var el = document.createElement('article');
+    el.className = 'room';
+    el.innerHTML =
+      '<canvas width="520" height="360"></canvas>' +
+      '<div class="room-top"><h4></h4><span class="en"></span></div>' +
+      '<div class="meta"><span class="ty"></span><span class="sq dat"></span><span class="hr dat"></span></div>' +
+      '<p></p>' +
+      '<div class="rate dat"></div>';
+    el.querySelector('h4').textContent = r.ja;
+    el.querySelector('.en').textContent = r.en;
+    el.querySelector('.ty').textContent = r.type;
+    el.querySelector('.sq').textContent = r.sqm + '㎡';
+    el.querySelector('.hr').textContent = '光 ' + fmt(r.hour);
+    el.querySelector('p').textContent = r.p;
+    el.querySelector('.rate').innerHTML = '¥' + r.rate.toLocaleString('ja-JP') + '<small>〜 / 1泊 素泊まり</small>';
+    roomsEl.appendChild(el);
+    r.cv = el.querySelector('canvas');
+  });
+  function drawRoomCards(){
+    ROOMS.forEach(function(r){ drawRoom(r.cv, r.hour, r.opt); });
+  }
+
+  /* ══ 予約 ═══════════════════════════════════════════════ */
+  var pickEl = document.getElementById('pick');
+  var gridEl = document.getElementById('grid');
+  var monthEl = document.getElementById('month');
+  var prevB = document.getElementById('prev'), nextB = document.getElementById('next');
+  var sumRoom = document.getElementById('sumRoom'), sumRange = document.getElementById('sumRange');
+  var sumNights = document.getElementById('sumNights'), sumTotal = document.getElementById('sumTotal');
+  var nightsEl = document.getElementById('nights'), msgEl = document.getElementById('msg'), ctaEl = document.getElementById('cta');
+
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var view = new Date(today.getFullYear(), today.getMonth(), 1);
+  var limit = new Date(today.getFullYear(), today.getMonth() + 10, 1);
+  var current = ROOMS[1];
+  var inD = null, outD = null;
+
+  ROOMS.forEach(function(r){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = r.ja + ' / ' + r.type;
+    b.setAttribute('aria-pressed', r === current ? 'true' : 'false');
+    b.addEventListener('click', function(){
+      current = r;
+      Array.prototype.forEach.call(pickEl.children, function(c){ c.setAttribute('aria-pressed', 'false'); });
+      b.setAttribute('aria-pressed', 'true');
+      render();
+    });
+    pickEl.appendChild(b);
+  });
+
+  function key(d){ return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
+  function hash(d){
+    var s = key(d), n = 7;
+    for (var i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) % 100003;
+    return n;
+  }
+  // 満室は日付から決まる。読み込むたびに変わると予約表として嘘になる
+  function soldOut(d){ return hash(d) % 13 === 0; }
+  function rateOf(d){
+    var w = d.getDay(), k = w === 6 ? 1.40 : w === 5 ? 1.25 : w === 0 ? 1.10 : 1.0;
+    return Math.round(current.rate * k / 500) * 500;
+  }
+  function addDays(d, n){ var x = new Date(d); x.setDate(x.getDate() + n); return x; }
+  function nightsBetween(a, b){ return Math.round((b - a) / 86400000); }
+
+  function render(){
+    monthEl.textContent = view.getFullYear() + '年 ' + (view.getMonth() + 1) + '月';
+    prevB.disabled = view <= new Date(today.getFullYear(), today.getMonth(), 1);
+    nextB.disabled = view >= limit;
+    gridEl.innerHTML = '';
+    var first = new Date(view.getFullYear(), view.getMonth(), 1);
+    var pad = first.getDay();
+    var days = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    var i;
+    for (i = 0; i < pad; i++){
+      var bl = document.createElement('div');
+      bl.className = 'cell blank';
+      gridEl.appendChild(bl);
+    }
+    for (i = 1; i <= days; i++){
+      var d = new Date(view.getFullYear(), view.getMonth(), i);
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'cell';
+      var past = d < today, full = soldOut(d);
+      var r = rateOf(d);
+      b.innerHTML = '<span class="d"></span><span class="r"></span>';
+      b.querySelector('.d').textContent = i;
+      if (past){ b.disabled = true; b.querySelector('.r').textContent = ''; }
+      else if (full){ b.disabled = true; b.classList.add('full'); b.querySelector('.r').textContent = '満'; }
+      else b.querySelector('.r').textContent = (r / 1000) + 'k';
+      if (inD && key(d) === key(inD)) b.classList.add('edge');
+      if (outD && key(d) === key(outD)) b.classList.add('edge');
+      if (inD && outD && d > inD && d < outD) b.classList.add('in-range');
+      b.setAttribute('aria-label', (view.getMonth()+1) + '月' + i + '日' + (full ? ' 満室' : past ? '' : ' ¥' + r.toLocaleString('ja-JP')));
+      (function(dd, disabled){
+        if (disabled) return;
+        b.addEventListener('click', function(){ choose(dd); });
+      })(d, b.disabled);
+      gridEl.appendChild(b);
+    }
+    summary();
+  }
+
+  function choose(d){
+    msgEl.textContent = '';
+    if (!inD || outD || d <= inD){ inD = d; outD = null; render(); return; }
+    // 途中に満室の夜があれば、その日程では泊まれない
+    for (var x = new Date(inD); x < d; x = addDays(x, 1)){
+      if (soldOut(x)){
+        msgEl.textContent = (x.getMonth()+1) + '月' + x.getDate() + '日が満室です。この日をまたぐ日程は取れません。';
+        inD = d; outD = null; render(); return;
+      }
+    }
+    outD = d;
+    render();
+  }
+
+  function summary(){
+    sumRoom.textContent = current.ja + ' / ' + current.type;
+    nightsEl.innerHTML = '';
+    if (!inD){
+      sumRange.textContent = '日付を選んでください';
+      sumNights.textContent = ''; sumTotal.textContent = '—';
+      ctaEl.disabled = true;
+      return;
+    }
+    if (!outD){
+      sumRange.textContent = (inD.getMonth()+1) + '/' + inD.getDate() + ' — 出発日を選ぶ';
+      sumNights.textContent = ''; sumTotal.textContent = '—';
+      ctaEl.disabled = true;
+      return;
+    }
+    var n = nightsBetween(inD, outD), total = 0;
+    for (var x = new Date(inD), i = 0; i < n; x = addDays(x, 1), i++){
+      var r = rateOf(x);
+      total += r;
+      var li = document.createElement('li');
+      li.innerHTML = '<span>' + (x.getMonth()+1) + '/' + x.getDate() + ' (' + '日月火水木金土'[x.getDay()] + ')</span><span>¥' + r.toLocaleString('ja-JP') + '</span>';
+      nightsEl.appendChild(li);
+    }
+    sumRange.textContent = (inD.getMonth()+1) + '/' + inD.getDate() + ' — ' + (outD.getMonth()+1) + '/' + outD.getDate();
+    sumNights.textContent = ' ' + n + '泊';
+    sumTotal.textContent = '¥' + total.toLocaleString('ja-JP');
+    ctaEl.disabled = false;
+  }
+
+  prevB.addEventListener('click', function(){ view = new Date(view.getFullYear(), view.getMonth() - 1, 1); render(); });
+  nextB.addEventListener('click', function(){ view = new Date(view.getFullYear(), view.getMonth() + 1, 1); render(); });
+  ctaEl.addEventListener('click', function(){
+    msgEl.textContent = '承りました。……とはいえ、これは架空のホテルです。';
+    ctaEl.disabled = true;
+  });
+
+  /* ══ スクロール ═════════════════════════════════════════ */
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var r = dayEl.getBoundingClientRect();
+    // 固定面は 100svh。innerHeight（=100vh）で割ると、
+    // アドレスバーが出入りするモバイルで最後まで進みきらない
+    var travel = r.height - stage.offsetHeight;
+    var p = travel > 0 ? clamp01(-r.top / travel) : 1;
+    paintDay(p);
+  }
+  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){ drawRoomCards(); onScroll(); });
+
+  function repaint(){ drawRoomCards(); onScroll(); }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaint);
+  new MutationObserver(repaint).observe(root, { attributes:true, attributeFilter:['data-theme'] });
+
+  render();
+  drawRoomCards();
+  if (reduce){
+    HOURS.forEach(function(o){ o.el.classList.add('on'); });
+    paintDay(4.5 / HOURS.length);
+  } else {
+    update();
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(repaint);
+})();
+</script>
+
+</body>
+</html>
