@@ -6,46 +6,46 @@
 <title>墨継 SUMITSUGI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500&family=Zen+Old+Mincho:wght@400;600;900&display=swap">
 </head>
 <body>
 <style>
-/* ── tokens: 和紙と墨。既定は紙、暗所では夜の墨に反転 ───────── */
+/* ── 色: 和紙と墨。既定は紙、暗所では夜の墨に反転 ─────────────── */
 :root{
-  --paper:#E9EAE6;
-  --sumi:#171A18;
-  --sumi-soft:#3A403C;
-  --usu:#6B706C;
-  --ai:#1B2A4A;
-  --shinchu:#8C6A3A;
-  --rule:rgba(23,26,24,.14);
-  --ink-line:#171A18;
-  --glow:rgba(27,42,74,.16);
+  --paper:#E7E6E0;
+  --sumi:#161917;
+  --sumi-soft:#3B403C;
+  --usu:#6E736E;
+  --ai:#1D2C4C;
+  --shinchu:#8A6733;
+  --rule:rgba(22,25,23,.15);
+  --ink-blend:multiply;
+  --grain:.42;
   --travel:132px;   /* 分解シーンの移動量。狭い画面で縮める */
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#111411;
-    --sumi:#E4E2DC;
-    --sumi-soft:#B9BCB5;
-    --usu:#878B84;
-    --ai:#8FA9D4;
+    --paper:#101310;
+    --sumi:#E6E4DD;
+    --sumi-soft:#BABDB6;
+    --usu:#8A8E87;
+    --ai:#93ACD6;
     --shinchu:#C8A063;
-    --rule:rgba(228,226,220,.16);
-    --ink-line:#E4E2DC;
-    --glow:rgba(143,169,212,.20);
+    --rule:rgba(230,228,221,.17);
+    --ink-blend:screen;
+    --grain:.22;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#111411;
-  --sumi:#E4E2DC;
-  --sumi-soft:#B9BCB5;
-  --usu:#878B84;
-  --ai:#8FA9D4;
+  --paper:#101310;
+  --sumi:#E6E4DD;
+  --sumi-soft:#BABDB6;
+  --usu:#8A8E87;
+  --ai:#93ACD6;
   --shinchu:#C8A063;
-  --rule:rgba(228,226,220,.16);
-  --ink-line:#E4E2DC;
-  --glow:rgba(143,169,212,.20);
+  --rule:rgba(230,228,221,.17);
+  --ink-blend:screen;
+  --grain:.22;
 }
 
 *{box-sizing:border-box;}
@@ -53,36 +53,57 @@ body{
   margin:0;
   background:var(--paper);
   color:var(--sumi);
-  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
+  /* 日本語のゴシック。中国語フォントは並べない（字形が変わるため） */
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
   font-size:17px;
-  line-height:1.85;
+  line-height:1.9;
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
 .mincho{
-  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho","Songti SC",serif;
+  font-family:"Zen Old Mincho","Hiragino Mincho ProN","Yu Mincho","Noto Serif JP","Source Han Serif JP",
+               "Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",serif;
   font-weight:400;
 }
 .mono{
   font-family:ui-monospace,"SF Mono",Menlo,monospace;
   font-variant-numeric:tabular-nums;
 }
+/* 縦組み。日本語のための組み方をひとつ持たせる */
+.tate{
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  font-feature-settings:"vpal" 1;
+  line-height:1.5;
+}
 
-/* ── インクの縦線: ページ全体の進行度で伸びる ───────────────── */
+/* ── 紙の地: 繊維のゆらぎを焼いて敷きつめる ─────────────────── */
+#grain{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  mix-blend-mode:overlay;
+  opacity:var(--grain);
+  background-repeat:repeat;
+}
+
+/* ── 進行度の目盛り ───────────────────────────────────────── */
 .inkline{
   position:fixed;
   left:clamp(16px,5vw,80px);
   top:0;
-  width:2px;
+  width:1px;
   height:100svh;
-  z-index:5;
+  z-index:6;
   pointer-events:none;
 }
 .inkline i{
   display:block;
   width:100%;
   height:100%;
-  background:var(--ink-line);
+  background:var(--sumi);
+  opacity:.5;
   transform-origin:top;
   transform:scaleY(var(--ink,0));
 }
@@ -90,19 +111,19 @@ body{
   position:absolute;
   left:50%;
   top:0;
-  width:9px;
-  height:12px;
-  margin-left:-4.5px;
+  width:8px;
+  height:11px;
+  margin-left:-4px;
   border-radius:50% 50% 46% 46%;
-  background:var(--ink-line);
-  transform:translateY(calc(var(--ink,0) * (100svh - 12px)));
+  background:var(--sumi);
+  transform:translateY(calc(var(--ink,0) * (100svh - 11px)));
 }
 .pct{
   position:fixed;
   left:clamp(16px,5vw,80px);
   bottom:18px;
-  z-index:5;
-  transform:translateX(14px);
+  z-index:6;
+  transform:translateX(13px);
   font-size:11px;
   letter-spacing:.18em;
   color:var(--usu);
@@ -114,6 +135,7 @@ body{
   width:min(1080px,100% - clamp(72px,15vw,190px));
   margin-inline:auto;
 }
+section{position:relative;z-index:1;}
 .stage{
   position:sticky;
   top:0;
@@ -121,142 +143,153 @@ body{
   height:100svh;
   display:grid;
   align-content:center;
-  background:var(--paper);
   overflow:hidden;
 }
 .eyebrow{
   margin:0 0 clamp(.9rem,2.2vh,1.6rem);
   font-size:11px;
   letter-spacing:.34em;
-  text-transform:uppercase;
   color:var(--usu);
 }
+.ink-canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  mix-blend-mode:var(--ink-blend);
+}
 
-/* ── 1. 見出し ────────────────────────────────────────────── */
+/* ── 1. 見出し: 縦組みの一行が主役。墨は背後を走る ──────────── */
+#hero .stage{align-content:center;}
 .hero-grid{
   display:grid;
   grid-template-columns:1fr auto;
-  gap:clamp(20px,5vw,72px);
+  gap:clamp(24px,6vw,80px);
   align-items:center;
+  position:relative;
+  z-index:1;
 }
+h1 span{display:block;}
 h1{
   margin:0;
-  font-size:clamp(2rem,min(7vw,9vh),5.4rem);
-  line-height:1.16;
-  letter-spacing:.02em;
-  text-wrap:balance;
+  font-weight:900;
+  font-size:clamp(1.9rem,min(8.4vw,10.4vh),4.2rem);
+  letter-spacing:.06em;
+  height:min(72vh,660px);
+}
+.brand{
+  margin:0 0 clamp(1.2rem,3vh,2rem);
+  font-size:clamp(1.5rem,3.4vw,2.1rem);
+  letter-spacing:.28em;
+  font-weight:600;
+}
+.brand small{
+  display:block;
+  margin-top:.5rem;
+  font-size:11px;
+  letter-spacing:.36em;
+  color:var(--usu);
+  font-weight:400;
+  font-family:"Zen Kaku Gothic New",system-ui,sans-serif;
 }
 .lede{
-  margin:clamp(1rem,2.6vh,1.9rem) 0 0;
-  max-width:30ch;
+  margin:0;
+  max-width:26ch;
   color:var(--sumi-soft);
-  font-size:clamp(.86rem,min(1.9vw,2.1vh),1.02rem);
+  font-size:clamp(.86rem,min(1.9vw,2.1vh),1rem);
 }
-.nib{width:clamp(72px,min(13vw,20vh),176px);height:auto;}
-.nib .metal{fill:none;stroke:var(--sumi);stroke-width:3;}
-.nib .slit{stroke:var(--sumi);stroke-width:3;stroke-linecap:round;}
-.nib .tip{fill:var(--shinchu);}
 .cue{
   display:flex;
   align-items:center;
   gap:.9rem;
-  margin-top:clamp(20px,5vh,64px);
-  font-size:12px;
-  letter-spacing:.24em;
+  margin-top:clamp(20px,5vh,56px);
+  font-size:11px;
+  letter-spacing:.26em;
   color:var(--usu);
 }
 .cue span{
-  width:52px;height:1px;background:var(--usu);
+  width:48px;height:1px;background:var(--usu);
   transform-origin:left;
-  animation:draw 2.4s ease-in-out infinite;
+  animation:draw 2.6s ease-in-out infinite;
 }
-@keyframes draw{0%,100%{transform:scaleX(.2);}50%{transform:scaleX(1);}}
+@keyframes draw{0%,100%{transform:scaleX(.15);}50%{transform:scaleX(1);}}
 
-/* ── 2. 落下 ──────────────────────────────────────────────── */
+/* ── 2. 落下: 縦組み三行 + にじみ広がる墨 ──────────────────── */
 #fall{height:300vh;}
 .drop-copy{
-  margin:0;
-  max-width:22ch;
-  font-size:clamp(1.5rem,min(5vw,6.4vh),3.4rem);
-  line-height:1.5;
+  position:relative;
+  z-index:1;
+  margin:0 0 0 auto;
+  height:min(64vh,560px);
+  font-size:clamp(1.3rem,min(6.4vw,6.2vh),2.9rem);
+  letter-spacing:.08em;
 }
-/* 3行を --p の 0-.5 / .2-.7 / .4-.9 に割り当てて順にずらす */
 .drop-copy em{
+  display:block;   /* 縦組みでは block が「段」になる。inline-block だと段が重なる */
   font-style:normal;
-  display:inline-block;
   opacity:calc(var(--p,0) * 2.2);
-  transform:translateY(calc((1 - min(var(--p,0) * 2.2, 1)) * 24px));
+  transform:translateY(calc((1 - min(var(--p,0) * 2.2, 1)) * 22px));
 }
 .drop-copy em.d2{
   opacity:calc(var(--p,0) * 2.2 - .44);
-  transform:translateY(calc((1 - min(max(var(--p,0) * 2.2 - .44, 0), 1)) * 24px));
+  transform:translateY(calc((1 - min(max(var(--p,0) * 2.2 - .44, 0), 1)) * 22px));
 }
 .drop-copy em.d3{
   opacity:calc(var(--p,0) * 2.2 - .88);
-  transform:translateY(calc((1 - min(max(var(--p,0) * 2.2 - .88, 0), 1)) * 24px));
-}
-.blot{
-  position:absolute;
-  right:6vw;
-  top:50%;
-  width:min(44vh,340px);
-  aspect-ratio:1;
-  margin-top:calc(min(44vh,340px) / -2);
-  border-radius:50%;
-  background:radial-gradient(circle at 42% 38%, var(--glow), transparent 68%);
-  transform:scale(calc(.3 + var(--p,0) * .9));
+  transform:translateY(calc((1 - min(max(var(--p,0) * 2.2 - .88, 0), 1)) * 22px));
 }
 
 /* ── 3. ペン先 ────────────────────────────────────────────── */
-#pen{height:340vh;}
+#pen{height:330vh;}
 #pen .stage{place-content:center;}
 .pen-holder{position:relative;display:grid;justify-items:center;width:100%;}
-.pen-nib{
-  width:clamp(104px,min(22vw,30vh),290px);
-  transform:rotate(calc(-14deg + var(--p,0) * 14deg)) scale(calc(.86 + var(--p,0) * .3));
-}
+.nib{width:clamp(104px,min(22vw,30vh),268px);height:auto;}
+.nib .metal{fill:none;stroke:var(--sumi);stroke-width:2;}
+.nib .slit{stroke:var(--sumi);stroke-width:2;stroke-linecap:round;}
+.nib .tip{fill:var(--shinchu);}
+.pen-nib{transform:rotate(calc(-13deg + var(--p,0) * 13deg)) scale(calc(.88 + var(--p,0) * .26));}
 .callouts{position:absolute;inset:0;pointer-events:none;}
 .callout{
   position:absolute;
   margin:0;
   display:flex;
   align-items:center;
-  gap:.6rem;
+  gap:.7rem;
   font-size:13px;
-  letter-spacing:.06em;
+  letter-spacing:.04em;
   color:var(--sumi-soft);
   white-space:nowrap;
 }
 .callout::before{content:"";width:34px;height:1px;background:var(--rule);flex:none;}
-.k1{top:20%;left:calc(50% + clamp(66px,12vw,158px));opacity:calc(var(--p,0) * 4 - .4);}
-.k2{top:47%;right:calc(50% + clamp(66px,12vw,158px));flex-direction:row-reverse;opacity:calc(var(--p,0) * 4 - 1.5);}
-.k3{top:74%;left:calc(50% + clamp(66px,12vw,158px));opacity:calc(var(--p,0) * 4 - 2.5);}
+.k1{top:19%;left:calc(50% + clamp(66px,12vw,152px));opacity:calc(var(--p,0) * 4 - .4);}
+.k2{top:47%;right:calc(50% + clamp(66px,12vw,152px));flex-direction:row-reverse;opacity:calc(var(--p,0) * 4 - 1.5);}
+.k3{top:75%;left:calc(50% + clamp(66px,12vw,152px));opacity:calc(var(--p,0) * 4 - 2.5);}
 .scene-title{
   position:absolute;
-  top:clamp(28px,7vh,88px);
+  top:clamp(28px,7vh,84px);
   left:0;right:0;
   padding-inline:6vw;
   text-align:center;
-  font-size:clamp(1.05rem,min(3vw,3.4vh),2rem);
+  font-size:clamp(1.05rem,min(3vw,3.4vh),1.9rem);
+  letter-spacing:.05em;
 }
 #pen .scene-title{opacity:calc(1.15 - var(--p,0) * 1.6);}
 
-/* ── 4. インクの道: 図を固定し、テキストだけを送る ──────────── */
+/* ── 4. インクの道: 断面を固定し、本文だけを送る ──────────── */
 #flow{padding:clamp(70px,13vh,150px) 0 0;}
 .flow-head{margin-bottom:clamp(30px,7vh,80px);}
 .flow-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,5vw,80px);}
 .flow-stick{position:sticky;top:0;height:100svh;display:grid;place-items:center;background:var(--paper);}
-.feed{width:min(100%,340px);height:auto;max-height:74svh;}
-.feed .pt{fill:none;stroke:var(--sumi);stroke-width:2;stroke-linecap:round;}
-.feed .grp{opacity:.26;transition:opacity .55s cubic-bezier(.2,.7,.2,1);}
-.feed .fill{fill:var(--sumi);stroke:none;opacity:.16;}
-.feed .lbl{fill:var(--usu);font-size:11px;letter-spacing:.12em;font-family:ui-monospace,"SF Mono",Menlo,monospace;}
-/* タンクのインクは下端を固定して減らす */
+.feed{width:min(100%,320px);height:auto;max-height:74svh;}
+.feed .pt{fill:none;stroke:var(--sumi);stroke-width:1.4;stroke-linecap:round;}
+.feed .grp{opacity:.24;transition:opacity .55s cubic-bezier(.2,.7,.2,1);}
+.feed .fill{fill:var(--sumi);stroke:none;opacity:.14;}
+.feed .lbl{fill:var(--usu);font-size:11px;letter-spacing:.14em;}
 .feed .tank-ink{transform-box:fill-box;transform-origin:50% 100%;transform:scaleY(1);transition:transform .7s cubic-bezier(.2,.7,.2,1);}
-/* 芯を下るインク柱。pathLength=1 なので dashoffset は 1→0 */
-.feed .column{fill:none;stroke:var(--ai);stroke-width:5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s cubic-bezier(.3,.6,.2,1);}
-.feed .mark{fill:none;stroke:var(--ai);stroke-width:6;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.3,.6,.2,1) .12s;}
-.feed .bub{fill:none;stroke:var(--ai);stroke-width:1.5;opacity:0;}
+.feed .column{fill:none;stroke:var(--ai);stroke-width:4;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .8s cubic-bezier(.3,.6,.2,1);}
+.feed .mark{fill:none;stroke:var(--ai);stroke-width:5;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset .9s cubic-bezier(.3,.6,.2,1) .12s;}
+.feed .bub{fill:none;stroke:var(--ai);stroke-width:1.2;opacity:0;}
 [data-step="1"] .g-tank,[data-step="1"] .g-feed,
 [data-step="2"] .g-comb,[data-step="2"] .g-feed,
 [data-step="3"] .g-nib,
@@ -288,8 +321,8 @@ h1{
 .flow-step.on{opacity:1;}
 .flow-step h3{
   margin:0;
-  font-size:clamp(1.15rem,2.7vw,1.65rem);
-  letter-spacing:.04em;
+  font-size:clamp(1.15rem,2.7vw,1.6rem);
+  letter-spacing:.05em;
   display:flex;align-items:baseline;gap:.9rem;
 }
 .flow-step h3 i{
@@ -299,38 +332,40 @@ h1{
   color:var(--usu);
   font-family:ui-monospace,"SF Mono",Menlo,monospace;
 }
-.flow-step p{margin:0;color:var(--sumi-soft);font-size:.96rem;max-width:36ch;}
+.flow-step p{margin:0;color:var(--sumi-soft);font-size:.95rem;max-width:34ch;}
 
-/* ── 5. 一筆: ペン先が線を引きながら進む ──────────────────── */
-#write{height:320vh;}
-.trace-svg{width:min(100%,1000px);height:auto;}
-.trace-ink{
-  fill:none;
-  stroke:var(--ink-line);
-  stroke-width:7;
-  stroke-linecap:round;
-  stroke-linejoin:round;
+/* ── 5. 一筆: 筆致そのものを Canvas で引く ─────────────────── */
+#write{height:340vh;}
+.write-canvas{
+  position:absolute;
+  left:0;right:0;
+  top:50%;
+  height:min(46vh,380px);
+  width:100%;
+  transform:translateY(-50%);
+  mix-blend-mode:var(--ink-blend);
+  pointer-events:none;
 }
-#tracer{opacity:0;}
-.t-body{fill:var(--paper);stroke:var(--sumi);stroke-width:6;}
-.t-line{fill:none;stroke:var(--sumi);stroke-width:6;stroke-linecap:round;}
-.t-tip{fill:var(--shinchu);}
-.trace-note{
-  margin:clamp(1.4rem,4vh,2.6rem) 0 0;
-  text-align:center;
+.write-note{
+  position:absolute;
+  right:clamp(24px,7vw,120px);
+  top:50%;
+  transform:translateY(-50%);
+  height:min(42vh,360px);
+  margin:0;
   color:var(--sumi-soft);
-  font-size:clamp(.86rem,2vw,1rem);
-  opacity:calc(var(--p,0) * 4 - 3.1);
+  font-size:clamp(.82rem,1.8vw,.95rem);
+  letter-spacing:.1em;
+  opacity:calc(var(--p,0) * 4 - 3);
 }
 
 /* ── 6. 分解 ──────────────────────────────────────────────── */
-#parts{height:320vh;}
+#parts{height:310vh;}
 #parts .stage{place-content:center;}
-/* 実際のペンの割付のまま横に開く。太さも長さも部位ごとに変える */
 .pen{display:flex;align-items:center;width:min(780px,80vw);}
 .seg{
   position:relative;
-  border:1.5px solid var(--sumi);
+  border:1.4px solid var(--sumi);
   background:var(--paper);
 }
 .seg b{
@@ -351,7 +386,7 @@ h1{
 .e4{flex:0 0 18%;height:clamp(14px,2.7vh,24px);border-radius:2px 10px 10px 2px;transform:translateX(calc(var(--p,0) * var(--travel)));}
 .e4 b{left:auto;right:0;}
 
-/* ── 7. 十一日: 縦スクロールを横送りに変換する ─────────────── */
+/* ── 7. 十一日: 縦スクロールを横送りに変える ──────────────── */
 #days{height:420vh;}
 #days .stage{align-content:center;grid-template-columns:minmax(0,1fr);gap:clamp(20px,4vh,44px);}
 #days .scene-title{position:static;padding:0;text-align:left;}
@@ -366,7 +401,7 @@ h1{
 .day{
   flex:0 0 clamp(232px,26vw,318px);
   border:1px solid var(--rule);
-  border-top:1.5px solid var(--sumi);
+  border-top:1.4px solid var(--sumi);
   padding:clamp(18px,2.2vw,26px);
   display:grid;
   align-content:start;
@@ -374,8 +409,8 @@ h1{
   background:var(--paper);
 }
 .day .n{font-size:11px;letter-spacing:.22em;color:var(--usu);}
-.day h3{margin:0;font-size:1.06rem;letter-spacing:.04em;}
-.day p{margin:0;color:var(--sumi-soft);font-size:.9rem;line-height:1.75;}
+.day h3{margin:0;font-size:1.05rem;letter-spacing:.05em;}
+.day p{margin:0;color:var(--sumi-soft);font-size:.89rem;line-height:1.8;}
 .rail{
   width:min(1080px,100% - clamp(72px,15vw,190px));
   margin-inline:auto;
@@ -391,21 +426,21 @@ h1{
   transform:scaleX(var(--p,0));
 }
 
-/* ── 8-10. スクロール連動を切り、一度きりの出現に落とす ─────── */
+/* ── 8-10. 読み物 ─────────────────────────────────────────── */
 .band{padding:clamp(80px,15vh,180px) 0;}
 .band + .band{border-top:1px solid var(--rule);}
 h2{
   margin:0 0 clamp(1.6rem,4vh,2.6rem);
-  font-size:clamp(1.4rem,3.4vw,2.4rem);
-  letter-spacing:.03em;
+  font-size:clamp(1.4rem,3.4vw,2.3rem);
+  letter-spacing:.06em;
 }
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(26px,5vw,58px);}
-.cols h3{margin:0 0 .7rem;font-size:1.1rem;letter-spacing:.05em;}
-.cols p{margin:0;color:var(--sumi-soft);font-size:.94rem;}
+.cols h3{margin:0 0 .7rem;font-size:1.08rem;letter-spacing:.06em;}
+.cols p{margin:0;color:var(--sumi-soft);font-size:.93rem;}
 .spec-wrap{overflow-x:auto;}
-.spec{width:100%;border-collapse:collapse;font-size:.94rem;}
+.spec{width:100%;border-collapse:collapse;font-size:.93rem;}
 .spec th,.spec td{text-align:left;padding:1rem .4rem;border-bottom:1px solid var(--rule);vertical-align:baseline;}
-.spec th{font-weight:400;color:var(--usu);width:clamp(6rem,22%,12rem);letter-spacing:.08em;}
+.spec th{font-weight:400;color:var(--usu);width:clamp(6rem,22%,12rem);letter-spacing:.1em;}
 .reveal{
   opacity:0;
   transform:translateY(20px);
@@ -413,14 +448,14 @@ h2{
 }
 .reveal.in{opacity:1;transform:none;}
 
-.price{margin:0 0 .4rem;font-size:clamp(1.7rem,4.6vw,2.9rem);letter-spacing:.02em;}
-.stock{margin:0 0 2.2rem;color:var(--usu);font-size:.9rem;}
+.price{margin:0 0 .4rem;font-size:clamp(1.7rem,4.6vw,2.8rem);letter-spacing:.04em;}
+.stock{margin:0 0 2.2rem;color:var(--usu);font-size:.89rem;}
 .btn{
   appearance:none;
-  border:1.5px solid var(--sumi);
+  border:1.4px solid var(--sumi);
   background:transparent;
   color:var(--sumi);
-  font:inherit;font-size:.94rem;letter-spacing:.12em;
+  font:inherit;font-size:.93rem;letter-spacing:.14em;
   padding:.95rem 2.3rem;
   border-radius:999px;
   cursor:pointer;
@@ -428,17 +463,19 @@ h2{
 }
 .btn:hover{background:var(--sumi);color:var(--paper);}
 .btn:focus-visible{outline:2px solid var(--ai);outline-offset:4px;}
-.said{margin-top:1.1rem;min-height:1.4em;font-size:.87rem;color:var(--ai);}
-footer{border-top:1px solid var(--rule);padding:2.4rem 0 3.6rem;color:var(--usu);font-size:.82rem;}
+.said{margin-top:1.1rem;min-height:1.4em;font-size:.86rem;color:var(--ai);}
+footer{border-top:1px solid var(--rule);padding:2.4rem 0 3.6rem;color:var(--usu);font-size:.81rem;}
 footer p{margin:.3rem 0;}
 
-/* ── モバイル: 動きを弱め、注記は縦積みに切り替える ─────────── */
+/* ── 狭い画面 ─────────────────────────────────────────────── */
 @media (max-width:720px){
   :root{--travel:86px;}
   .wrap{width:min(1080px,100% - 76px);}
-  .hero-grid{grid-template-columns:1fr;}
-  .hero-grid .nib{order:-1;justify-self:start;width:clamp(56px,14vw,92px);}
-  .pen-nib{width:clamp(150px,42vw,220px);}
+  .hero-grid{grid-template-columns:auto 1fr;}
+  h1{height:min(58vh,480px);font-size:clamp(1.7rem,9.6vw,2.6rem);}
+  .brand{font-size:1.25rem;}
+  .drop-copy{height:min(58vh,440px);}
+  .nib{width:clamp(140px,40vw,210px);}
   .pen-holder{gap:1.6rem;}
   .callouts{position:static;display:grid;gap:.5rem;justify-items:start;}
   .callout{position:static;white-space:normal;font-size:12px;}
@@ -456,35 +493,43 @@ footer p{margin:.3rem 0;}
   }
   .feed{max-height:40svh;}
   .flow-step{min-height:64svh;}
+
+  .write-canvas{height:min(38vh,300px);}
+  .write-note{right:20px;height:min(34vh,260px);font-size:.8rem;}
+
   #days .days-head,.rail{width:min(1080px,100% - 76px);}
   .track{padding-inline:38px;}
   .day{flex:0 0 78vw;}
 }
-/* ── 縦が詰まった画面: 装飾から先に落とす ──────────────────── */
 @media (max-height:520px){
-  .nib,.blot{display:none;}
-  .cue{margin-top:14px;}
+  h1,.drop-copy{height:auto;writing-mode:horizontal-tb;}
   .scene-title{display:none;}
   #days .scene-title{display:block;}
 }
 @media (prefers-reduced-motion:reduce){
-  /* 固定シーンをすべて解いて、ふつうの縦組みの読み物にする */
+  /* 固定を全部解いて、ふつうの縦組みの読み物に組み替える */
   #fall,#pen,#write,#parts,#days{height:auto;}
   #fall .stage,#pen .stage,#write .stage,#parts .stage,#days .stage{
     position:static;height:auto;overflow:visible;
     padding:clamp(64px,12vh,150px) 0;
   }
   .flow-stick{position:static;height:auto;margin-inline:0;padding:clamp(24px,5vh,60px) 0;}
+  .flow-figcol{display:grid;place-items:center;}
   .flow-step{min-height:0;padding:clamp(20px,4vh,44px) 0;opacity:1;}
-  .blot{display:none;}
   .scene-title{
     position:static;padding:0;text-align:left;
     width:min(1080px,100% - clamp(72px,15vw,190px));
     margin:0 auto 1.4rem;
   }
-  .flow-figcol{display:grid;place-items:center;}
   .callouts{position:static;display:grid;gap:.5rem;justify-items:start;margin-top:1.4rem;}
   .callout{position:static;white-space:normal;}
+  .write-canvas{position:static;transform:none;height:min(40vh,320px);}
+  .write-note{
+    position:static;transform:none;height:auto;
+    writing-mode:horizontal-tb;opacity:1;
+    width:min(1080px,100% - clamp(72px,15vw,190px));
+    margin:1.4rem auto 0;
+  }
   .track{transform:none;flex-wrap:wrap;padding-inline:0;}
   #days .stage{padding-inline:clamp(72px,15vw,190px);}
   .day{flex:1 1 260px;}
@@ -496,60 +541,52 @@ footer p{margin:.3rem 0;}
   .pen-nib,.e1,.e2,.e3,.e4{transform:none;}
   .seg b{opacity:1;}
   #pen .scene-title{opacity:1;}
-  .trace-ink{stroke-dashoffset:0;}
-  .trace-note{opacity:1;}
-  #tracer{display:none;}
-  .feed .grp{transition:none;}
+  .feed .grp,.feed .column,.feed .mark,.feed .tank-ink{transition:none;}
   .feed .bub{display:none;}
-  .feed .column,.feed .mark,.feed .tank-ink{transition:none;}
 }
 </style>
 
+<div id="grain" aria-hidden="true"></div>
 <div class="inkline" aria-hidden="true"><i></i><b></b></div>
 <div class="pct mono" aria-hidden="true"><span id="pct">00</span></div>
 
-<!-- シーン1: 落下の起点。ここだけ静止させる -->
+<!-- シーン1: 縦組みの一行が主役。墨はその背後を走る -->
 <section id="hero">
   <div class="stage">
+    <canvas class="ink-canvas" id="heroInk" aria-hidden="true"></canvas>
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <p class="eyebrow">Fountain Pen — 墨継 / Sumitsugi</p>
-          <h1 class="mincho">インクは、<br>落ちていく。</h1>
-          <p class="lede">重力に任せて書く万年筆。押しつけずに、置くだけで線が出ます。スクロールするほど、線は伸びていきます。</p>
+          <p class="brand mincho">墨継<small>SUMITSUGI — FOUNTAIN PEN</small></p>
+          <p class="lede">重力に任せて書く万年筆。押しつけず、置くだけで線が出ます。</p>
           <div class="cue"><span></span>スクロール</div>
         </div>
-        <svg class="nib" viewBox="0 0 120 250" aria-hidden="true">
-          <path class="metal" d="M60 244 C 30 190, 16 132, 16 76 C 16 38, 34 16, 60 16 C 86 16, 104 38, 104 76 C 104 132, 90 190, 60 244 Z"/>
-          <circle class="metal" cx="60" cy="126" r="9"/>
-          <line class="slit" x1="60" y1="135" x2="60" y2="238"/>
-          <circle class="tip" cx="60" cy="240" r="5.5"/>
-        </svg>
+        <h1 class="tate mincho"><span>インクは、</span><span>落ちていく。</span></h1>
       </div>
     </div>
   </div>
 </section>
 
-<!-- シーン2: 3行が順に沈みながら現れる + にじみが広がる -->
+<!-- シーン2: 縦組み三行 + にじみが広がる墨 -->
 <section id="fall" data-scene>
   <div class="stage">
-    <div class="blot" aria-hidden="true"></div>
+    <canvas class="ink-canvas" id="blotInk" aria-hidden="true"></canvas>
     <div class="wrap">
-      <p class="drop-copy mincho">
-        <em class="d1">書くというのは、</em><br>
-        <em class="d2">インクを</em><br>
+      <p class="drop-copy tate mincho">
+        <em class="d1">書くというのは、</em>
+        <em class="d2">インクを</em>
         <em class="d3">落とす行為だ。</em>
       </p>
     </div>
   </div>
 </section>
 
-<!-- シーン3: ペン先が起き上がりながら寄る + 注記が順に出る -->
+<!-- シーン3: ペン先が起き上がりながら寄る -->
 <section id="pen" data-scene>
   <div class="stage">
     <p class="scene-title mincho">14金のペン先が、紙の凹凸を拾う。</p>
     <div class="pen-holder">
-      <svg class="pen-nib nib" viewBox="0 0 120 250" aria-hidden="true">
+      <svg class="nib pen-nib" viewBox="0 0 120 250" aria-hidden="true">
         <path class="metal" d="M60 244 C 30 190, 16 132, 16 76 C 16 38, 34 16, 60 16 C 86 16, 104 38, 104 76 C 104 132, 90 190, 60 244 Z"/>
         <circle class="metal" cx="60" cy="126" r="9"/>
         <line class="slit" x1="60" y1="135" x2="60" y2="238"/>
@@ -557,160 +594,142 @@ footer p{margin:.3rem 0;}
       </svg>
       <div class="callouts">
         <p class="callout k1">切り割り — 毛細管現象でインクを導く</p>
-        <p class="callout k2">ハート穴 — たわみを逃がして割れを防ぐ</p>
-        <p class="callout k3">イリジウム点 — 摩耗しない書き味の要</p>
+        <p class="callout k2">ハート穴 — たわみを逃がし、割れを防ぐ</p>
+        <p class="callout k3">ペンポイント — すり減りにくいイリジウム合金</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- シーン4: 断面図を固定し、本文だけを送る。図は段に応じて状態が変わる -->
+<!-- シーン4: 断面図を固定し、本文だけを送る -->
 <section id="flow">
   <div class="wrap flow-head">
-    <p class="eyebrow">How it flows — 断面</p>
+    <p class="eyebrow">断面</p>
     <h2 class="mincho">インクが紙に届くまで</h2>
   </div>
   <div class="wrap flow-grid">
     <div class="flow-figcol">
       <div class="flow-stick">
         <svg class="feed" id="feed" viewBox="0 0 300 520" data-step="1" role="img" aria-label="万年筆の断面図。タンク、櫛溝、芯、ペン先、紙の順にインクが下りていく。">
-          <!-- タンク -->
           <g class="grp g-tank">
             <rect class="pt" x="112" y="24" width="76" height="152" rx="10"/>
             <rect class="fill tank-ink" x="118" y="32" width="64" height="138" rx="6"/>
-            <text class="lbl" x="200" y="52">TANK</text>
+            <text class="lbl" x="200" y="52">タンク</text>
           </g>
-          <!-- 首軸と芯の溝 -->
           <g class="grp g-feed">
             <path class="pt" d="M120 176 L180 176 L170 258 L130 258 Z"/>
             <line class="pt" x1="150" y1="258" x2="150" y2="300"/>
-            <text class="lbl" x="200" y="196">FEED</text>
+            <text class="lbl" x="200" y="196">芯</text>
           </g>
-          <!-- 櫛溝 -->
           <g class="grp g-comb">
             <rect class="pt" x="96" y="186" width="26" height="5" rx="2.5"/>
             <rect class="pt" x="96" y="199" width="26" height="5" rx="2.5"/>
             <rect class="pt" x="96" y="212" width="26" height="5" rx="2.5"/>
             <rect class="pt" x="96" y="225" width="26" height="5" rx="2.5"/>
             <rect class="pt" x="96" y="238" width="26" height="5" rx="2.5"/>
-            <text class="lbl" x="34" y="182">AIR</text>
+            <text class="lbl" x="24" y="182">櫛溝</text>
             <circle class="bub" cx="109" cy="244" r="3.4"/>
             <circle class="bub" cx="103" cy="244" r="2.6"/>
             <circle class="bub" cx="115" cy="244" r="2.2"/>
           </g>
-          <!-- ペン先 -->
           <g class="grp g-nib">
             <path class="pt" d="M150 452 C 128 404, 118 356, 118 320 C 118 300, 132 290, 150 290 C 168 290, 182 300, 182 320 C 182 356, 172 404, 150 452 Z"/>
             <circle class="pt" cx="150" cy="336" r="7"/>
             <line class="pt" x1="150" y1="343" x2="150" y2="448"/>
-            <text class="lbl" x="200" y="352">NIB</text>
+            <text class="lbl" x="200" y="352">ペン先</text>
           </g>
-          <!-- 紙 -->
           <g class="grp g-paper">
             <line class="pt" x1="34" y1="470" x2="266" y2="470"/>
             <path class="mark" pathLength="1" d="M64 470 C 110 470, 160 470, 240 470"/>
-            <text class="lbl" x="34" y="494">PAPER</text>
+            <text class="lbl" x="34" y="496">紙</text>
           </g>
-          <!-- インク柱: 上から下へ伸びる -->
           <path class="column" pathLength="1" d="M150 172 L150 466"/>
         </svg>
       </div>
     </div>
     <div class="flow-steps">
       <div class="flow-step" data-flow="1">
-        <h3 class="mincho"><i>01</i>吸い出される</h3>
-        <p>コンバーターの中のインクは、押し出されるのではなく、芯に刻まれた細い溝に引き込まれます。溝が細いほど、引く力は強くなります。</p>
+        <h3 class="mincho"><i>01</i>押し出さず、吸い出す</h3>
+        <p>タンクのインクは、押し出されて出てくるのではありません。芯に刻まれた細い溝が、毛細管現象でインクを引き込みます。溝が細いほど、引く力は強くなります。</p>
       </div>
       <div class="flow-step" data-flow="2">
-        <h3 class="mincho"><i>02</i>空気と入れ替わる</h3>
+        <h3 class="mincho"><i>02</i>空気と入れ替える</h3>
         <p>出ていったインクと同じ体積の空気が、タンクへ戻ります。櫛溝はその通り道であり、気温で膨らんだインクを一時的に受け止める場所でもあります。</p>
       </div>
       <div class="flow-step" data-flow="3">
         <h3 class="mincho"><i>03</i>切り割りへ移る</h3>
-        <p>芯を下ったインクは、ペン先の切り割りに移ります。ここから先を支えているのは、金属と金属のあいだ 0.02mm の隙間だけです。</p>
+        <p>芯を下ったインクは、ペン先の切り割りに移ります。ここから先でインクを支えているのは、金属と金属のあいだにある 0.02mm の隙間だけです。</p>
       </div>
       <div class="flow-step" data-flow="4">
-        <h3 class="mincho"><i>04</i>紙に置かれる</h3>
-        <p>紙の繊維が切り割りに触れた瞬間、繊維側の引く力が勝ってインクが移ります。筆圧はいりません。触れれば、線になります。</p>
+        <h3 class="mincho"><i>04</i>紙に置く</h3>
+        <p>紙の繊維が切り割りに触れると、繊維の引く力のほうが強く、インクは紙へ移ります。筆圧はいりません。触れれば、線になります。</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- シーン5: ペン先が線を引きながら画面を横切る -->
+<!-- シーン5: 筆致そのものを Canvas で引く -->
 <section id="write" data-scene>
-  <div class="stage">
-    <p class="scene-title mincho">一度置いた線は、最後まで細らない。</p>
-    <div class="wrap">
-      <svg class="trace-svg" id="trace-svg" viewBox="0 0 1000 260" aria-hidden="true">
-        <path class="trace-ink" id="trace" d="M60 176 C 100 66, 172 62, 192 122 C 212 182, 172 228, 146 208 C 120 188, 142 122, 206 114 C 270 106, 302 192, 356 192 C 410 192, 402 88, 452 88 C 502 88, 470 208, 520 212 C 570 216, 582 122, 642 120 C 702 118, 690 202, 746 198 C 802 194, 800 112, 860 124 C 906 133, 922 167, 952 152"/>
-        <g id="tracer">
-          <g transform="scale(0.55) translate(-60,-244)">
-            <path class="t-body" d="M60 244 C 30 190, 16 132, 16 76 C 16 38, 34 16, 60 16 C 86 16, 104 38, 104 76 C 104 132, 90 190, 60 244 Z"/>
-            <circle class="t-line" cx="60" cy="126" r="9"/>
-            <line class="t-line" x1="60" y1="135" x2="60" y2="238"/>
-            <circle class="t-tip" cx="60" cy="240" r="7"/>
-          </g>
-        </g>
-      </svg>
-      <p class="trace-note">A4を一枚書き切っても、書き出しと書き終わりで濃さは変わりません。</p>
-    </div>
+  <div class="stage write-stage">
+    <p class="scene-title mincho">書き出しから書き終わりまで、線の濃さは変わらない。</p>
+    <canvas class="write-canvas" id="writeInk" aria-hidden="true"></canvas>
+    <p class="write-note tate">A4を一枚書ききっても、最初の一画と最後の一画で濃さは同じです。</p>
   </div>
 </section>
 
-<!-- シーン6: 4部品が左右に離れる爆発図 -->
+<!-- シーン6: 四部品が左右に離れる分解図 -->
 <section id="parts" data-scene>
   <div class="stage">
     <p class="scene-title mincho">部品は四つ。工具は要りません。</p>
     <div class="pen">
       <div class="seg e1"><b>キャップ — 拭き漆エボナイト</b></div>
-      <div class="seg e2"><b>首軸 — ペン先を保持</b></div>
-      <div class="seg e3"><b>胴軸 — 一本削り出し</b></div>
+      <div class="seg e2"><b>首軸 — ペン先を保持する</b></div>
+      <div class="seg e3"><b>胴軸 — 一本から削り出す</b></div>
       <div class="seg e4"><b>コンバーター</b></div>
     </div>
   </div>
 </section>
 
-<!-- シーン7: 縦スクロールを横送りに変換した工程表 -->
+<!-- シーン7: 縦スクロールを横送りに変えた工程表 -->
 <section id="days" data-scene>
   <div class="stage">
     <div class="days-head">
-      <p class="eyebrow">Eleven days — 工程</p>
+      <p class="eyebrow">工程</p>
       <p class="scene-title mincho">一本に十一日。うち七日は、乾くのを待つ時間です。</p>
     </div>
     <div class="track" id="track">
       <article class="day">
-        <span class="n mono">DAY 01</span>
+        <span class="n mono">一日目</span>
         <h3 class="mincho">棒材を選ぶ</h3>
-        <p>エボナイトの丸棒を切り、断面を見ます。気泡や巣が混じった材はここで落とします。歩留まりは七割ほど。</p>
+        <p>エボナイトの丸棒を切り、断面を見ます。気泡の入った材はここで外します。使えるのは七割ほどです。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 02</span>
+        <span class="n mono">二日目</span>
         <h3 class="mincho">荒削り</h3>
-        <p>旋盤で外形を出します。削りすぎたぶんは戻せないので、仕上げ代を 0.3mm 残したところで一度止めます。</p>
+        <p>旋盤で外形を出します。削りすぎた分は戻せないので、仕上げ代を 0.3mm 残したところで一度止めます。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 03</span>
+        <span class="n mono">三日目</span>
         <h3 class="mincho">ねじを切る</h3>
-        <p>キャップと胴軸のねじ山を合わせます。三回転でちょうど閉まり、天冠のロゴが正面に来る位置に決めています。</p>
+        <p>キャップと胴軸のねじ山を合わせます。三回転で閉まりきり、そのとき天冠の刻印が正面を向くようにしています。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 04–10</span>
-        <h3 class="mincho">拭き漆 七回</h3>
-        <p>漆を塗り、乾ききる前に拭き取る。これを一日一回、七日続けます。塗膜を重ねるのではなく、木地ならぬ「ゴム地」に色を入れていく作業です。</p>
+        <span class="n mono">四〜十日目</span>
+        <h3 class="mincho">拭き漆を七回</h3>
+        <p>漆を塗り、乾ききる前に拭き取ります。これを一日一回、七日続けます。塗膜を重ねるのではなく、生地に色を沈ませていく作業です。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 10</span>
-        <h3 class="mincho">ペン先を調整</h3>
-        <p>切り割りの幅をルーペで見ながら詰めます。左右のズレが 0.01mm あると、線の立ち上がりが変わります。</p>
+        <span class="n mono">十日目</span>
+        <h3 class="mincho">ペン先を調整する</h3>
+        <p>切り割りの幅を、ルーペで見ながら詰めます。左右のずれが 0.01mm あると、書き出しの線の立ち上がりが変わります。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 11</span>
-        <h3 class="mincho">試筆</h3>
+        <span class="n mono">十一日目</span>
+        <h3 class="mincho">試し書き</h3>
         <p>職人が一枚書きます。紙を三種類替えて、書き出しの一画目でインクが遅れないかを確かめます。</p>
       </article>
       <article class="day">
-        <span class="n mono">DAY 11</span>
+        <span class="n mono">十一日目</span>
         <h3 class="mincho">検品と箱詰め</h3>
         <p>軸に映り込んだ蛍光灯の線が、まっすぐ通っているかを見ます。歪んで見えるなら、削りの癖が残っています。</p>
       </article>
@@ -724,16 +743,16 @@ footer p{margin:.3rem 0;}
     <h2 class="mincho">素材のこと</h2>
     <div class="cols">
       <div>
-        <h3>エボナイト</h3>
-        <p>硬質ゴムを削り出した軸。樹脂より手の熱を吸うので、握ったときに冷たさがありません。経年で色が深くなります。</p>
+        <h3 class="mincho">エボナイト</h3>
+        <p>硬質ゴムを削り出した軸です。樹脂より手の熱を受けとるので、握ったときに冷たさがありません。使ううちに色が深くなります。</p>
       </div>
       <div>
-        <h3>拭き漆</h3>
-        <p>漆を塗っては拭き取る工程を七度。塗膜を厚くせず、地の質感を残したまま艶を出しています。</p>
+        <h3 class="mincho">拭き漆</h3>
+        <p>漆を塗っては拭き取る工程を七度重ねます。塗膜を厚くせず、地の手ざわりを残したまま艶を出しています。</p>
       </div>
       <div>
-        <h3>14金ペン先</h3>
-        <p>18金よりわずかに硬い14金。筆圧をかけない設計なので、しなりすぎない硬さのほうが線は安定します。</p>
+        <h3 class="mincho">14金のペン先</h3>
+        <p>18金よりわずかに硬い14金です。筆圧をかけない設計なので、しなりすぎない硬さのほうが線は安定します。</p>
       </div>
     </div>
   </div>
@@ -748,11 +767,11 @@ footer p{margin:.3rem 0;}
           <tr><th>全長</th><td class="mono">138.0 mm（収納時）</td></tr>
           <tr><th>筆記長</th><td class="mono">152.4 mm</td></tr>
           <tr><th>軸径</th><td class="mono">12.8 mm</td></tr>
-          <tr><th>質量</th><td class="mono">24.6 g（インク込み）</td></tr>
-          <tr><th>ペン先</th><td>14金ロジウム仕上げ / EF・F・M</td></tr>
-          <tr><th>吸入方式</th><td>コンバーター・カートリッジ両用</td></tr>
-          <tr><th>軸材</th><td>エボナイト（拭き漆七回）</td></tr>
-          <tr><th>製作</th><td class="mono">1本あたり約 11 日</td></tr>
+          <tr><th>質量</th><td class="mono">24.6 g（インクを含む）</td></tr>
+          <tr><th>ペン先</th><td>14金・ロジウム仕上げ / EF・F・M</td></tr>
+          <tr><th>インクの入れ方</th><td>コンバーター・カートリッジ 両用</td></tr>
+          <tr><th>軸材</th><td>エボナイト（拭き漆 七回）</td></tr>
+          <tr><th>製作日数</th><td class="mono">1本あたり およそ 11 日</td></tr>
         </tbody>
       </table>
     </div>
@@ -763,7 +782,7 @@ footer p{margin:.3rem 0;}
   <div class="wrap reveal">
     <p class="eyebrow">2026年 秋</p>
     <p class="price mincho">￥48,000</p>
-    <p class="stock mono">初回 300 本 — 職人 2 名による製作のため</p>
+    <p class="stock">初回は 300 本です。職人二名でつくるため、これ以上は増やせません。</p>
     <button class="btn" id="notify">入荷を知らせる</button>
     <p class="said" id="said" role="status"></p>
   </div>
@@ -771,22 +790,266 @@ footer p{margin:.3rem 0;}
 
 <footer>
   <div class="wrap">
-    <p>墨継 SUMITSUGI</p>
-    <p>これは架空の製品です。スクロール連動演出の実装デモとして制作しました。実在の製品・ブランドとは関係ありません。</p>
+    <p class="mincho">墨継 SUMITSUGI</p>
+    <p>架空の製品です。スクロール連動演出の実装デモとして制作しました。実在の製品・ブランドとは関係ありません。</p>
   </div>
 </footer>
 
 <script>
 (function(){
-  var scenes = Array.prototype.slice.call(document.querySelectorAll('[data-scene]'));
+  // 日本語の字形を確実に選ばせる。これが無いと中国語のフォントに落ちることがある
+  document.documentElement.lang = 'ja';
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var root = document.documentElement;
   var pct = document.getElementById('pct');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var ticking = false;
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('[data-scene]'));
 
   function clamp01(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function ease(t){ return 1 - Math.pow(1 - t, 3); }
 
-  /* ── 横送りシーン: 送る距離だけは実測がいる ─────────────── */
+  /* ── 和紙の地: 繊維のゆらぎを一度だけ焼いて敷きつめる ─────── */
+  (function paper(){
+    var n = 220, c = document.createElement('canvas');
+    c.width = c.height = n;
+    var g = c.getContext('2d');
+    var img = g.createImageData(n, n), d = img.data;
+    for (var i = 0; i < n * n; i++){
+      // overlay 合成の基準は中間グレー。そこからのズレだけが紙目になる
+      var v = 128 + (Math.random() * 15 - 7.5);
+      d[i*4] = d[i*4+1] = d[i*4+2] = v; d[i*4+3] = 255;
+    }
+    g.putImageData(img, 0, 0);
+    g.globalAlpha = .09;
+    for (var k = 0; k < 30; k++){
+      g.strokeStyle = Math.random() < .5 ? '#000' : '#fff';
+      g.lineWidth = Math.random() * 1.1 + .3;
+      var y = Math.random() * n;
+      g.beginPath();
+      g.moveTo(0, y);
+      g.bezierCurveTo(n*.33, y + (Math.random()*9-4.5), n*.66, y + (Math.random()*9-4.5), n, y + (Math.random()*7-3.5));
+      g.stroke();
+    }
+    var el = document.getElementById('grain');
+    el.style.backgroundImage = 'url(' + c.toDataURL() + ')';
+    el.style.backgroundSize = n + 'px ' + n + 'px';
+  })();
+
+  /* ── 墨: 筆の当たり・送り・抜きを幅の変化として持つ ────────── */
+  var inkColor = '#161917', inkRGB = [22, 25, 23];
+
+  function readInk(){
+    inkColor = getComputedStyle(root).getPropertyValue('--sumi').trim() || '#161917';
+    var m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(inkColor);
+    inkRGB = m ? [parseInt(m[1],16), parseInt(m[2],16), parseInt(m[3],16)] : [22,25,23];
+  }
+  function ink(a){ return 'rgba(' + inkRGB[0] + ',' + inkRGB[1] + ',' + inkRGB[2] + ',' + a + ')'; }
+  readInk();
+
+  function cubic(a, b, c, d, t){
+    var u = 1 - t;
+    return {
+      x: u*u*u*a[0] + 3*u*u*t*b[0] + 3*u*t*t*c[0] + t*t*t*d[0],
+      y: u*u*u*a[1] + 3*u*u*t*b[1] + 3*u*t*t*c[1] + t*t*t*d[1]
+    };
+  }
+
+  // 正規化座標(0-1)の三次ベジエ列を等間隔にサンプルする
+  function sample(segs, per){
+    var pts = [], s, i;
+    for (s = 0; s < segs.length; s++){
+      for (i = (s === 0 ? 0 : 1); i <= per; i++){
+        pts.push(cubic(segs[s][0], segs[s][1], segs[s][2], segs[s][3], i / per));
+      }
+    }
+    return pts;
+  }
+
+  // 筆: 入りで太らせ、送りでわずかに細り、抜きで一気に細める
+  function brushWidth(t){
+    if (t < .07) return .30 + (t / .07) * .70;
+    if (t < .68) return 1 - (t - .07) * .16;
+    var u = (t - .68) / .32;
+    return (1 - .61 * .16) * Math.pow(1 - u, 2.2) + .012;
+  }
+  // 万年筆: 太らず痩せず、書き終わりだけわずかに離れる
+  function penWidth(t){
+    if (t < .02) return .55 + (t / .02) * .45;
+    if (t < .97) return 1;
+    return 1 - (t - .97) / .03 * .55;
+  }
+  function widthAt(t, prof){ return prof === 'pen' ? penWidth(t) : brushWidth(t); }
+
+  function wobAt(wob, t){
+    if (!wob) return 1;
+    var v = 1;
+    for (var i = 0; i < wob.length; i++) v += Math.sin(t * wob[i].f * 6.283 + wob[i].ph) * wob[i].a;
+    return v;
+  }
+
+  function normal(pts, i){
+    var a = pts[i > 0 ? i - 1 : i], b = pts[i < pts.length - 1 ? i + 1 : i];
+    var dx = b.x - a.x, dy = b.y - a.y, m = Math.hypot(dx, dy) || 1;
+    return { x: -dy / m, y: dx / m };
+  }
+
+  function ribbon(ctx, pts, count, w, h, base, scale, wob, prof){
+    var i, p, nv, wd, last = pts.length - 1;
+    ctx.beginPath();
+    for (i = 0; i < count; i++){
+      p = pts[i]; nv = normal(pts, i); wd = base * widthAt(i / last, prof) * wobAt(wob, i / last) * scale / 2;
+      var x = p.x * w + nv.x * wd, y = p.y * h + nv.y * wd;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    for (i = count - 1; i >= 0; i--){
+      p = pts[i]; nv = normal(pts, i); wd = base * widthAt(i / last, prof) * wobAt(wob, i / last) * scale / 2;
+      ctx.lineTo(p.x * w - nv.x * wd, p.y * h - nv.y * wd);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function Stroke(canvas, segs, opts){
+    this.cv = canvas;
+    this.pts = sample(segs, 90);
+    this.opts = opts || {};
+    this.p = 0;
+    // かすれの位置は初期化時に決める。毎フレーム引き直すとちらつく
+    // 穂先のばらつき。一定幅だと板に見える
+    this.wob = [];
+    var amp = this.opts.profile === 'pen' ? .012 : .09;
+    for (var q = 0; q < 7; q++) this.wob.push({ f: 1 + q * 1.7, a: Math.random() * amp, ph: Math.random() * 6.28 });
+    this.dry = [];
+    var last = this.pts.length - 1;
+    var dryN = this.opts.profile === 'pen' ? 0 : 9;   // 万年筆の線はかすれない。それがこの製品の主張
+    for (var i = 0; i < dryN; i++){
+      var at = .62 + Math.random() * .36;
+      this.dry.push({ i: Math.round(at * last), off: Math.random() * .7 - .35,
+                      rx: 1.2 + Math.random() * 3.4, ry: .5 + Math.random() * 1.1 });
+    }
+    this.fit();
+  }
+  Stroke.prototype.fit = function(){
+    var r = this.cv.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.cv.width = Math.round(r.width * dpr);
+    this.cv.height = Math.round(r.height * dpr);
+    this.w = r.width; this.h = r.height;
+    this.ctx = this.cv.getContext('2d');
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.draw(this.p);
+  };
+  Stroke.prototype.draw = function(p){
+    this.p = p;
+    if (!this.ctx) return;
+    var ctx = this.ctx, w = this.w, h = this.h;
+    ctx.clearRect(0, 0, w, h);
+    var count = Math.round(this.pts.length * clamp01(p));
+    if (count < 2) return;
+    var u = this.opts.unit;
+    var base = u === 'px' ? this.opts.base : (this.opts.base || .13) * (u === 'min' ? Math.min(w, h) : h);
+    ctx.fillStyle = inkColor;
+    // にじみ: 外側ほど薄く広く重ねる。ぼかしを使わずに滲みを作る
+    var pr = this.opts.profile;
+    var b1 = pr === 'pen' ? 2.9 : 1.85, b2 = pr === 'pen' ? 1.8 : 1.32;
+    ctx.globalAlpha = .045; ribbon(ctx, this.pts, count, w, h, base, b1, this.wob, pr);
+    ctx.globalAlpha = .075; ribbon(ctx, this.pts, count, w, h, base, b2, this.wob, pr);
+    ctx.globalAlpha = this.opts.alpha || 1; ribbon(ctx, this.pts, count, w, h, base, 1, this.wob, pr);
+    // かすれ: 抜きぎわで紙の目に墨が乗りきらない箇所を抜く
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'destination-out';
+    var last = this.pts.length - 1;
+    for (var k = 0; k < this.dry.length; k++){
+      var D = this.dry[k];
+      if (D.i >= count) continue;
+      var q = this.pts[D.i], nv = normal(this.pts, D.i), wd = base * widthAt(D.i / last, pr) * wobAt(this.wob, D.i / last);
+      ctx.beginPath();
+      ctx.ellipse(q.x * w + nv.x * D.off * wd, q.y * h + nv.y * D.off * wd,
+                  D.rx, D.ry, Math.atan2(nv.y, nv.x) + Math.PI / 2, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
+  /* ── にじみ: 落ちた墨が紙の目に沿って広がる ────────────────── */
+  function Blot(canvas){
+    this.cv = canvas;
+    this.p = 0;
+    this.edge = [];
+    for (var i = 0; i < 160; i++) this.edge.push(.93 + Math.random() * .14);
+    this.spray = [];
+    for (var j = 0; j < 9; j++){
+      this.spray.push({ a2: Math.random() * Math.PI * 2, d: 1.35 + Math.random() * 1.5,
+                        r: .8 + Math.random() * 2.2, a: .25 + Math.random() * .45 });
+    }
+    // 隣どうしを均して、輪郭のがたつきを繊維のうねりに近づける
+    for (var s = 0; s < 3; s++){
+      var next = this.edge.slice();
+      for (var j = 0; j < this.edge.length; j++){
+        var a = this.edge[(j + this.edge.length - 1) % this.edge.length];
+        var b = this.edge[(j + 1) % this.edge.length];
+        next[j] = (a + this.edge[j] * 2 + b) / 4;
+      }
+      this.edge = next;
+    }
+    this.fit();
+  }
+  Blot.prototype.fit = Stroke.prototype.fit;
+  Blot.prototype.draw = function(p){
+    this.p = p;
+    if (!this.ctx) return;
+    var ctx = this.ctx, w = this.w, h = this.h, n = this.edge.length;
+    ctx.clearRect(0, 0, w, h);
+    var cx = w * .34, cy = h * .5;
+    var R = Math.min(w, h) * (.045 + clamp01(p) * .105);
+
+    // にじみ: 外側は放射グラデーションで薄く逃がす
+    var g = ctx.createRadialGradient(cx, cy, R * .55, cx, cy, R * 2.6);
+    g.addColorStop(0, ink(.20));
+    g.addColorStop(.45, ink(.07));
+    g.addColorStop(1, ink(0));
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // 芯: 紙の目でわずかに歪んだ輪郭
+    ctx.fillStyle = ink(.94);
+    ctx.beginPath();
+    for (var i = 0; i <= n; i++){
+      var a = (i % n) / n * Math.PI * 2;
+      var r = R * this.edge[i % n];
+      var x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r * .94;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fill();
+
+    // 飛沫: 落ちた勢いで散った粒
+    for (var k = 0; k < this.spray.length; k++){
+      var S = this.spray[k];
+      ctx.globalAlpha = S.a * clamp01(p * 1.6 - .3);
+      ctx.beginPath();
+      ctx.arc(cx + Math.cos(S.a2) * R * S.d, cy + Math.sin(S.a2) * R * S.d * .94, S.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  };
+
+  /* ── 各シーンの墨 ─────────────────────────────────────────── */
+  // 見出しの墨は「落ちていく」ものなので、横に走らせず縦に落とす
+  var heroStroke = new Stroke(document.getElementById('heroInk'),
+    [[[.618,-.08],[.628,.14],[.606,.30],[.612,.46]],
+     [[.612,.46],[.618,.62],[.604,.78],[.588,1.06]]],
+    { base:.042, unit:'min' });
+
+  var writeStroke = new Stroke(document.getElementById('writeInk'),
+    [[[.02,.62],[.20,.24],[.40,.22],[.54,.44]],
+     [[.54,.44],[.66,.62],[.80,.78],[.98,.52]]],
+    { base:5, unit:'px', profile:'pen' });
+
+  var blot = new Blot(document.getElementById('blotInk'));
+
+  /* ── 横送りシーン: 送る距離だけは実測がいる ───────────────── */
   var days = document.getElementById('days');
   var track = document.getElementById('track');
 
@@ -796,42 +1059,24 @@ footer p{margin:.3rem 0;}
     days.style.setProperty('--travelx', (over > 0 ? over : 0) + 'px');
   }
 
-  /* ── 一筆シーン: ペン先を線の上に置く ───────────────────── */
-  // 表示用の path は pathLength=1 で dash を配っているため、
-  // 座標を測る用に同じ形の複製を（描画せずに）並べておく。
-  var trace = document.getElementById('trace');
-  var tracer = document.getElementById('tracer');
-  var traceLen = 0;
-
-  if (trace && tracer && !reduce){
-    traceLen = trace.getTotalLength();
-    trace.style.strokeDasharray = traceLen;
-    trace.style.strokeDashoffset = traceLen;
-  }
-
-  function moveTracer(p){
-    if (!traceLen) return;
-    var d = Math.min(p * 1.2, 1);           // 最後の 2 割は余韻に回すので、線は先に引き終える
-    var pt = trace.getPointAtLength(traceLen * d);
-    trace.style.strokeDashoffset = traceLen * (1 - d);
-    tracer.setAttribute('transform', 'translate(' + pt.x.toFixed(2) + ',' + pt.y.toFixed(2) + ') rotate(-16)');
-    tracer.style.opacity = (d > 0.004 && d < 0.999) ? '1' : '0';
-  }
+  /* ── スクロール: JS は測って配るだけ。描くのは CSS と Canvas ── */
+  var ticking = false;
 
   function update(){
     ticking = false;
     var vh = window.innerHeight;
 
-    // 各シーン: sticky で固定されている間のスクロール量を 0→1 に正規化して配るだけ。
-    // 実際の描画は CSS 側が --p を読んでやる（JS は DOM を測って変数を書くのみ）。
     for (var i = 0; i < scenes.length; i++){
       var s = scenes[i];
       var r = s.getBoundingClientRect();
+      // 固定面は 100svh。innerHeight（=100vh）で割ると、
+      // アドレスバーが出入りするモバイルで進行度が 1 に届かない
       var stage = s.firstElementChild;
       var travel = r.height - (stage ? stage.offsetHeight : vh);
       var p = travel > 0 ? clamp01(-r.top / travel) : 0;
       s.style.setProperty('--p', p);
-      if (s.id === 'write') moveTracer(p);
+      if (!reduce && s.id === 'fall') blot.draw(p);
+      if (!reduce && s.id === 'write') writeStroke.draw(Math.min(p * 1.25, 1));
     }
 
     var docTravel = document.body.scrollHeight - vh;
@@ -840,21 +1085,51 @@ footer p{margin:.3rem 0;}
     pct.textContent = String(Math.round(ink * 100)).padStart(2, '0');
   }
 
-  // scroll ごとに DOM を触るとレイアウトスラッシングでカクつくので rAF で1フレーム1回に束ねる
+  // scroll ごとに DOM を触るとカクつくので rAF で1フレーム1回に束ねる
   function onScroll(){
     if (!ticking){ ticking = true; requestAnimationFrame(update); }
   }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  window.addEventListener('resize', function(){ measure(); onScroll(); });
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){
+    heroStroke.fit(); writeStroke.fit(); blot.fit();
+    if (reduce){ writeStroke.draw(1); blot.draw(1); }
+    measure(); onScroll();
+  });
+
+  // 明暗が切り替わったら墨の色を取り直して引き直す
+  function repaint(){
+    readInk();
+    heroStroke.draw(heroStroke.p);
+    writeStroke.draw(writeStroke.p);
+    blot.draw(blot.p);
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaint);
+  new MutationObserver(repaint).observe(root, { attributes:true, attributeFilter:['data-theme'] });
+
   measure();
   update();
 
-  // Web フォントが後から効くと横幅が変わるので、確定してからもう一度測る
+  // Web フォントが後から効くと幅が変わるので、確定してから測り直す
   if (document.fonts && document.fonts.ready){
     document.fonts.ready.then(function(){ measure(); onScroll(); });
   }
 
-  // 断面図: 画面の中央にいる段を「現在の段」として図に伝える
+  // 見出しの一筆は読み込み時に一度だけ引く
+  if (reduce){
+    heroStroke.draw(1);
+    writeStroke.draw(1);
+    blot.draw(1);
+  } else {
+    var t0 = null;
+    requestAnimationFrame(function step(now){
+      if (t0 === null) t0 = now;
+      var t = Math.min((now - t0) / 1700, 1);
+      heroStroke.draw(ease(t));
+      if (t < 1) requestAnimationFrame(step);
+    });
+  }
+
+  // 断面図: 画面の中央にいる段を「いまの段」として図に伝える
   var feed = document.getElementById('feed');
   var steps = Array.prototype.slice.call(document.querySelectorAll('.flow-step'));
   if (feed && steps.length){
@@ -864,21 +1139,21 @@ footer p{margin:.3rem 0;}
         steps.forEach(function(el){ el.classList.toggle('on', el === e.target); });
         feed.setAttribute('data-step', e.target.getAttribute('data-flow'));
       });
-    }, {rootMargin: '-48% 0px -48% 0px', threshold: 0});
+    }, { rootMargin:'-48% 0px -48% 0px', threshold:0 });
     steps.forEach(function(el){ stepIO.observe(el); });
     steps[0].classList.add('on');
   }
 
-  // 後半は「一度だけ」出現させる。再スクロールで再生し直すと酔う。
+  // 読み物側は一度だけ出す。再スクロールで出し直すと酔う
   var io = new IntersectionObserver(function(entries){
     entries.forEach(function(e){
       if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     });
-  }, {threshold:0.15});
+  }, { threshold:.15 });
   document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
 
   document.getElementById('notify').addEventListener('click', function(){
-    document.getElementById('said').textContent = '受け付けました。……とはいえ、これは架空の製品です。';
+    document.getElementById('said').textContent = '承りました。……とはいえ、これは架空の製品です。';
   });
 })();
 </script>
