@@ -1,0 +1,1050 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ガブリ・バーガー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+</head>
+<body>
+<style>
+/* ══ リソグラフの版。掛け合わせるので、色は少なく強く ══════════ */
+:root{
+  --red:#F04E37;
+  --yellow:#FFC400;
+  --green:#00A05A;
+  --ink:#1C1A17;
+  --paper:#EFEEE9;
+  --on-dark:#F7F4EC;
+  /* 紙面の既定 */
+  --bg:var(--paper);
+  --fg:var(--ink);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --paper:#16151A; --ink:#1C1A17; --fg:#EDEAE2; }
+}
+:root[data-theme="dark"]{ --paper:#16151A; --ink:#1C1A17; --fg:#EDEAE2; }
+
+/* 紙の色はセクションごとに刷り替える。インクは明暗どちらでも同じ */
+[data-bg="paper"] { --bg:var(--paper);  --fg:var(--page-fg); }
+[data-bg="yellow"]{ --bg:var(--yellow); --fg:var(--ink); }
+[data-bg="red"]   { --bg:var(--red);    --fg:var(--on-dark); }
+[data-bg="green"] { --bg:var(--green);  --fg:var(--ink); }
+[data-bg="dark"]  { --bg:var(--ink);    --fg:var(--on-dark); }
+:root{ --page-fg:#1C1A17; }
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --page-fg:#EDEAE2; } }
+:root[data-theme="dark"]{ --page-fg:#EDEAE2; }
+
+*{box-sizing:border-box;}
+html{scroll-behavior:auto;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--page-fg);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP","Yu Gothic",system-ui,sans-serif;
+  font-size:17px;
+  line-height:1.85;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+.fat{
+  font-family:"Dela Gothic One","Zen Kaku Gothic New","Hiragino Sans",system-ui,sans-serif;
+  font-weight:400;
+  font-feature-settings:"palt" 1;
+  letter-spacing:.01em;
+  line-height:1.08;
+}
+.num{
+  font-family:"Archivo","Zen Kaku Gothic New",system-ui,sans-serif;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:-.01em;
+}
+.lbl{
+  font-family:"Archivo",system-ui,sans-serif;
+  font-weight:600;
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+}
+
+section{background:var(--bg);color:var(--fg);position:relative;}
+.wrap{width:min(1180px,100% - clamp(32px,7vw,120px));margin-inline:auto;}
+.stage{
+  position:sticky;top:0;
+  height:100vh;height:100svh;
+  display:grid;align-content:center;
+  background:var(--bg);
+  overflow:hidden;
+}
+a{color:inherit;}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}
+[data-bg="red"] :focus-visible,[data-bg="dark"] :focus-visible{outline-color:var(--on-dark);}
+
+/* ══ 流れる帯。刷り物の耳のつもり ═══════════════════════════ */
+.marquee{
+  overflow:hidden;
+  background:var(--ink);
+  color:var(--on-dark);
+  padding:.62rem 0;
+  border-block:3px solid var(--ink);
+}
+.mq{display:flex;width:max-content;animation:mq 26s linear infinite;}
+.mq span{
+  padding-inline:1.1rem;
+  font-family:"Archivo",system-ui,sans-serif;
+  font-weight:800;font-size:13px;letter-spacing:.2em;white-space:nowrap;
+}
+.mq b{color:var(--yellow);font-weight:800;}
+@keyframes mq{to{transform:translateX(-50%);}}
+
+/* ══ 1. 表紙 ═══════════════════════════════════════════════ */
+#hero .stage{align-content:center;}
+.hero-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,.86fr);
+  gap:clamp(16px,4vw,56px);
+  align-items:center;
+}
+.wordmark{
+  margin:0;
+  font-size:clamp(4.6rem,min(19vw,25vh),15rem);
+  letter-spacing:-.02em;
+}
+.tag{
+  margin:clamp(.8rem,2.4vh,1.6rem) 0 0;
+  max-width:24ch;
+  font-weight:500;
+  font-size:clamp(.9rem,min(2vw,2.2vh),1.06rem);
+}
+.hero-badge{
+  position:absolute;
+  right:clamp(8px,4vw,90px);
+  top:clamp(60px,12vh,140px);
+  width:clamp(96px,13vw,150px);
+  aspect-ratio:1;
+  display:grid;place-items:center;
+  border-radius:50%;
+  background:var(--red);
+  color:var(--on-dark);
+  transform:rotate(-11deg);
+  text-align:center;
+  line-height:1.15;
+  box-shadow:0 0 0 4px var(--ink);
+}
+.hero-badge .num{font-size:clamp(1.1rem,2.4vw,1.55rem);display:block;}
+.hero-badge small{font-size:10px;letter-spacing:.16em;}
+.burger-box{position:relative;justify-self:center;width:100%;display:grid;place-items:center;}
+canvas.burger{display:block;width:100%;height:auto;cursor:pointer;}
+.chomp{
+  position:absolute;
+  left:50%;top:38%;
+  transform:translate(-50%,-50%) rotate(-8deg) scale(.4);
+  font-size:clamp(2rem,7vw,4.4rem);
+  color:var(--red);
+  -webkit-text-stroke:3px var(--ink);
+  paint-order:stroke fill;
+  opacity:0;
+  pointer-events:none;
+}
+.chomp.go{animation:chomp .62s cubic-bezier(.2,1.5,.4,1) forwards;}
+@keyframes chomp{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(-8deg) scale(.4);}
+  30%{opacity:1;transform:translate(-50%,-50%) rotate(-8deg) scale(1.12);}
+  70%{opacity:1;transform:translate(-50%,-58%) rotate(-8deg) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-72%) rotate(-8deg) scale(.96);}
+}
+.cue{
+  display:inline-flex;align-items:center;gap:.7rem;
+  margin-top:clamp(14px,4vh,40px);
+  font-weight:700;font-size:13px;letter-spacing:.1em;
+}
+.cue i{
+  width:26px;height:26px;display:grid;place-items:center;
+  border-radius:50%;background:var(--ink);color:var(--yellow);
+  font-style:normal;font-size:13px;
+  animation:bob 1.5s ease-in-out infinite;
+}
+@keyframes bob{0%,100%{transform:translateY(-2px);}50%{transform:translateY(3px);}}
+.hint{
+  margin:.7rem 0 0;
+  display:inline-block;
+  background:var(--ink);color:var(--yellow);
+  padding:.16rem .55rem;
+  font-size:12px;font-weight:700;
+}
+
+/* ══ 2. 組み立て ═══════════════════════════════════════════ */
+#build{height:560vh;}
+.build-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(20px,4vw,60px);
+  align-items:center;
+}
+.build-head{margin:0 0 clamp(1rem,3vh,2rem);font-size:clamp(1.6rem,4.4vw,3rem);}
+.steps{display:grid;gap:clamp(.3rem,1.1vh,.7rem);margin:0;padding:0;list-style:none;counter-reset:s;}
+.steps li{
+  display:grid;
+  grid-template-columns:2.1rem 1fr;
+  gap:.7rem;
+  align-items:baseline;
+  padding:.45rem .7rem;
+  opacity:.46;
+  transition:opacity .3s,background .3s,transform .3s;
+}
+.steps li.on{opacity:1;background:var(--ink);color:var(--on-dark);transform:translateX(6px);}
+.steps li b{font-family:"Archivo",system-ui,sans-serif;font-weight:800;font-size:.82rem;}
+.steps li em{font-style:normal;font-weight:700;font-size:clamp(.95rem,2.2vw,1.15rem);}
+.steps li span{grid-column:2;font-size:.83rem;line-height:1.6;opacity:.85;}
+
+/* ══ 3. 焼き ═══════════════════════════════════════════════ */
+#grill{height:320vh;}
+.grill-wrap{display:grid;justify-items:center;gap:clamp(14px,3vh,34px);text-align:center;}
+.grill-head{margin:0;font-size:clamp(2rem,7vw,5rem);}
+.grill-sub{margin:0;max-width:34ch;font-weight:500;font-size:clamp(.88rem,2vw,1.02rem);}
+canvas.griddle{display:block;width:min(560px,82vw);height:auto;}
+.temp{
+  display:flex;gap:clamp(14px,4vw,48px);
+  font-family:"Archivo",system-ui,sans-serif;font-weight:800;
+}
+.temp div{text-align:center;}
+.temp .num{font-size:clamp(1.6rem,5vw,2.8rem);display:block;line-height:1;}
+.temp small{font-size:10px;letter-spacing:.2em;opacity:.8;}
+
+/* ══ 4. お品書き ═══════════════════════════════════════════ */
+.band{padding:clamp(56px,11vh,130px) 0;}
+h2{margin:0 0 clamp(1.4rem,4vh,2.4rem);font-size:clamp(1.9rem,5.6vw,3.6rem);text-wrap:balance;}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:clamp(14px,2vw,22px);}
+.item{
+  border:3px solid var(--ink);
+  background:var(--paper);
+  color:var(--page-fg);
+  padding:clamp(16px,2.2vw,24px);
+  display:grid;
+  align-content:start;
+  gap:.45rem;
+  position:relative;
+}
+.item.hot{background:var(--yellow);color:var(--ink);}
+.item .chip{
+  position:absolute;top:-3px;right:-3px;
+  background:var(--red);color:var(--on-dark);
+  border:3px solid var(--ink);
+  font-family:"Archivo",system-ui,sans-serif;font-weight:800;font-size:10px;letter-spacing:.18em;
+  padding:.2rem .5rem;
+}
+.item h3{margin:0;font-size:clamp(1.15rem,2.6vw,1.5rem);}
+.item .yen{font-size:clamp(1.5rem,3.6vw,2.1rem);line-height:1;}
+.item p{margin:0;font-size:.86rem;line-height:1.7;}
+.sides{
+  margin-top:clamp(16px,3vh,30px);
+  display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;
+  font-weight:700;font-size:.9rem;
+  padding-top:1rem;border-top:3px solid var(--ink);
+}
+.sides span{white-space:nowrap;}
+.sides i{font-style:normal;font-family:"Archivo",system-ui,sans-serif;font-weight:800;}
+
+/* ══ 5. 自分で積む ═════════════════════════════════════════ */
+.stacker{
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1fr);
+  gap:clamp(20px,4vw,56px);
+  align-items:center;
+}
+.stack-canvas{background:transparent;}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:0 0 1.2rem;}
+.chip-btn{
+  appearance:none;cursor:pointer;
+  border:3px solid var(--ink);
+  background:var(--paper);
+  color:var(--page-fg);
+  font:inherit;font-weight:700;font-size:.88rem;
+  padding:.42rem .9rem;
+  display:inline-flex;align-items:baseline;gap:.5rem;
+  transition:transform .12s,background .18s,color .18s;
+}
+.chip-btn i{font-style:normal;font-family:"Archivo",system-ui,sans-serif;font-weight:800;font-size:.78rem;opacity:.75;}
+.chip-btn:hover{background:var(--ink);color:var(--on-dark);}
+.chip-btn:active{transform:translateY(3px);}
+.tally{
+  border:3px solid var(--ink);
+  background:var(--paper);
+  color:var(--page-fg);
+  padding:clamp(14px,2vw,20px);
+  display:grid;gap:.5rem;
+}
+.tally-row{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;}
+.tally-row .num{font-size:clamp(1.8rem,4.6vw,2.6rem);line-height:1;}
+.tally ol{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:.3rem;font-size:.8rem;font-weight:500;}
+.tally ol li{border:2px solid var(--ink);padding:.05rem .45rem;}
+.tally ol li.empty{border-style:dashed;opacity:.6;}
+.warn{margin:0;font-weight:700;font-size:.88rem;color:var(--red);min-height:1.5em;}
+[data-bg="green"] .warn{color:var(--ink);background:var(--yellow);display:inline-block;padding:0 .4rem;}
+.tools{display:flex;gap:.5rem;margin-top:.2rem;}
+.tool{
+  appearance:none;cursor:pointer;
+  border:3px solid var(--ink);background:var(--ink);color:var(--on-dark);
+  font:inherit;font-weight:700;font-size:.84rem;padding:.42rem 1rem;
+}
+.tool.ghost{background:transparent;color:var(--ink);}
+.tool:active{transform:translateY(3px);}
+
+/* ══ 6. 店 ════════════════════════════════════════════════ */
+.shop{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(20px,3vw,44px);}
+.shop dt{font-family:"Archivo",system-ui,sans-serif;font-weight:600;font-size:10px;letter-spacing:.22em;opacity:.7;margin-bottom:.35rem;}
+.shop dd{margin:0 0 1.3rem;font-weight:500;font-size:.98rem;line-height:1.75;}
+footer{padding:0 0 clamp(30px,6vh,60px);font-size:.78rem;opacity:.72;}
+
+/* ══ 狭い画面 ═════════════════════════════════════════════ */
+@media (max-width:880px){
+  .hero-grid,.build-grid,.stacker{grid-template-columns:1fr;}
+  .hero-grid{gap:0;}
+  .burger-box{order:-1;width:min(70%,300px);}
+  .wordmark{font-size:clamp(3.6rem,22vw,7rem);}
+  .hero-badge{width:84px;right:6px;top:clamp(40px,7vh,90px);}
+  #build{height:660vh;}
+  .build-grid{gap:clamp(12px,3vh,26px);}
+  .steps li{padding:.3rem .5rem;}
+  .steps li span{display:none;}
+  .steps li.on span{display:block;}
+}
+@media (max-height:560px){
+  .hero-badge,.hint{display:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .mq{animation:none;}
+  .cue i{animation:none;}
+  .chomp.go{animation:none;}
+  #build,#grill{height:auto;}
+  #build .stage,#grill .stage{position:static;height:auto;overflow:visible;padding:clamp(50px,9vh,110px) 0;}
+  .steps li{opacity:1;}
+  .chip-btn:active,.tool:active{transform:none;}
+}
+</style>
+
+<!-- ══ 1. 表紙 ═══════════════════════════════════════════════ -->
+<section id="hero" data-bg="yellow">
+  <div class="stage">
+    <div class="hero-badge">
+      <div>
+        <span class="num">¥1,280</span>
+        <small>TAX IN</small>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div>
+          <p class="lbl" style="margin:0 0 .6rem;">Burger Stand — Sangenjaya</p>
+          <h1 class="wordmark fat">ガブリ</h1>
+          <p class="tag">三軒茶屋のハンバーガー屋です。手で持って、大きく口をあけて、いってください。</p>
+          <p class="cue"><i>↓</i>スクロールで組み立てる</p>
+          <p class="hint">バーガーを押すと、齧れます。</p>
+        </div>
+        <div class="burger-box">
+          <canvas class="burger" id="heroBurger" width="520" height="620" role="img" aria-label="ガブリ・バーガーの断面。バンズ、ソース、パティ、チーズ、トマト、レタスが積まれている。"></canvas>
+          <div class="chomp fat" id="chomp">ガブリ！</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="mq" id="mq1"></div>
+</div>
+
+<!-- ══ 2. 組み立て ═══════════════════════════════════════════ -->
+<section id="build" data-scene data-bg="paper">
+  <div class="stage">
+    <div class="wrap">
+      <div class="build-grid">
+        <div class="burger-box">
+          <canvas class="burger" id="buildBurger" width="520" height="620" role="img" aria-label="スクロールに合わせてバーガーが一段ずつ積み上がる図"></canvas>
+        </div>
+        <div>
+          <p class="lbl" style="margin:0 0 .5rem;">How it stacks</p>
+          <h2 class="build-head fat">七枚、順番に積む。</h2>
+          <ol class="steps" id="steps"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 3. 焼き ═══════════════════════════════════════════════ -->
+<section id="grill" data-scene data-bg="red">
+  <div class="stage">
+    <div class="wrap grill-wrap">
+      <p class="lbl" style="margin:0;">On the griddle</p>
+      <h2 class="grill-head fat">押さえつけない。</h2>
+      <canvas class="griddle" id="griddle" width="720" height="330" role="img" aria-label="鉄板の上でパティが焼けていく図"></canvas>
+      <p class="grill-sub">肉汁が逃げるからです。返すのは一度だけ。あとは、鉄板にまかせます。</p>
+      <div class="temp">
+        <div><span class="num" id="tTemp">0</span><small>℃ 鉄板</small></div>
+        <div><span class="num" id="tSec">0</span><small>秒 片面</small></div>
+        <div><span class="num" id="tCore">0</span><small>℃ 中心</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 4. お品書き ═══════════════════════════════════════════ -->
+<section class="band" data-bg="paper">
+  <div class="wrap">
+    <p class="lbl" style="margin:0 0 .5rem;">Menu</p>
+    <h2 class="fat">お品書き</h2>
+    <div class="menu">
+      <article class="item hot">
+        <span class="chip">まずこれ</span>
+        <h3 class="fat">ガブリ・バーガー</h3>
+        <span class="yen num">¥1,280</span>
+        <p>基本の一個。迷ったらこれを食べてから、次を決めてください。</p>
+      </article>
+      <article class="item">
+        <h3 class="fat">ベーコンチーズ</h3>
+        <span class="yen num">¥1,580</span>
+        <p>ベーコンは自家製。塩漬けに七日、燻すのに四時間かけています。</p>
+      </article>
+      <article class="item">
+        <h3 class="fat">てりやきアボカド</h3>
+        <span class="yen num">¥1,480</span>
+        <p>甘辛いタレとアボカドは、けんかしません。醤油は近所の蔵のもの。</p>
+      </article>
+      <article class="item">
+        <h3 class="fat">ダブル・ガブリ</h3>
+        <span class="yen num">¥1,880</span>
+        <p>パティ二枚。そのままでは口に入りません。上から潰してください。</p>
+      </article>
+    </div>
+    <div class="sides">
+      <span>フライドポテト <i>¥380</i></span>
+      <span>コールスロー <i>¥280</i></span>
+      <span>クラフトコーラ <i>¥480</i></span>
+      <span>チョコレートシェイク <i>¥580</i></span>
+    </div>
+  </div>
+</section>
+
+<div class="marquee" aria-hidden="true">
+  <div class="mq" id="mq2"></div>
+</div>
+
+<!-- ══ 5. 自分で積む ═════════════════════════════════════════ -->
+<section class="band" id="stack" data-bg="green">
+  <div class="wrap">
+    <p class="lbl" style="margin:0 0 .5rem;">Build your own</p>
+    <h2 class="fat">自分で積む。</h2>
+    <div class="stacker">
+      <div class="burger-box">
+        <canvas class="burger stack-canvas" id="myBurger" width="480" height="640" role="img" aria-label="選んだ具材を積み上げたバーガーの図"></canvas>
+      </div>
+      <div>
+        <div class="chips" id="chips"></div>
+        <div class="tally">
+          <div class="tally-row">
+            <span class="lbl">合計</span>
+            <span class="num" id="total">¥980</span>
+          </div>
+          <ol id="tallyList"><li class="empty">まだ何ものっていません</li></ol>
+          <p class="warn" id="warn"></p>
+          <div class="tools">
+            <button type="button" class="tool" id="allIn">ぜんぶのせ</button>
+            <button type="button" class="tool ghost" id="reset">はじめから</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 6. 店 ════════════════════════════════════════════════ -->
+<section class="band" data-bg="dark">
+  <div class="wrap">
+    <p class="lbl" style="margin:0 0 .5rem;">Shop</p>
+    <h2 class="fat">ガブリ</h2>
+    <dl class="shop">
+      <div>
+        <dt>Address</dt>
+        <dd>東京都世田谷区三軒茶屋 二丁目 X-X<br>三茶ビル 1F</dd>
+        <dt>Seats</dt>
+        <dd>カウンター 8席 / テイクアウト可</dd>
+      </div>
+      <div>
+        <dt>Hours</dt>
+        <dd>11:00 – 21:00（L.O. 20:30）<br>水曜定休</dd>
+        <dt>Pay</dt>
+        <dd>現金 / 各種カード / QR</dd>
+      </div>
+      <div>
+        <dt>Note</dt>
+        <dd>パティは一日 60 枚まで。売り切れたらその日は閉めます。予約はとっていません。</dd>
+      </div>
+    </dl>
+    <footer>
+      <p>架空の店です。スクロール連動演出の実装デモとして制作しました。実在の店舗・ブランドとは関係ありません。</p>
+    </footer>
+  </div>
+</section>
+
+<script>
+(function(){
+  document.documentElement.lang = 'ja';
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var root = document.documentElement;
+
+  function clamp01(v){ return v < 0 ? 0 : v > 1 ? 1 : v; }
+  function backOut(t){ var c = 1.9; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); }
+  function wave(t, s){
+    return Math.sin(t * 6.2832 * 2 + s) * .5 + Math.sin(t * 6.2832 * 5 + s * 2.3) * .3 + Math.sin(t * 6.2832 * 9 + s * 1.7) * .2;
+  }
+
+  /* ── インク。版ずれの量は版ごとに決め打ちで持つ ────────────── */
+  var INK = { red:'#F04E37', yellow:'#FFC400', green:'#00A05A', ink:'#1C1A17' };
+  var REG = { red:[1.5,-1.1], yellow:[-1.3,1.2], green:[1.1,1.4], ink:[0,0] };
+
+  /* ── 粒子。刷り物の「ざらつき」はこれが無いと出ない ────────── */
+  var grainPat = (function(){
+    var n = 90, c = document.createElement('canvas');
+    c.width = c.height = n;
+    var g = c.getContext('2d'), img = g.createImageData(n, n), d = img.data;
+    for (var i = 0; i < n * n; i++){
+      d[i*4] = d[i*4+1] = d[i*4+2] = 255;
+      d[i*4+3] = Math.random() < .30 ? Math.floor(Math.random() * 190) : 0;
+    }
+    g.putImageData(img, 0, 0);
+    return g.createPattern(c, 'repeat');
+  })();
+
+  /* ── 具材。順番・厚み・幅・刷り色・値段 ───────────────────── */
+  var ING = {
+    bunBottom:{ name:'バンズ（下）', h:.13, w:.94, kind:'bunBottom', paint:[['yellow',1],['red',.22]], yen:0,
+                note:'国産小麦。焼く前に一度冷やして、目を詰める。' },
+    sauce:{ name:'特製ソース', h:.05, w:.86, kind:'sauce', paint:[['red',1]], yen:0,
+            note:'玉ねぎを飴色になるまで三時間。仕込みでいちばん長い。' },
+    patty:{ name:'パティ 150g', h:.13, w:1, kind:'patty', paint:[['ink',.74],['red',.40]], yen:400,
+            note:'粗挽き、つなぎなし。だから強く握らない。' },
+    cheese:{ name:'チーズ', h:.07, w:.92, kind:'cheese', paint:[['yellow',1]], yen:150,
+             note:'鉄板の上で溶かしてから被せる。垂れるくらいでちょうどいい。' },
+    bacon:{ name:'ベーコン', h:.05, w:.9, kind:'bacon', paint:[['red',.95],['ink',.38]], yen:250,
+            note:'自家製。塩漬け七日、燻し四時間。' },
+    egg:{ name:'目玉焼き', h:.08, w:.86, kind:'egg', paint:[['yellow',1]], yen:180,
+          note:'黄身は半熟で止める。潰して食べてください。' },
+    tomato:{ name:'トマト', h:.07, w:.88, kind:'tomato', paint:[['red',.92]], yen:120,
+             note:'厚さ 8mm。薄く切ると、他の味に消される。' },
+    avocado:{ name:'アボカド', h:.07, w:.84, kind:'slab', paint:[['green',.85],['yellow',.4]], yen:200,
+              note:'その日に熟れたものだけ。硬い日は出しません。' },
+    pickle:{ name:'ピクルス', h:.04, w:.8, kind:'pickle', paint:[['green',1]], yen:100,
+             note:'自家製。酸で口を戻すための一枚。' },
+    lettuce:{ name:'レタス', h:.09, w:1, kind:'lettuce', paint:[['green',1]], yen:100,
+              note:'氷水に十分。しゃきっとさせてから挟む。' },
+    bunTop:{ name:'バンズ（上）', h:.25, w:.94, kind:'bunTop', paint:[['yellow',1],['red',.22]], yen:0,
+             note:'白ごま。焼き面にバターを引いて、香りを立てる。' }
+  };
+  var ORDER = ['bunBottom','sauce','patty','cheese','tomato','lettuce','bunTop'];
+
+  /* ── かたち。すべて手描きのゆらぎを持たせる ───────────────── */
+  function capEnv(t){
+    var e = .10;
+    return t < e ? Math.sin(t / e * Math.PI / 2) : t > 1 - e ? Math.sin((1 - t) / e * Math.PI / 2) : 1;
+  }
+  function capsule(ctx, cx, cy, w, h, seed, topA, botA, keep){
+    var N = 44, x0 = cx - w / 2, i, t, c;
+    if (!keep) ctx.beginPath();
+    for (i = 0; i <= N; i++){
+      t = i / N; c = capEnv(t);
+      var py = cy - (h / 2) * c - wave(t, seed) * topA * c;
+      if (i === 0) ctx.moveTo(x0 + t * w, py); else ctx.lineTo(x0 + t * w, py);
+    }
+    for (i = N; i >= 0; i--){
+      t = i / N; c = capEnv(t);
+      ctx.lineTo(x0 + t * w, cy + (h / 2) * c + wave(t, seed + 7) * botA * c);
+    }
+    ctx.closePath();
+  }
+  function dome(ctx, cx, baseY, w, h, seed, keep){
+    var N = 60, i, t, a;
+    if (!keep) ctx.beginPath();
+    ctx.moveTo(cx - w / 2, baseY);
+    for (i = 0; i <= N; i++){
+      t = i / N; a = Math.PI * (1 - t);
+      ctx.lineTo(cx + Math.cos(a) * (w / 2), baseY - Math.sin(a) * h * (1 + wave(t, seed) * .04));
+    }
+    ctx.lineTo(cx + w / 2, baseY);
+    ctx.closePath();
+  }
+  function frill(ctx, cx, cy, w, h, seed, keep){
+    var N = 84, x0 = cx - w / 2, i, t, c;
+    if (!keep) ctx.beginPath();
+    for (i = 0; i <= N; i++){
+      t = i / N; c = capEnv(t);
+      var py = cy - h * .42 * c - Math.abs(Math.sin(t * Math.PI * 11 + seed)) * h * .55 * c;
+      if (i === 0) ctx.moveTo(x0 + t * w, py); else ctx.lineTo(x0 + t * w, py);
+    }
+    for (i = N; i >= 0; i--){
+      t = i / N; c = capEnv(t);
+      ctx.lineTo(x0 + t * w, cy + h * .40 * c + Math.abs(Math.sin(t * Math.PI * 8 + seed * 2)) * h * .38 * c);
+    }
+    ctx.closePath();
+  }
+  function dripPath(ctx, cx, cy, w, h, at, len){
+    for (var k = 0; k < at.length; k++){
+      var dx = cx + at[k] * w, dw = w * .14, dh = h * len[k];
+      ctx.moveTo(dx - dw / 2, cy - h * .3);
+      ctx.lineTo(dx - dw / 2, cy + dh - dw / 2);
+      ctx.arc(dx, cy + dh - dw / 2, dw / 2, Math.PI, 0, true);
+      ctx.lineTo(dx + dw / 2, cy - h * .3);
+      ctx.closePath();
+    }
+  }
+  function wavyBand(ctx, cx, cy, w, h, seed, amp, keep){
+    var N = 60, x0 = cx - w / 2, i, t, c, off;
+    if (!keep) ctx.beginPath();
+    for (i = 0; i <= N; i++){
+      t = i / N; c = capEnv(t); off = Math.sin(t * Math.PI * 3.2 + seed) * h * amp;
+      var py = cy + off - h * .5 * c;
+      if (i === 0) ctx.moveTo(x0 + t * w, py); else ctx.lineTo(x0 + t * w, py);
+    }
+    for (i = N; i >= 0; i--){
+      t = i / N; c = capEnv(t); off = Math.sin(t * Math.PI * 3.2 + seed) * h * amp;
+      ctx.lineTo(x0 + t * w, cy + off + h * .5 * c);
+    }
+    ctx.closePath();
+  }
+
+  function shape(ctx, kind, cx, cy, w, h, seed){
+    ctx.beginPath();
+    switch (kind){
+      case 'bunTop':    dome(ctx, cx, cy + h / 2, w, h, seed, true); break;
+      case 'bunBottom': capsule(ctx, cx, cy, w, h, seed, h * .04, h * .16, true); break;
+      case 'patty':     capsule(ctx, cx, cy, w, h, seed, h * .13, h * .11, true); break;
+      case 'tomato':    capsule(ctx, cx, cy, w, h, seed, h * .10, h * .10, true); break;
+      case 'slab':      capsule(ctx, cx, cy, w, h, seed, h * .12, h * .12, true); break;
+      case 'pickle':    capsule(ctx, cx, cy, w, h, seed, h * .18, h * .18, true); break;
+      case 'egg':       capsule(ctx, cx, cy, w, h, seed, h * .30, h * .16, true); break;
+      case 'lettuce':   frill(ctx, cx, cy, w, h, seed, true); break;
+      case 'bacon':     wavyBand(ctx, cx, cy, w, h, seed, .75, true); break;
+      case 'sauce':     capsule(ctx, cx, cy, w, h, seed, h * .22, h * .22, true); break;
+      case 'cheese':
+        capsule(ctx, cx, cy, w, h, seed, h * .14, h * .10, true);
+        dripPath(ctx, cx, cy + h / 2, w, h, [-.41, .38], [1.5, 2.1]);
+        break;
+      default:          capsule(ctx, cx, cy, w, h, seed, h * .12, h * .12, true);
+    }
+  }
+  // かたちを塗ったあとに乗せる細部
+  function detail(ctx, kind, cx, cy, w, h, seed){
+    if (kind === 'bunTop'){
+      ctx.save();
+      ctx.fillStyle = INK.ink;
+      ctx.globalAlpha = .62;
+      var seeds = [[-.30,.52],[-.12,.30],[.08,.36],[.28,.56],[-.02,.66],[.20,.78],[-.24,.80],[.36,.30]];
+      for (var i = 0; i < seeds.length; i++){
+        ctx.save();
+        ctx.translate(cx + seeds[i][0] * w, cy + h / 2 - seeds[i][1] * h);
+        ctx.rotate(seeds[i][0] * 2.2);
+        ctx.beginPath();
+        ctx.ellipse(0, 0, w * .022, w * .012, 0, 0, 6.2832);
+        ctx.fill();
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+    if (kind === 'egg'){
+      ctx.save();
+      ctx.fillStyle = INK.red;
+      ctx.globalAlpha = .78;
+      ctx.beginPath();
+      ctx.ellipse(cx + w * .06, cy - h * .06, h * .46, h * .40, 0, 0, 6.2832);
+      ctx.fill();
+      ctx.restore();
+    }
+    if (kind === 'pickle'){
+      ctx.save();
+      ctx.fillStyle = INK.ink;
+      ctx.globalAlpha = .5;
+      for (var k = -2; k <= 2; k++){
+        ctx.beginPath();
+        ctx.ellipse(cx + k * w * .17, cy, w * .02, h * .18, 0, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
+
+  function paintIngredient(ctx, spec, cx, cy, w, h, seed, alpha){
+    for (var i = 0; i < spec.paint.length; i++){
+      var col = spec.paint[i][0], reg = REG[col];
+      ctx.save();
+      // 一版目はベタ。二版目からは掛け合わせて色に深さを出す
+      ctx.globalCompositeOperation = i === 0 ? 'source-over' : 'multiply';
+      ctx.globalAlpha = spec.paint[i][1] * alpha;
+      ctx.fillStyle = INK[col];
+      ctx.translate(reg[0], reg[1]);
+      shape(ctx, spec.kind, cx, cy, w, h, seed);
+      ctx.fill();
+      ctx.restore();
+    }
+    // 墨の輪郭。刷り物は線が入ると一気に締まる
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = INK.ink;
+    ctx.lineWidth = Math.max(2, w * .013);
+    ctx.lineJoin = 'round';
+    shape(ctx, spec.kind, cx, cy, w, h, seed);
+    ctx.stroke();
+    detail(ctx, spec.kind, cx, cy, w, h, seed);
+    ctx.restore();
+  }
+
+  /* ── 一個ぶんの描画。積み方はここに集約する ───────────────── */
+  function renderBurger(cv, stack, opts){
+    var st = fit(cv);
+    if (!st) return;
+    var ctx = st.ctx, W = st.w, H = st.h;
+    ctx.clearRect(0, 0, W, H);
+    if (!stack.length) return;
+    opts = opts || {};
+
+    var raw = 0, i;
+    for (i = 0; i < stack.length; i++) raw += stack[i].spec.h;
+    var domeK = Math.min(1, .95 / Math.max(.86, raw));
+    function hOf(sp){ return sp.h * (sp.kind === 'bunTop' ? domeK : 1); }
+    var total = 0;
+    for (i = 0; i < stack.length; i++) total += hOf(stack[i].spec);
+    var budget = .84;
+    var unit = (H * budget) / Math.max(budget, total);
+    var bw = Math.min(W * .86, unit * .72);
+
+    var ys = [], y = 0, lh;
+    for (i = 0; i < stack.length; i++){
+      lh = hOf(stack[i].spec) * unit;
+      ys.push(y - lh / 2);
+      y -= lh * .76;
+    }
+    var topEdge = ys[ys.length - 1] - hOf(stack[stack.length - 1].spec) * unit / 2;
+    var botEdge = ys[0] + hOf(stack[0].spec) * unit / 2;
+    var shift = H / 2 - (topEdge + botEdge) / 2;
+
+    for (i = 0; i < stack.length; i++){
+      var it = stack[i], sp = it.spec;
+      var t = it.t === undefined ? 1 : clamp01(it.t);
+      if (t <= 0) continue;
+      var e = reduce ? t : backOut(t);
+      var dy = (1 - e) * -H * .6;
+      paintIngredient(ctx, sp, W / 2, ys[i] + shift + dy, bw * sp.w, hOf(sp) * unit, i * 3.7 + 1, Math.min(1, t * 2.2));
+    }
+
+    // 齧った跡
+    if (opts.bites && opts.bites.length){
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-out';
+      for (i = 0; i < opts.bites.length; i++){
+        var b = opts.bites[i];
+        for (var k = 0; k < 4; k++){
+          ctx.beginPath();
+          ctx.arc(b.x * W + Math.cos(k * 1.9) * b.r * .38, b.y * H + Math.sin(k * 1.9) * b.r * .30,
+                  b.r * (.62 + (k % 2) * .22), 0, 6.2832);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
+    }
+
+    // 粒子
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = .13;
+    ctx.fillStyle = grainPat;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
+
+  function fit(cv){
+    var r = cv.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = Math.round(r.width * dpr), h = Math.round(r.height * dpr);
+    if (cv.width !== w || cv.height !== h){ cv.width = w; cv.height = h; }
+    var ctx = cv.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: r.width, h: r.height };
+  }
+  function stackOf(keys, tf){
+    return keys.map(function(k, i){ return { spec: ING[k], t: tf ? tf(i) : 1 }; });
+  }
+
+  /* ══ 表紙 ═══════════════════════════════════════════════ */
+  var heroCv = document.getElementById('heroBurger');
+  var bites = [];
+  var heroStack = stackOf(ORDER);
+  function drawHero(){ renderBurger(heroCv, heroStack, { bites: bites }); }
+
+  var chomp = document.getElementById('chomp');
+  heroCv.style.transition = 'transform .28s cubic-bezier(.2,1.6,.4,1)';
+  heroCv.addEventListener('click', function(ev){
+    if (bites.length >= 3){ bites = []; drawHero(); return; }
+    var r = heroCv.getBoundingClientRect();
+    var side = bites.length % 2 ? .16 : .84;
+    bites.push({ x: side, y: .30 + bites.length * .16, r: r.width * .17 });
+    drawHero();
+    if (!reduce){
+      heroCv.style.transform = 'scale(1.04, .93)';
+      setTimeout(function(){ heroCv.style.transform = ''; }, 170);
+      chomp.classList.remove('go');
+      void chomp.offsetWidth;
+      chomp.classList.add('go');
+    }
+  });
+  heroCv.addEventListener('keydown', function(e){ if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); heroCv.click(); } });
+  heroCv.tabIndex = 0;
+
+  /* ══ 組み立て ═══════════════════════════════════════════ */
+  var buildCv = document.getElementById('buildBurger');
+  var stepsEl = document.getElementById('steps');
+  ORDER.forEach(function(k, i){
+    var sp = ING[k];
+    var li = document.createElement('li');
+    li.innerHTML = '<b>' + String(i + 1).padStart(2, '0') + '</b><em></em><span></span>';
+    li.querySelector('em').textContent = sp.name;
+    li.querySelector('span').textContent = sp.note;
+    stepsEl.appendChild(li);
+  });
+  var stepEls = Array.prototype.slice.call(stepsEl.children);
+
+  function drawBuild(p){
+    var n = ORDER.length;
+    var stack = ORDER.map(function(k, i){
+      return { spec: ING[k], t: clamp01(p * (n + 1.1) - i) };
+    });
+    renderBurger(buildCv, stack, {});
+    var active = Math.min(n - 1, Math.max(0, Math.floor(p * (n + 1.1) - .35)));
+    for (var i = 0; i < stepEls.length; i++) stepEls[i].classList.toggle('on', i === active);
+  }
+
+  /* ══ 焼き ═══════════════════════════════════════════════ */
+  var griddleCv = document.getElementById('griddle');
+  var tTemp = document.getElementById('tTemp'), tSec = document.getElementById('tSec'), tCore = document.getElementById('tCore');
+  var char = [];
+  for (var ci = 0; ci < 26; ci++) char.push({ x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, r: Math.random(), at: Math.random() * .7 + .15 });
+
+  function drawGrill(p){
+    var st = fit(griddleCv);
+    if (!st) return;
+    var ctx = st.ctx, W = st.w, H = st.h;
+    ctx.clearRect(0, 0, W, H);
+    var cx = W / 2, cy = H * .62, pw = W * .62, ph = H * .26;
+
+    // 鉄板
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = .9;
+    ctx.fillStyle = INK.ink;
+    ctx.fillRect(W * .06, cy + ph * .52, W * .88, H * .055);
+    ctx.restore();
+
+    // 湯気（焼けるほど強く）
+    if (!reduce){
+      ctx.save();
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.strokeStyle = INK.yellow;
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      ctx.globalAlpha = .55 * clamp01(p * 1.6);
+      for (var s = -2; s <= 2; s++){
+        ctx.beginPath();
+        for (var j = 0; j <= 14; j++){
+          var t = j / 14;
+          var x = cx + s * pw * .18 + Math.sin(t * 5 + s * 2 + p * 6) * 12;
+          var y = cy - ph * .6 - t * H * .34;
+          j ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // パティ: 生（赤）→ 焼き上がり（墨を重ねる）
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = .95;
+    ctx.fillStyle = INK.red;
+    ctx.translate(REG.red[0], REG.red[1]);
+    capsule(ctx, cx, cy, pw, ph, 3, ph * .16, ph * .14);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.globalAlpha = .18 + clamp01(p) * .62;
+    ctx.fillStyle = INK.ink;
+    capsule(ctx, cx, cy, pw, ph, 3, ph * .16, ph * .14);
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.strokeStyle = INK.ink;
+    ctx.lineWidth = Math.max(2.5, pw * .009);
+    ctx.lineJoin = 'round';
+    capsule(ctx, cx, cy, pw, ph, 3, ph * .16, ph * .14);
+    ctx.stroke();
+    ctx.restore();
+
+    // 焦げ
+    ctx.save();
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.fillStyle = INK.ink;
+    for (var k = 0; k < char.length; k++){
+      var c = char[k];
+      if (p < c.at) continue;
+      ctx.globalAlpha = Math.min(.75, (p - c.at) * 3);
+      ctx.beginPath();
+      ctx.ellipse(cx + c.x * pw * .42, cy + c.y * ph * .32, 3 + c.r * 9, 2 + c.r * 5, c.r * 3, 0, 6.2832);
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.globalAlpha = .16;
+    ctx.fillStyle = grainPat;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+
+    tTemp.textContent = Math.round(250 * Math.min(1, p * 3 + .12));
+    tSec.textContent = Math.round(90 * clamp01(p));
+    tCore.textContent = Math.round(8 + 56 * clamp01(p));
+  }
+
+  /* ══ 自分で積む ═════════════════════════════════════════ */
+  var myCv = document.getElementById('myBurger');
+  var chipsEl = document.getElementById('chips');
+  var totalEl = document.getElementById('total');
+  var listEl = document.getElementById('tallyList');
+  var warnEl = document.getElementById('warn');
+  var BASE = 980;
+  var OPTIONAL = ['patty','cheese','bacon','egg','tomato','avocado','pickle','lettuce'];
+  var mine = [];
+
+  OPTIONAL.forEach(function(k){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip-btn';
+    b.innerHTML = '<span></span><i>+' + ING[k].yen + '</i>';
+    b.querySelector('span').textContent = ING[k].name;
+    b.addEventListener('click', function(){ add(k); });
+    chipsEl.appendChild(b);
+  });
+
+  function myStack(anim){
+    var keys = ['bunBottom', 'sauce'].concat(mine, ['bunTop']);
+    return keys.map(function(k, i){
+      return { spec: ING[k], t: (anim && i === keys.length - 2) ? 0 : 1 };
+    });
+  }
+  function drawMine(){ renderBurger(myCv, myStack(false), {}); }
+
+  function add(k){
+    if (mine.length >= 12){ say('もう積めません。これ以上は皿です。'); return; }
+    mine.push(k);
+    sync();
+    if (!reduce) bounceLast();
+  }
+  function bounceLast(){
+    var keys = ['bunBottom', 'sauce'].concat(mine, ['bunTop']);
+    var idx = keys.length - 2;
+    var t0 = null;
+    function step(now){
+      if (t0 === null) t0 = now;
+      var t = Math.min((now - t0) / 460, 1);
+      var stack = keys.map(function(kk, i){ return { spec: ING[kk], t: i === idx ? t : 1 }; });
+      renderBurger(myCv, stack, {});
+      if (t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  function say(msg){ warnEl.textContent = msg; }
+  function sync(){
+    var yen = BASE, i;
+    for (i = 0; i < mine.length; i++) yen += ING[mine[i]].yen;
+    totalEl.textContent = '¥' + yen.toLocaleString('ja-JP');
+    listEl.innerHTML = '';
+    if (!mine.length){
+      var e = document.createElement('li');
+      e.className = 'empty';
+      e.textContent = 'まだ何ものっていません';
+      listEl.appendChild(e);
+    } else {
+      for (i = 0; i < mine.length; i++){
+        var li = document.createElement('li');
+        li.textContent = ING[mine[i]].name;
+        listEl.appendChild(li);
+      }
+    }
+    if (mine.length >= 9) say('もう口に入りません。潰してください。');
+    else if (mine.length >= 6) say('だいぶ背が高くなってきました。');
+    else say('');
+    drawMine();
+  }
+  document.getElementById('allIn').addEventListener('click', function(){
+    mine = OPTIONAL.slice();
+    sync();
+  });
+  document.getElementById('reset').addEventListener('click', function(){
+    mine = [];
+    sync();
+  });
+
+  /* ══ 帯の中身 ═══════════════════════════════════════════ */
+  var MQ = ['11:00 – 21:00', '水曜定休', 'パティは一日60枚', '三軒茶屋', 'TAKEOUT OK', 'カウンター8席'];
+  function fillMq(el){
+    var html = '';
+    for (var r = 0; r < 2; r++){
+      for (var i = 0; i < MQ.length; i++) html += '<span>' + MQ[i] + ' <b>●</b></span>';
+    }
+    el.innerHTML = html;
+  }
+  fillMq(document.getElementById('mq1'));
+  fillMq(document.getElementById('mq2'));
+
+  /* ══ スクロール ═════════════════════════════════════════ */
+  var scenes = Array.prototype.slice.call(document.querySelectorAll('[data-scene]'));
+  var ticking = false;
+
+  function update(){
+    ticking = false;
+    var vh = window.innerHeight;
+    for (var i = 0; i < scenes.length; i++){
+      var s = scenes[i];
+      var r = s.getBoundingClientRect();
+      // 固定面は 100svh。innerHeight（=100vh）で割ると、
+      // アドレスバーが出入りするモバイルで最後まで進みきらない
+      var st = s.firstElementChild;
+      var travel = r.height - (st ? st.offsetHeight : vh);
+      var p = travel > 0 ? clamp01(-r.top / travel) : (reduce ? 1 : 0);
+      s.style.setProperty('--p', p);
+      if (s.id === 'build') drawBuild(p);
+      if (s.id === 'grill') drawGrill(p);
+    }
+  }
+  function onScroll(){ if (!ticking){ ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', function(){ drawHero(); drawMine(); onScroll(); });
+
+  function repaint(){ drawHero(); drawMine(); onScroll(); }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', repaint);
+  new MutationObserver(repaint).observe(root, { attributes:true, attributeFilter:['data-theme'] });
+
+  drawHero();
+  sync();
+  update();
+  if (reduce){ drawBuild(1); drawGrill(1); }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(repaint);
+})();
+</script>
+
+</body>
+</html>
