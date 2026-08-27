@@ -1,0 +1,1356 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ガブリ — 三軒茶屋のハンバーガー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500&family=Archivo:wght@500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<style>
+/* 写真スタジオの暗幕に合わせて、地色は一貫して深い焦げ茶。単一のルックで通す */
+:root{
+  --bg:#161110;
+  --bg2:#1e1714;
+  --panel:#221a15;
+  --ink:#f1e9dd;
+  --sub:#c4b39c;
+  --amber:#e8a24b;
+  --line:rgba(241,233,221,.14);
+  --serif:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",sans-serif;
+  --latin:"Archivo","Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15.5px;
+  line-height:1.9;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 clamp(20px,4vw,48px)}
+.label{
+  font-family:var(--latin);font-weight:600;font-size:11.5px;letter-spacing:.32em;
+  color:var(--amber);text-transform:uppercase;margin-bottom:14px;
+}
+h1,h2{font-family:var(--serif);font-weight:600;letter-spacing:.06em;line-height:1.25}
+h2{font-size:clamp(26px,3.4vw,40px);margin-bottom:18px}
+p.body{color:var(--sub);max-width:34em}
+canvas{display:block;max-width:100%}
+a{color:var(--amber)}
+:focus-visible{outline:2px solid var(--amber);outline-offset:3px;border-radius:4px}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+
+/* ---------- 表紙 ---------- */
+#hero{min-height:100svh;display:flex;align-items:center;position:relative;padding:48px 0}
+.heroGrid{display:grid;grid-template-columns:minmax(300px,5fr) 6fr;gap:clamp(20px,4vw,64px);align-items:center;width:100%}
+.heroCopy h1{font-size:clamp(64px,9vw,124px);font-weight:700;letter-spacing:.1em;margin:6px 0 20px}
+.heroCopy .lead{color:var(--sub);max-width:24em;margin-bottom:30px}
+.price{display:flex;align-items:baseline;gap:12px;margin-bottom:44px}
+.price .yen{font-family:var(--latin);font-weight:600;font-size:clamp(28px,3vw,38px);letter-spacing:.02em}
+.tax{font-size:12px;color:var(--sub)}
+.cue{font-size:13px;color:var(--sub);display:flex;align-items:center;gap:12px}
+.cue::before{content:"";width:1px;height:34px;background:linear-gradient(var(--amber),transparent);
+  animation:cueDrop 1.8s ease-in-out infinite}
+@keyframes cueDrop{0%{transform:scaleY(.2);transform-origin:top;opacity:0}
+  40%{transform:scaleY(1);opacity:1}100%{transform:scaleY(1);transform-origin:top;opacity:0}}
+.heroShot{position:relative}
+#heroBite{display:block;width:100%;border-radius:14px}
+#heroBite:active{transform:translateY(1px)}
+#heroCanvas{width:100%;height:auto;border-radius:14px}
+.biteHint{text-align:center;font-size:12.5px;color:var(--sub);margin-top:10px}
+
+/* ---------- 固定舞台（組み立て・焼き） ---------- */
+.scene{position:relative}
+#build{height:460svh}
+#grill{height:330svh}
+.stage{position:sticky;top:0;height:100svh;display:flex;align-items:center;overflow:hidden}
+.stageGrid{display:grid;grid-template-columns:5fr 6fr;gap:clamp(16px,3vw,56px);align-items:center;width:100%}
+#buildCanvas,#grillCanvas{width:100%;height:auto;border-radius:16px}
+.layerCount{font-family:var(--latin);font-weight:600;font-size:13px;letter-spacing:.18em;color:var(--sub);margin-bottom:14px}
+.layerCount b{color:var(--amber);font-size:22px;font-weight:600}
+.layerCard{border-top:1px solid var(--line);padding-top:18px;min-height:7.5em}
+.layerCard h3{font-family:var(--serif);font-size:21px;font-weight:600;letter-spacing:.05em;margin-bottom:8px}
+.layerCard p{color:var(--sub);font-size:14.5px}
+.layerList{display:none;list-style:none;margin-top:20px}
+.layerList li{border-top:1px solid var(--line);padding:12px 0}
+.layerList h3{font-family:var(--serif);font-size:16.5px;font-weight:600}
+.layerList p{color:var(--sub);font-size:13.5px}
+.nums{display:flex;gap:clamp(16px,3vw,42px);margin-top:34px;border-top:1px solid var(--line);padding-top:22px}
+.nums>div{min-width:5.2em}
+.nums dt{font-size:12px;color:var(--sub);letter-spacing:.14em;margin-bottom:2px}
+.nums dd{font-family:var(--latin);font-weight:600;font-size:clamp(26px,3vw,36px);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.nums dd i{font-style:normal;font-size:13px;color:var(--sub);margin-left:3px;font-family:var(--sans)}
+
+/* ---------- お品書き ---------- */
+#menu{padding:clamp(80px,12vh,140px) 0}
+.menuGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.8vw,26px);margin-top:38px}
+.mCard{background:var(--bg2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.mCard .ph{background:#120d0b;aspect-ratio:5/4}
+.mCard canvas{width:100%;height:100%}
+.mBody{padding:16px 18px 20px}
+.mBody h3{font-family:var(--serif);font-size:17.5px;font-weight:600;letter-spacing:.04em}
+.mBody .p{font-family:var(--latin);font-weight:600;color:var(--amber);font-size:16px;margin:2px 0 8px}
+.mBody p.d{color:var(--sub);font-size:13px;line-height:1.8}
+.sides{margin-top:34px;border-top:1px solid var(--line);padding-top:22px;display:flex;flex-wrap:wrap;gap:10px 34px}
+.sides span{color:var(--sub);font-size:14px}
+.sides b{font-family:var(--latin);font-weight:600;color:var(--ink);margin-left:8px}
+
+/* ---------- 自分で積む ---------- */
+#stack{padding:clamp(80px,12vh,140px) 0;background:var(--bg2)}
+.byoGrid{display:grid;grid-template-columns:6fr 5fr;gap:clamp(20px,3.5vw,56px);margin-top:34px;align-items:start}
+.towerBox{position:relative;background:#120d0b;border:1px solid var(--line);border-radius:16px;overflow:hidden}
+#towerCanvas{width:100%;height:auto}
+.warn{position:absolute;left:0;right:0;bottom:0;padding:12px 18px;text-align:center;font-size:14px;
+  color:var(--ink);background:linear-gradient(transparent,rgba(10,6,4,.85) 40%);min-height:3em;
+  opacity:0;transition:opacity .3s}
+.warn.on{opacity:1}
+.totalRow{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.totalRow .t{font-size:13px;color:var(--sub)}
+#total{font-family:var(--latin);font-weight:600;font-size:clamp(30px,3.4vw,40px);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.ingBtns{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
+.ing{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 14px;
+  transition:border-color .15s,transform .1s;text-align:left}
+.ing:hover{border-color:rgba(232,162,75,.55)}
+.ing:active{transform:scale(.97)}
+.ing b{font-weight:500;font-size:14.5px}
+.ing i{font-style:normal;font-family:var(--latin);font-weight:600;font-size:13px;color:var(--amber)}
+.ing[disabled]{opacity:.4;cursor:not-allowed}
+.picked h3{font-size:13px;letter-spacing:.14em;color:var(--sub);font-weight:500;margin-bottom:8px}
+#pickedList{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+#pickedList li{background:var(--panel);border:1px solid var(--line);border-radius:99px;
+  padding:3px 12px;font-size:12.5px;color:var(--ink)}
+#pickedList li i{font-style:normal;color:var(--sub);margin-left:6px;font-family:var(--latin)}
+#pickedEmpty{color:var(--sub);font-size:13.5px}
+.ops{display:flex;gap:12px;margin-top:22px}
+.ops button{border-radius:99px;padding:11px 26px;font-size:14.5px;letter-spacing:.06em}
+#allBtn{background:var(--amber);color:#231303;font-weight:500}
+#allBtn:hover{filter:brightness(1.07)}
+#resetBtn{border:1px solid var(--line);color:var(--sub)}
+#resetBtn:hover{color:var(--ink);border-color:rgba(241,233,221,.4)}
+
+/* ---------- 店 ---------- */
+#shop{padding-top:clamp(70px,10vh,120px)}
+.band{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+  padding:12px 0;margin-bottom:clamp(48px,7vh,90px);white-space:nowrap}
+.band span{display:inline-block;font-family:var(--latin);font-weight:500;font-size:12.5px;
+  letter-spacing:.3em;color:var(--sub);animation:slide 36s linear infinite}
+@keyframes slide{to{transform:translateX(-50%)}}
+.shopGrid{display:grid;grid-template-columns:1fr 1.6fr;gap:clamp(20px,4vw,70px)}
+.shopInfo{border-top:1px solid var(--line)}
+.shopInfo>div{display:grid;grid-template-columns:6.5em 1fr;gap:14px;padding:15px 0;border-bottom:1px solid var(--line)}
+.shopInfo dt{color:var(--sub);font-size:13px;padding-top:2px}
+.shopInfo dd{font-size:14.5px}
+.note{margin-top:20px;color:var(--sub);font-size:13.5px}
+.colophon{margin-top:clamp(60px,9vh,110px);padding:26px 0 34px;border-top:1px solid var(--line)}
+.colophon p{color:#8d7f6c;font-size:12px;text-align:center}
+
+@media (max-width:860px){
+  .heroGrid{grid-template-columns:1fr;gap:8px}
+  .heroShot{order:-1;max-width:420px;margin:0 auto}
+  .heroCopy h1{font-size:clamp(56px,15vw,84px)}
+  #hero{padding-top:24px}
+  .price{margin-bottom:24px}
+  .stageGrid{grid-template-columns:1fr;gap:4px;align-content:center}
+  .stageGrid>.copy{order:2}
+  h2{font-size:24px}
+  .layerCard{min-height:8.5em;padding-top:12px}
+  .nums{margin-top:16px;padding-top:14px}
+  .menuGrid{grid-template-columns:1fr 1fr}
+  .byoGrid{grid-template-columns:1fr}
+  .shopGrid{grid-template-columns:1fr}
+}
+
+/* 動きを減らす：固定舞台を解き、完成形で静止させる */
+@media (prefers-reduced-motion:reduce){
+  #build,#grill{height:auto}
+  .stage{position:static;height:auto;padding:clamp(70px,10vh,120px) 0}
+  .cue::before,.band span{animation:none}
+  .layerCard,.layerCount{display:none}
+  .layerList{display:block}
+  .warn{transition:none}
+}
+</style>
+
+<header id="hero">
+  <div class="wrap heroGrid">
+    <div class="heroCopy">
+      <p class="label">Burger Stand — Sangenjaya</p>
+      <h1>ガブリ</h1>
+      <p class="lead">三軒茶屋のハンバーガー屋です。手で持って、大きく口をあけて、いってください。</p>
+      <p class="price"><span class="yen">¥1,280</span><span class="tax">税込</span></p>
+      <p class="cue">スクロールで組み立てる</p>
+    </div>
+    <div class="heroShot">
+      <button id="heroBite" aria-label="バーガーを齧る"><canvas id="heroCanvas"></canvas></button>
+      <p class="biteHint">バーガーを押すと、齧れます。</p>
+    </div>
+  </div>
+</header>
+
+<section id="build" class="scene" aria-label="組み立て">
+  <div class="stage">
+    <div class="wrap stageGrid">
+      <div class="copy">
+        <p class="label">Assembly</p>
+        <h2>七枚、順番に積む。</h2>
+        <p class="layerCount"><b id="buildNum">1</b> / 7</p>
+        <div class="layerCard"><h3 id="layerName"></h3><p id="layerDesc"></p></div>
+        <ol class="layerList" id="layerList"></ol>
+      </div>
+      <canvas id="buildCanvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<section id="grill" class="scene" aria-label="焼き">
+  <div class="stage">
+    <div class="wrap stageGrid">
+      <div class="copy">
+        <p class="label">Griddle</p>
+        <h2>押さえつけない。</h2>
+        <p class="body">肉汁が逃げるからです。返すのは一度だけ。あとは、鉄板にまかせます。</p>
+        <dl class="nums">
+          <div><dt>鉄板</dt><dd><span id="numPlate">20</span><i>℃</i></dd></div>
+          <div><dt>片面</dt><dd><span id="numSec">0</span><i>秒</i></dd></div>
+          <div><dt>中心</dt><dd><span id="numCore">11</span><i>℃</i></dd></div>
+        </dl>
+      </div>
+      <canvas id="grillCanvas"></canvas>
+    </div>
+  </div>
+</section>
+
+<section id="menu" aria-label="お品書き">
+  <div class="wrap">
+    <p class="label">Menu</p>
+    <h2>お品書き</h2>
+    <div class="menuGrid" id="menuGrid"></div>
+    <div class="sides">
+      <span>フライドポテト<b>¥380</b></span>
+      <span>コールスロー<b>¥280</b></span>
+      <span>クラフトコーラ<b>¥480</b></span>
+      <span>チョコレートシェイク<b>¥580</b></span>
+    </div>
+  </div>
+</section>
+
+<section id="stack" aria-label="自分で積む">
+  <div class="wrap">
+    <p class="label">Build Your Own</p>
+    <h2>自分で積む。</h2>
+    <div class="byoGrid">
+      <div class="towerBox">
+        <canvas id="towerCanvas"></canvas>
+        <p id="warn" class="warn" aria-live="polite"></p>
+      </div>
+      <div class="panel">
+        <p class="totalRow"><span id="total">¥980</span><span class="t">税込 — 基本はバンズと特製ソースで ¥980</span></p>
+        <div class="ingBtns" id="ingBtns"></div>
+        <div class="picked">
+          <h3>積んだもの</h3>
+          <ul id="pickedList"></ul>
+          <p id="pickedEmpty">まだ何も積んでいません。バンズとソースだけです。</p>
+        </div>
+        <div class="ops">
+          <button id="allBtn">ぜんぶのせ</button>
+          <button id="resetBtn">はじめから</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="shop" aria-label="店">
+  <div class="band" aria-hidden="true"><span id="bandText"></span></div>
+  <div class="wrap">
+    <div class="shopGrid">
+      <div>
+        <p class="label">Shop</p>
+        <h2>ガブリ</h2>
+        <p class="note">パティは一日 60 枚まで。売り切れたらその日は閉めます。予約はとっていません。</p>
+      </div>
+      <dl class="shopInfo">
+        <div><dt>住所</dt><dd>東京都世田谷区三軒茶屋 二丁目 X-X / 三茶ビル 1F</dd></div>
+        <div><dt>席</dt><dd>カウンター 8席 / テイクアウト可</dd></div>
+        <div><dt>営業</dt><dd>11:00 – 21:00（L.O. 20:30） / 水曜定休</dd></div>
+        <div><dt>支払い</dt><dd>現金 / 各種カード / QR</dd></div>
+      </dl>
+    </div>
+    <div class="colophon"><p>架空の店です。実装デモとして制作しました。実在の店舗・ブランドとは関係ありません。</p></div>
+  </div>
+</footer>
+
+<script>
+document.documentElement.lang = 'ja';
+(() => {
+'use strict';
+const DPR = Math.min(window.devicePixelRatio || 1, 2);
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const UNIT = 640; // スプライトはこの幅で一度だけ描き、各シーンへは縮小して使う
+
+/* ---------- 乱数とノイズ ---------- */
+const mul32 = s => () => { s |= 0; s = s + 0x6D2B79F5 | 0; let t = Math.imul(s ^ s >>> 15, 1 | s);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+function noise2(seed){
+  const r = mul32(seed), g = new Float32Array(128 * 128);
+  for (let i = 0; i < g.length; i++) g[i] = r();
+  const at = (x, y) => g[((y & 127) << 7) | (x & 127)];
+  return (x, y, oct = 3) => {
+    let a = 0, amp = .5, f = 1, norm = 0;
+    for (let o = 0; o < oct; o++){
+      const xi = Math.floor(x * f), yi = Math.floor(y * f), xf = x * f - xi, yf = y * f - yi;
+      const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+      a += amp * (at(xi, yi) * (1 - u) * (1 - v) + at(xi + 1, yi) * u * (1 - v)
+        + at(xi, yi + 1) * (1 - u) * v + at(xi + 1, yi + 1) * u * v);
+      norm += amp; amp *= .5; f *= 2.03;
+    }
+    return a / norm;
+  };
+}
+
+/* ---------- canvas 小物 ---------- */
+const C = (w, h) => { const c = document.createElement('canvas'); c.width = Math.round(w); c.height = Math.round(h); return c; };
+const lg = (g, x0, y0, x1, y1, stops) => { const gr = g.createLinearGradient(x0, y0, x1, y1);
+  for (const [o, c] of stops) gr.addColorStop(o, c); return gr; };
+const rgr = (g, x, y, r, stops) => { const gr = g.createRadialGradient(x, y, 0, x, y, r);
+  for (const [o, c] of stops) gr.addColorStop(o, c); return gr; };
+// 楕円の柔らかい染み。輪郭線を使わないので、影も照りも全部これで置く
+function softE(g, x, y, rx, ry, color, rot = 0){
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(1, ry / rx);
+  g.fillStyle = rgr(g, 0, 0, rx, [[0, color], [1, color.replace(/[\d.]+\)$/, '0)')]]);
+  g.beginPath(); g.arc(0, 0, rx, 0, 7); g.fill(); g.restore();
+}
+function ell(g, x, y, rx, ry, fill, rot = 0){
+  g.save(); g.beginPath(); g.ellipse(x, y, rx, ry, rot, 0, 7);
+  g.fillStyle = fill; g.fill(); g.restore();
+}
+// α>0 の画素だけを触るテクスチャパス
+function texture(cv, fn){
+  const g = cv.getContext('2d'), w = cv.width, h = cv.height;
+  const im = g.getImageData(0, 0, w, h), d = im.data;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){
+    const i = (y * w + x) * 4; if (d[i + 3] < 10) continue; fn(x, y, d, i);
+  }
+  g.putImageData(im, 0, 0);
+}
+const mix = (a, b, t) => a + (b - a) * t;
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const easeOut = t => 1 - Math.pow(1 - t, 3);
+const easeIO = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+// フィルム粒とヴィネット。これが入ると「撮ったもの」に見えはじめる
+const grainTile = (() => {
+  const c = C(112, 112), g = c.getContext('2d'), im = g.createImageData(112, 112), r = mul32(99);
+  for (let i = 0; i < im.data.length; i += 4){
+    const v = 118 + r() * 130 | 0;
+    im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 26;
+  }
+  g.putImageData(im, 0, 0); return c;
+})();
+function makeFilm(w, h, vig = .5){
+  const c = C(w, h), g = c.getContext('2d');
+  g.globalAlpha = .30;
+  g.fillStyle = g.createPattern(grainTile, 'repeat'); g.fillRect(0, 0, w, h);
+  g.globalAlpha = 1;
+  const r = Math.hypot(w, h) * .62;
+  g.fillStyle = rgr(g, w / 2, h * .46, r, [[0, 'rgba(0,0,0,0)'], [.66, 'rgba(0,0,0,0)'], [1, `rgba(6,3,2,${vig})`]]);
+  g.fillRect(0, 0, w, h);
+  return c;
+}
+function filmPass(g, w, h, vig = .5){
+  g.save();
+  g.globalCompositeOperation = 'overlay';
+  g.globalAlpha = .55;
+  g.fillStyle = g.createPattern(grainTile, 'repeat'); g.fillRect(0, 0, w, h);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  const r = Math.hypot(w, h) * .62;
+  g.fillStyle = rgr(g, w / 2, h * .46, r, [[0, 'rgba(0,0,0,0)'], [.66, 'rgba(0,0,0,0)'], [1, `rgba(6,3,2,${vig})`]]);
+  g.fillRect(0, 0, w, h);
+  g.restore();
+}
+
+/* ---------- 具材スプライト ----------
+   すべて幅 UNIT の透明 canvas に一度だけ描く。
+   top / bot は「上の層が座る線」「下の層に座る線」の y（幅比）。 */
+const SPRC = {};
+function sprite(type, variant = 0){
+  const key = type + '|' + variant;
+  if (!SPRC[key]) SPRC[key] = LAYERS[type].paint(UNIT, variant);
+  return SPRC[key];
+}
+
+function paintBunT(W){
+  const H = W * .62, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, rx = W * .46, yb = W * .52, dh = W * .42;
+  const dome = new Path2D();
+  dome.moveTo(cx - rx, yb);
+  dome.bezierCurveTo(cx - rx * 1.02, yb - dh * .66, cx - rx * .58, yb - dh * 1.03, cx, yb - dh);
+  dome.bezierCurveTo(cx + rx * .58, yb - dh * 1.03, cx + rx * 1.02, yb - dh * .66, cx + rx, yb);
+  dome.bezierCurveTo(cx + rx * .97, yb + W * .045, cx - rx * .97, yb + W * .045, cx - rx, yb);
+  dome.closePath();
+  g.fillStyle = lg(g, 0, yb - dh, 0, yb + W * .05,
+    [[0, '#f0b566'], [.42, '#d68f3a'], [.74, '#a86016'], [1, '#733c0e']]);
+  g.fill(dome);
+  g.globalCompositeOperation = 'source-atop';
+  // 光は左上。右側面を沈める
+  g.fillStyle = lg(g, cx - rx, 0, cx + rx, 0,
+    [[0, 'rgba(255,236,200,.20)'], [.45, 'rgba(255,236,200,0)'], [1, 'rgba(48,17,0,.32)']]);
+  g.fillRect(0, 0, W, H);
+  g.fillStyle = rgr(g, W * .40, W * .13, W * .38, [[0, 'rgba(255,224,164,.5)'], [1, 'rgba(255,224,164,0)']]);
+  g.fillRect(0, 0, W, H);
+  g.fillStyle = lg(g, 0, yb - W * .08, 0, yb + W * .05, [[0, 'rgba(56,22,3,0)'], [1, 'rgba(44,16,2,.58)']]);
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  // 焼きむらは大きく柔らかい染みで置き、画素ノイズは肌理だけに使う
+  const RB = mul32(77);
+  g.save(); g.clip(dome);
+  for (let k = 0; k < 7; k++){
+    const bx = cx + (RB() - .5) * rx * 1.5, by = yb - dh * (.25 + RB() * .6);
+    softE(g, bx, by, W * (.05 + RB() * .07), W * (.03 + RB() * .04), `rgba(133,72,20,${.14 + RB() * .16})`);
+  }
+  for (let k = 0; k < 4; k++){
+    const bx = cx + (RB() - .5) * rx * 1.2, by = yb - dh * (.35 + RB() * .5);
+    softE(g, bx, by, W * (.04 + RB() * .05), W * (.025 + RB() * .03), `rgba(255,214,150,${.10 + RB() * .10})`);
+  }
+  g.restore();
+  const n = noise2(7), n2 = noise2(31);
+  texture(cv, (x, y, d, i) => {
+    const v = n(x * .014, y * .014, 3) * .55 + n2(x * .06, y * .06, 2) * .45;
+    const f = .945 + .11 * (v - .5) * 2;
+    d[i] = Math.min(255, d[i] * (f + .02));
+    d[i + 1] *= f;
+    d[i + 2] *= f * (1 - .10 * (v - .5));
+  });
+  // 白ごま
+  const R = mul32(21);
+  const domeY = u => yb - dh * Math.pow(Math.max(0, 1 - u * u), .55);
+  let placed = 0, guard = 0;
+  while (placed < 26 && guard++ < 400){
+    const u = (R() * 2 - 1) * .88, v = Math.pow(R(), 1.5);
+    const x = cx + u * rx, y = domeY(u) + v * (yb - domeY(u)) * .52 + W * .012;
+    if (!g.isPointInPath(dome, x, y)) continue;
+    const rot = u * .95 + (R() - .5) * .8, srx = W * .0155, sry = W * .0085;
+    g.save(); g.translate(x, y); g.rotate(rot);
+    ell(g, srx * .12, sry * .5, srx, sry, 'rgba(78,34,5,.5)');
+    const gr = g.createLinearGradient(-srx, -sry, srx, sry);
+    gr.addColorStop(0, '#f9edd6'); gr.addColorStop(.6, '#ead2a2'); gr.addColorStop(1, '#c9a166');
+    ell(g, 0, -sry * .28, srx, sry, gr);
+    ell(g, -srx * .3, -sry * .55, srx * .24, sry * .34, 'rgba(255,255,246,.85)');
+    g.restore();
+    placed++;
+  }
+  // 照りの芯と、右縁のまわり込み光
+  softE(g, W * .355, W * .115, W * .085, W * .04, 'rgba(255,244,224,.5)', -.45);
+  softE(g, W * .43, W * .19, W * .2, W * .1, 'rgba(255,224,170,.18)', -.3);
+  softE(g, W * .77, W * .24, W * .06, W * .1, 'rgba(255,196,130,.16)', .5);
+  return cv;
+}
+
+function paintBunB(W){
+  const H = W * .36, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, rx = W * .45, fy = W * .095, fry = W * .062, yb = W * .315;
+  const side = new Path2D();
+  side.moveTo(cx - rx, fy);
+  side.bezierCurveTo(cx - rx * 1.035, fy + (yb - fy) * .55, cx - rx * 1.0, yb - W * .02, cx - rx * .88, yb - W * .004);
+  side.bezierCurveTo(cx - rx * .5, yb + W * .022, cx + rx * .5, yb + W * .022, cx + rx * .88, yb - W * .004);
+  side.bezierCurveTo(cx + rx * 1.0, yb - W * .02, cx + rx * 1.035, fy + (yb - fy) * .55, cx + rx, fy);
+  side.closePath();
+  g.fillStyle = lg(g, 0, fy, 0, yb + W * .02, [[0, '#c98a3e'], [.55, '#8f5118'], [1, '#582b09']]);
+  g.fill(side);
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = lg(g, cx - rx, 0, cx + rx, 0,
+    [[0, 'rgba(255,232,196,.16)'], [.5, 'rgba(255,232,196,0)'], [1, 'rgba(44,16,0,.3)']]);
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  const n = noise2(11);
+  texture(cv, (x, y, d, i) => {
+    const v = n(x * .02, y * .02, 3);
+    const f = .92 + .16 * (v - .5) * 2;
+    d[i] *= f; d[i + 1] *= f * (1 - .06 * (v - .5)); d[i + 2] *= f * (1 - .14 * (v - .5));
+  });
+  // 切り口（クラム）。焼いた縁がリング状に色づく
+  g.beginPath(); g.ellipse(cx, fy, rx * .99, fry, 0, 0, 7);
+  g.fillStyle = rgr(g, cx - rx * .18, fy - fry * .25, rx * 1.12,
+    [[0, '#e2c48e'], [.55, '#d2ab6c'], [1, '#b98f4e']]);
+  g.fill();
+  g.save(); g.beginPath(); g.ellipse(cx, fy, rx * .99, fry, 0, 0, 7); g.clip();
+  g.translate(cx, fy); g.scale(1, fry / (rx * .99));
+  g.fillStyle = rgr(g, 0, 0, rx * .99, [[0, 'rgba(0,0,0,0)'], [.72, 'rgba(0,0,0,0)'],
+    [.88, 'rgba(158,88,26,.65)'], [1, 'rgba(104,52,10,.85)']]);
+  g.beginPath(); g.arc(0, 0, rx * .99, 0, 7); g.fill();
+  g.restore();
+  // クラムの気泡
+  const R = mul32(41);
+  for (let k = 0; k < 240; k++){
+    const a = R() * Math.PI * 2, rr = Math.sqrt(R()) * .92;
+    const x = cx + Math.cos(a) * rx * rr, y = fy + Math.sin(a) * fry * rr;
+    ell(g, x, y, .8 + R() * 1.6, (.8 + R() * 1.6) * .7, `rgba(158,104,48,${.06 + R() * .12})`);
+  }
+  softE(g, cx - rx * .3, fy - fry * .3, rx * .4, fry * .5, 'rgba(255,246,226,.18)');
+  return cv;
+}
+
+function paintSauce(W){
+  const H = W * .16, cv = C(W, H), g = cv.getContext('2d');
+  const bw = W * .84, x0 = (W - bw) / 2, yt = W * .030, ybm = W * .082;
+  const n = noise2(5);
+  const p = new Path2D();
+  p.moveTo(x0, yt + W * .006);
+  for (let k = 0; k <= 24; k++){ const t = k / 24;
+    p.lineTo(x0 + bw * t, yt + (n(t * 9, 0) - .5) * W * .014); }
+  const drips = [[.18, .038], [.5, .02], [.79, .048]];
+  let px = x0 + bw;
+  p.lineTo(px, ybm);
+  for (let di = drips.length - 1; di >= 0; di--){
+    const [dt, dl] = drips[di], dx = x0 + bw * dt, dw = W * (.024 + dl * .35);
+    p.bezierCurveTo(px - (px - dx - dw) * .4, ybm + W * .008, dx + dw, ybm, dx + dw, ybm + W * .01);
+    p.bezierCurveTo(dx + dw * .8, ybm + dl * W * 1.35, dx - dw * .8, ybm + dl * W * 1.35, dx - dw, ybm + W * .01);
+    px = dx - dw;
+  }
+  p.lineTo(x0, ybm);
+  p.closePath();
+  g.fillStyle = lg(g, 0, yt, 0, H, [[0, '#96501a'], [.5, '#71370e'], [1, '#4e2306']]);
+  g.fill(p);
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = lg(g, x0, 0, x0 + bw, 0, [[0, 'rgba(255,210,150,.14)'], [1, 'rgba(30,8,0,.25)']]);
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  // 濡れたキャラメルの照り：帯の前面に横一本、これがソースの署名になる
+  g.save(); g.clip(p);
+  softE(g, x0 + bw * .38, (yt + ybm) / 2 + W * .004, bw * .34, W * .011, 'rgba(255,190,110,.5)');
+  softE(g, x0 + bw * .74, (yt + ybm) / 2 + W * .006, bw * .1, W * .008, 'rgba(255,206,130,.38)');
+  g.restore();
+  for (const [dt, dl] of drips)
+    softE(g, x0 + bw * dt - W * .01, ybm + dl * W * .9, W * .009, W * .013, 'rgba(255,216,160,.4)');
+  return cv;
+}
+
+function paintPatty(W, done){
+  const H = W * .28, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, rx = W * .455, ty = W * .085, ry = W * .095, yb = W * .225;
+  const n = noise2(3); // 生も焼きも同じ輪郭。違うと重ねたとき縁がずれて見える
+  const p = new Path2D();
+  // 上面の楕円上半分 → でこぼこした側面 → 底
+  for (let k = 0; k <= 40; k++){ const a = Math.PI - (k / 40) * Math.PI;
+    const w = 1 + (n(k * .33, 0) - .5) * .05;
+    const x = cx + Math.cos(a) * rx * w, y = ty - Math.sin(a) * ry * (1 + (n(k * .21, 4) - .5) * .12);
+    k ? p.lineTo(x, y) : p.moveTo(x, y); }
+  for (let k = 1; k <= 8; k++){ const t = k / 8;
+    p.lineTo(cx + rx * (1 + (n(t * 5, 9) - .5) * .14), mix(ty, yb, t)); }
+  for (let k = 0; k <= 30; k++){ const t = k / 30;
+    p.lineTo(mix(cx + rx, cx - rx, t), yb + Math.sin(t * Math.PI) * W * .014 + (n(t * 11, 14) - .5) * W * .012); }
+  for (let k = 8; k >= 1; k--){ const t = k / 8;
+    p.lineTo(cx - rx * (1 + (n(t * 5, 19) - .5) * .14), mix(ty, yb, t)); }
+  p.closePath();
+  const base = [mix(178, 97, done), mix(88, 56, done), mix(74, 31, done)];
+  g.fillStyle = `rgb(${base.map(Math.round).join(',')})`;
+  g.fill(p);
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = lg(g, 0, 0, 0, yb, [[0, 'rgba(255,214,180,.16)'], [.55, 'rgba(0,0,0,0)'], [1, 'rgba(14,5,1,.5)']]);
+  g.fillRect(0, 0, W, H);
+  g.fillStyle = lg(g, cx - rx, 0, cx + rx, 0, [[0, 'rgba(255,220,190,.12)'], [.5, 'rgba(0,0,0,0)'], [1, 'rgba(20,6,0,.3)']]);
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  // 上面：焼き面の色
+  g.save(); g.beginPath(); g.ellipse(cx, ty, rx * .97, ry * .93, 0, 0, 7); g.clip();
+  const topc = done > .5 ? ['#67391c', '#4e2b13'] : ['#c26a5b', '#a95446'];
+  g.fillStyle = rgr(g, cx - rx * .2, ty - ry * .3, rx * 1.1, [[0, topc[0]], [1, topc[1]]]);
+  g.fillRect(0, 0, W, H); g.restore();
+  // 粗挽きの荒れと焦げ
+  const n2 = noise2(17);
+  texture(cv, (x, y, d, i) => {
+    const v = n(x * .028, y * .028, 3), w2 = n2(x * .085, y * .085, 2);
+    let f = mix(.94 + .12 * (v - .5) * 2, .84 + .3 * (v - .5) * 2, done);
+    d[i] *= f; d[i + 1] *= f; d[i + 2] *= f;
+    if (done < .99 && w2 > .70){ // 生：脂の白い斑
+      const t = Math.min(1, (w2 - .70) * 6) * .34 * (1 - done);
+      d[i] = d[i] * (1 - t) + 236 * t; d[i + 1] = d[i + 1] * (1 - t) + 203 * t; d[i + 2] = d[i + 2] * (1 - t) + 188 * t; }
+    if (done > .01 && w2 > .60){ // 焼き：焦げの斑
+      const t = Math.min(1, (w2 - .60) * 5) * .52 * done;
+      d[i] = d[i] * (1 - t) + 24 * t; d[i + 1] = d[i + 1] * (1 - t) + 11 * t; d[i + 2] = d[i + 2] * (1 - t) + 5 * t; }
+    if (done > .01 && w2 < .34){ // 焼き：クラストの明るい起伏
+      const t = Math.min(1, (.34 - w2) * 4) * .5 * done;
+      d[i] = d[i] * (1 - t) + 166 * t; d[i + 1] = d[i + 1] * (1 - t) + 102 * t; d[i + 2] = d[i + 2] * (1 - t) + 50 * t; }
+  });
+  // 肉汁の照り
+  const R = mul32(53);
+  const glist = Math.round(mix(6, 34, done));
+  for (let k = 0; k < glist; k++){
+    const a = R() * Math.PI * 2, rr = Math.sqrt(R());
+    const x = cx + Math.cos(a) * rx * .9 * rr, y = ty + Math.sin(a) * ry * .8 * rr + R() * W * .05;
+    softE(g, x, y, W * .006 + R() * W * .006, W * .004, `rgba(255,240,220,${.25 + R() * .35})`);
+  }
+  softE(g, cx - rx * .3, ty - ry * .1, rx * .45, ry * .5, `rgba(255,236,214,${mix(.10, .13, done)})`, -.1);
+  return cv;
+}
+
+function paintCheese(W){
+  const H = W * .30, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, fy = W * .075;
+  // 垂れを先に、面をその上に描く（同じ体なので繋がって見える）
+  const drips = [[cx - W * .345, W * .085, W * .185], [cx - W * .09, W * .066, W * .105],
+                 [cx + W * .155, W * .078, W * .15], [cx + W * .35, W * .07, W * .065]];
+  const dgrad = lg(g, 0, W * .05, 0, W * .30, [[0, '#e79b2c'], [.6, '#cd7712'], [1, '#b3660c']]);
+  for (const [dx, dw, dl] of drips){
+    const p = new Path2D();
+    p.moveTo(dx - dw / 2, fy);
+    p.bezierCurveTo(dx - dw * .46, fy + dl * .45, dx - dw * .30, fy + dl * .9, dx - dw * .30, fy + dl);
+    p.bezierCurveTo(dx - dw * .28, fy + dl + W * .024, dx + dw * .28, fy + dl + W * .024, dx + dw * .30, fy + dl);
+    p.bezierCurveTo(dx + dw * .30, fy + dl * .88, dx + dw * .46, fy + dl * .42, dx + dw / 2, fy);
+    p.closePath();
+    g.fillStyle = dgrad; g.fill(p);
+    // 垂れ先の丸みと照り
+    softE(g, dx - dw * .1, fy + dl * .82, dw * .16, dw * .2, 'rgba(255,214,130,.5)');
+    softE(g, dx + dw * .18, fy + dl * .5, dw * .1, dw * .3, 'rgba(150,80,5,.28)');
+  }
+  // 上面：とろけた四角。縁は溶けて波打つ（直線が一本でも残ると絵に見える）
+  const nC = noise2(47);
+  const p = new Path2D();
+  const edge = (ax, ay, bx, by, sag, segs) => {
+    for (let k = 1; k <= segs; k++){ const t = k / segs;
+      const mx = mix(ax, bx, t), my = mix(ay, by, t) + Math.sin(t * Math.PI) * sag;
+      p.lineTo(mx + (nC(t * 5, ay * .01) - .5) * W * .018, my + (nC(t * 7, 40 + ax * .01) - .5) * W * .014); }
+  };
+  const cL = [cx - W * .425, fy + W * .006], cT = [cx - W * .01, fy - W * .033],
+        cR = [cx + W * .425, fy + W * .01], cB = [cx + W * .02, fy + W * .052];
+  p.moveTo(cL[0], cL[1]);
+  edge(cL[0], cL[1], cT[0], cT[1], -W * .006, 7);
+  edge(cT[0], cT[1], cR[0], cR[1], W * .004, 7);
+  edge(cR[0], cR[1], cB[0], cB[1], W * .008, 6);
+  edge(cB[0], cB[1], cL[0], cL[1], W * .008, 6);
+  p.closePath();
+  g.fillStyle = lg(g, cx - W * .3, fy - W * .03, cx + W * .3, fy + W * .06,
+    [[0, '#f3b348'], [.55, '#e3941f'], [1, '#cd7c12']]);
+  g.fill(p);
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = lg(g, 0, fy - W * .035, 0, fy + W * .055, [[0, 'rgba(255,235,180,.25)'], [1, 'rgba(150,75,0,.18)']]);
+  g.fillRect(0, 0, W, fy + W * .06);
+  g.globalCompositeOperation = 'source-over';
+  // 濡れた照り：短い斑を二つ三つ。長い一本線は引かない
+  g.save(); g.clip(p);
+  softE(g, cx - W * .19, fy - W * .008, W * .09, W * .012, 'rgba(255,248,232,.45)', -.10);
+  softE(g, cx + W * .04, fy + W * .002, W * .06, W * .009, 'rgba(255,248,232,.30)', -.04);
+  softE(g, cx - W * .30, fy + W * .006, W * .035, W * .008, 'rgba(255,252,244,.5)', -.16);
+  // 面のむら
+  softE(g, cx + W * .18, fy + W * .015, W * .10, W * .02, 'rgba(150,80,8,.18)');
+  softE(g, cx - W * .05, fy - W * .014, W * .08, W * .014, 'rgba(255,222,150,.20)');
+  g.restore();
+  return cv;
+}
+
+function paintTomato(W){
+  const H = W * .15, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, rx = W * .44, ty = W * .05, ry = W * .066, yb = W * .128;
+  // 側面（皮）
+  const p = new Path2D();
+  p.moveTo(cx - rx, ty);
+  p.bezierCurveTo(cx - rx * 1.02, mix(ty, yb, .6), cx - rx * .96, yb, cx - rx * .82, yb + W * .004);
+  p.bezierCurveTo(cx - rx * .4, yb + W * .016, cx + rx * .4, yb + W * .016, cx + rx * .82, yb + W * .004);
+  p.bezierCurveTo(cx + rx * .96, yb, cx + rx * 1.02, mix(ty, yb, .6), cx + rx, ty);
+  p.closePath();
+  g.fillStyle = lg(g, 0, ty, 0, yb + W * .02, [[0, '#c23a29'], [.6, '#992517'], [1, '#73180e']]);
+  g.fill(p);
+  g.globalCompositeOperation = 'source-atop';
+  g.fillStyle = lg(g, cx - rx, 0, cx + rx, 0, [[0, 'rgba(255,190,170,.2)'], [.5, 'rgba(0,0,0,0)'], [1, 'rgba(40,4,0,.3)']]);
+  g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over';
+  // 上面：果肉
+  g.save(); g.beginPath(); g.ellipse(cx, ty, rx * .99, ry, 0, 0, 7); g.clip();
+  g.fillStyle = rgr(g, cx - rx * .15, ty - ry * .2, rx * 1.1, [[0, '#d95c46'], [.6, '#c74634'], [1, '#b23524']]);
+  g.fillRect(0, 0, W, H);
+  // 種のゼリー室：明るい扇形の斑
+  const R = mul32(71);
+  for (let k = 0; k < 6; k++){
+    const a = k / 6 * Math.PI * 2 + .4;
+    const x = cx + Math.cos(a) * rx * .52, y = ty + Math.sin(a) * ry * .5;
+    softE(g, x, y, rx * .15, ry * .28, 'rgba(238,132,102,.34)', a * .3);
+    for (let s = 0; s < 3; s++)
+      ell(g, x + (R() - .5) * rx * .2, y + (R() - .5) * ry * .3, W * .006, W * .0035,
+        'rgba(242,212,150,.55)', R() * 3);
+  }
+  softE(g, cx, ty, rx * .2, ry * .35, 'rgba(232,108,84,.42)');
+  g.restore();
+  // 濡れた光
+  softE(g, cx - rx * .3, ty - ry * .25, rx * .24, ry * .3, 'rgba(255,255,255,.22)', -.15);
+  softE(g, cx - rx * .55, ty + W * .03, W * .02, W * .012, 'rgba(255,235,230,.4)');
+  return cv;
+}
+
+function paintLettuce(W){
+  const H = W * .19, cv = C(W, H), g = cv.getContext('2d');
+  const y0 = W * .066, R = mul32(13);
+  // 奥の列：暗く沈む
+  for (let k = 0; k < 6; k++){
+    const x = W * (.12 + .15 * k) + (R() - .5) * W * .04;
+    const w = W * (.10 + R() * .06), hh = W * (.04 + R() * .05);
+    const p = new Path2D();
+    p.moveTo(x - w / 2, y0 - W * .008);
+    p.quadraticCurveTo(x - w * .6, y0 + hh * .7, x - w * .2, y0 + hh);
+    p.quadraticCurveTo(x, y0 + hh * 1.25, x + w * .25, y0 + hh * .9);
+    p.quadraticCurveTo(x + w * .6, y0 + hh * .6, x + w / 2, y0 - W * .008);
+    p.closePath();
+    g.fillStyle = lg(g, 0, y0, 0, y0 + hh * 1.3, [[0, '#2c4614'], [1, '#42641f']]);
+    g.fill(p);
+  }
+  // 手前のひだ。位置は不等間隔、深さは倍半分、明るさも個体差
+  let x = W * .045;
+  const folds = [];
+  while (x < W * .95){
+    const w = W * (.09 + R() * .10);
+    folds.push({ x: x + w / 2, w,
+      h: W * (.028 + Math.pow(R(), 1.6) * .085),
+      lum: .72 + R() * .5, ph: R() * 6, tilt: (R() - .5) * .25 });
+    x += w * (.55 + R() * .35);
+  }
+  folds.forEach((L, idx) => {
+    if (idx) softE(g, L.x - L.w / 2, y0 + L.h * .6, W * .022, L.h * .6, 'rgba(7,16,3,.55)');
+    const yb = y0 + L.h, p = new Path2D();
+    g.save(); g.translate(L.x, 0); g.rotate(L.tilt * .1); g.translate(-L.x, 0);
+    p.moveTo(L.x - L.w / 2, y0 - W * .006);
+    let px = L.x - L.w / 2;
+    const bumps = 1 + Math.floor(R() * 2.4);
+    p.quadraticCurveTo(px - W * .014, y0 + L.h * .6, px + L.w * .07, yb + (R() - .3) * W * .015);
+    for (let b = 0; b < bumps; b++){
+      const nx = L.x - L.w / 2 + L.w * (.14 + (b + 1) * .72 / bumps);
+      const dip = yb + (R() - .35) * W * .022;
+      p.quadraticCurveTo((px + nx) / 2, dip + W * (.014 + R() * .022), nx, dip);
+      px = nx;
+    }
+    p.quadraticCurveTo(L.x + L.w * .54, y0 + L.h * .5, L.x + L.w / 2, y0 - W * .006);
+    p.closePath();
+    const m = L.lum;
+    const col = v => `rgb(${Math.round(v[0] * m)},${Math.round(v[1] * m)},${Math.round(v[2] * m)})`;
+    g.fillStyle = lg(g, 0, y0 - W * .01, 0, yb + W * .028,
+      [[0, col([64, 96, 26])], [.5, col([94, 130, 40])], [.85, col([134, 168, 58])], [1, col([158, 189, 72])]]);
+    g.fill(p);
+    g.save(); g.clip(p);
+    softE(g, L.x - L.w * .12, y0 + L.h * .5, L.w * .09, L.h * .5, 'rgba(22,40,8,.32)');
+    softE(g, L.x + L.w * .26, y0 + L.h * .3, L.w * .1, L.h * .38, `rgba(168,196,96,${.14 * m})`);
+    // 縁の透け：明るいひだにだけ
+    if (m > .95) for (let sB = 0; sB < 2; sB++){
+      const bx = L.x + (sB - .5) * L.w * .4, by = yb + (R() - .4) * W * .012 - W * .003;
+      softE(g, bx, by, W * .02, W * .007, 'rgba(200,224,124,.5)');
+    }
+    g.restore(); g.restore();
+  });
+  g.fillStyle = lg(g, 0, y0 - W * .012, 0, y0 + W * .024, [[0, 'rgba(44,68,20,.95)'], [1, 'rgba(44,68,20,0)']]);
+  g.fillRect(W * .04, y0 - W * .012, W * .92, W * .038);
+  return cv;
+}
+
+function paintBacon(W){
+  const H = W * .17, cv = C(W, H), g = cv.getContext('2d');
+  const strips = [[W * .09, W * .82, W * .052, -0.02, 61], [W * .22, W * .68, W * .048, 0.03, 67]];
+  strips.forEach(([x0, len, th, tilt, seed], si) => {
+    const n = noise2(seed), y0 = W * .062 + si * W * .028;
+    const top = [], bot = [];
+    for (let k = 0; k <= 30; k++){ const t = k / 30, x = x0 + len * t;
+      const y = y0 + tilt * len * t + Math.sin(t * 9 + si * 2) * W * .014 + (n(t * 7, 0) - .5) * W * .01;
+      top.push([x, y]); bot.push([x, y + th * (0.85 + n(t * 5, 8) * .3)]); }
+    const p = new Path2D();
+    top.forEach(([x, y], k) => k ? p.lineTo(x, y) : p.moveTo(x, y));
+    bot.reverse().forEach(([x, y]) => p.lineTo(x, y));
+    p.closePath();
+    // 赤身と脂の縞
+    const gr = g.createLinearGradient(x0, 0, x0 + len, 0);
+    const RJ = mul32(seed + 5);
+    const stops = [[0, '#8e3d24'], [.13 + RJ() * .06, '#e2b085'], [.24 + RJ() * .05, '#83321c'],
+                   [.4 + RJ() * .07, '#d9a276'], [.53 + RJ() * .05, '#7c2f1a'], [.7 + RJ() * .06, '#d6a26f'],
+                   [.83 + RJ() * .04, '#8a3a22'], [1, '#93422a']];
+    for (const [o, c] of stops) gr.addColorStop(clamp(o + (si ? .06 : 0), 0, 1), c);
+    g.fillStyle = gr; g.fill(p);
+    g.save(); g.clip(p);
+    g.fillStyle = lg(g, 0, y0 - th, 0, y0 + th * 1.6, [[0, 'rgba(255,220,190,.3)'], [.5, 'rgba(0,0,0,0)'], [1, 'rgba(30,8,0,.42)']]);
+    g.fillRect(0, 0, W, H);
+    // 脂の照り
+    for (let k = 0; k < 8; k++){ const t = .1 + k / 8 * .8;
+      softE(g, x0 + len * t, y0 + tilt * len * t + Math.sin(t * 9 + si * 2) * W * .014 + th * .2,
+        W * .012, W * .005, 'rgba(255,238,214,.4)'); }
+    g.restore();
+  });
+  return cv;
+}
+
+function paintEgg(W){
+  const H = W * .17, cv = C(W, H), g = cv.getContext('2d');
+  const cx = W / 2, cy = W * .085, rx = W * .40, ry = W * .052, n = noise2(83);
+  const blob = s => { const p = new Path2D();
+    for (let k = 0; k <= 44; k++){ const a = k / 44 * Math.PI * 2;
+      const w = 1 + (n(Math.cos(a) * 2 + 3, Math.sin(a) * 2 + 3) - .5) * .22;
+      const x = cx + Math.cos(a) * rx * w * s, y = cy + Math.sin(a) * ry * w * s;
+      k ? p.lineTo(x, y) : p.moveTo(x, y); }
+    p.closePath(); return p; };
+  // 白身：焼けた縁 → 内側の白
+  g.fillStyle = '#c98b43'; g.fill(blob(1));
+  g.fillStyle = lg(g, 0, cy - ry, 0, cy + ry * 1.4, [[0, '#faf5ea'], [.7, '#f3ead8'], [1, '#e3d2b4']]);
+  g.fill(blob(.93));
+  softE(g, cx - rx * .45, cy - ry * .3, rx * .3, ry * .5, 'rgba(255,255,250,.5)');
+  // 黄身
+  const yx = cx + W * .05, yy = cy - W * .012, yrx = W * .102, yry = W * .075;
+  softE(g, yx, yy + yry * .75, yrx * 1.15, yry * .5, 'rgba(150,100,35,.35)');
+  g.beginPath(); g.ellipse(yx, yy, yrx, yry, 0, 0, 7);
+  g.fillStyle = rgr(g, yx - yrx * .32, yy - yry * .4, yrx * 1.6, [[0, '#f8c93e'], [.55, '#eda317'], [1, '#c07a09']]);
+  g.fill();
+  softE(g, yx - yrx * .3, yy - yry * .42, yrx * .26, yry * .22, 'rgba(255,255,248,.85)');
+  softE(g, yx, yy - yry * .1, yrx * .7, yry * .55, 'rgba(255,238,180,.2)');
+  return cv;
+}
+
+function paintAvocado(W){
+  const H = W * .15, cv = C(W, H), g = cv.getContext('2d');
+  for (let k = 0; k < 5; k++){
+    const x = W * (.18 + .16 * k), y = W * .105 - k * W * .002, s = W * .145, rot = -.06 + k * .025;
+    g.save(); g.translate(x, y); g.rotate(rot);
+    // 前の切れ端との重なりに影
+    if (k) softE(g, -s * .8, -s * .1, s * .3, s * .16, 'rgba(20,34,6,.4)');
+    const p = new Path2D();
+    p.moveTo(-s, 0);
+    p.bezierCurveTo(-s * .72, -s * .5, s * .72, -s * .5, s, 0);
+    p.bezierCurveTo(s * .6, -s * .1, -s * .6, -s * .1, -s, 0);
+    p.closePath();
+    const gr = g.createLinearGradient(0, -s * .48, 0, 0);
+    gr.addColorStop(0, '#83a83e'); gr.addColorStop(.4, '#b5cd72'); gr.addColorStop(.85, '#dde8b4'); gr.addColorStop(1, '#e9eecd');
+    g.fillStyle = gr; g.fill(p);
+    g.save(); g.clip(p);
+    softE(g, -s * .3, -s * .34, s * .3, s * .1, 'rgba(255,255,240,.30)', .06);
+    softE(g, s * .45, -s * .16, s * .25, s * .12, 'rgba(74,104,28,.25)');
+    g.restore(); g.restore();
+  }
+  return cv;
+}
+
+function paintPickle(W){
+  const H = W * .12, cv = C(W, H), g = cv.getContext('2d');
+  const R = mul32(37);
+  [[W * .30, 0], [W * .52, 1], [W * .70, 2]].forEach(([x, k]) => {
+    const y = W * .062 + (k === 1 ? -W * .006 : 0), r = W * .105, sq = .5, phi = R() * 6;
+    const p = new Path2D();
+    for (let i = 0; i <= 40; i++){ const a = i / 40 * Math.PI * 2;
+      const rr = r * (1 + .032 * Math.sin(8 * a + phi) + .015 * Math.sin(3 * a + phi * 2));
+      const px = x + Math.cos(a) * rr, py = y + Math.sin(a) * rr * sq;
+      i ? p.lineTo(px, py) : p.moveTo(px, py); }
+    p.closePath();
+    g.fillStyle = rgr(g, x - r * .2, y - r * sq * .3, r * 1.25,
+      [[0, '#87994a'], [.5, '#697f36'], [.85, '#4c6326'], [1, '#354818']]);
+    g.fill(p);
+    g.save(); g.clip(p);
+    for (let s = 0; s < 5; s++)
+      ell(g, x + (R() - .5) * r, y + (R() - .5) * r * sq * .8, W * .008, W * .004, 'rgba(226,222,168,.6)', R() * 3);
+    softE(g, x - r * .3, y - r * sq * .4, r * .3, r * sq * .3, 'rgba(255,255,235,.4)');
+    g.restore();
+  });
+  return cv;
+}
+
+const LAYERS = {
+  bunB:    { top: .095, bot: .315, paint: paintBunB },
+  sauce:   { top: .030, bot: .082, paint: paintSauce },
+  patty:   { top: .085, bot: .225, paint: W => paintPatty(W, 1) },
+  cheese:  { top: .055, bot: .102, paint: paintCheese },
+  tomato:  { top: .05,  bot: .124, paint: paintTomato },
+  lettuce: { top: .062, bot: .122, paint: paintLettuce },
+  bunT:    { top: .10,  bot: .56,  paint: paintBunT },
+  bacon:   { top: .05,  bot: .11,  paint: paintBacon },
+  egg:     { top: .055, bot: .115, paint: paintEgg },
+  avocado: { top: .055, bot: .105, paint: paintAvocado },
+  pickle:  { top: .04,  bot: .095, paint: paintPickle },
+};
+
+/* ---------- スタックの合成 ---------- */
+// offs[i] = {dy, a}：落下アニメ用。a=0 の層で打ち切る
+function drawStack(g, cx, baseY, list, W, offs){
+  let y = baseY;
+  for (let i = 0; i < list.length; i++){
+    const t = list[i], L = LAYERS[t], sp = sprite(t);
+    const o = (offs && offs[i]) || { dy: 0, a: 1 };
+    if (o.a <= 0) break;
+    const sw = W, sh = sp.height * (W / sp.width);
+    const placeY = y - L.bot * W;
+    g.save(); g.globalAlpha = o.a;
+    if (i > 0) softE(g, cx, y + W * .006, W * .34, W * .042, `rgba(8,3,1,${.5 * o.a})`);
+    g.drawImage(sp, cx - sw / 2, placeY - o.dy, sw, sh);
+    g.restore();
+    y = placeY + L.top * W;
+  }
+  return y; // 積み上がった天辺
+}
+function stackThickness(list){
+  let s = 0; for (const t of list) s += LAYERS[t].bot - LAYERS[t].top;
+  return s + .10; // bunT の bot より上に出る分
+}
+
+/* ---------- 写真の舞台（背景・卓・皿） ---------- */
+function paintBackdrop(g, w, h, seed, warm = 1){
+  const R = mul32(seed);
+  const bg = C(w, h), b = bg.getContext('2d');
+  b.fillStyle = lg(b, 0, 0, 0, h, [[0, '#221813'], [.55, '#171110'], [1, '#0f0b09']]);
+  b.fillRect(0, 0, w, h);
+  // 左上からの灯りだまり
+  b.fillStyle = rgr(b, w * .28, h * .16, w * .75, [[0, `rgba(198,132,62,${.20 * warm})`], [1, 'rgba(198,132,62,0)']]);
+  b.fillRect(0, 0, w, h);
+  // 奥のボケ玉
+  for (let k = 0; k < 7; k++){
+    const x = w * (.08 + R() * .84), y = h * (.05 + R() * .38), r = w * (.02 + R() * .05);
+    const ba = .04 + R() * .05;
+    b.fillStyle = rgr(b, x, y, r, [[0, `rgba(232,176,96,${ba})`], [.55, `rgba(232,176,96,${ba * .7})`], [.85, `rgba(232,176,96,${ba * .25})`], [1, 'rgba(232,176,96,0)']]);
+    b.beginPath(); b.arc(x, y, r, 0, 7); b.fill();
+  }
+  // 卓面
+  const ty = h * .74;
+  b.fillStyle = lg(b, 0, ty, 0, h, [[0, '#2b1d15'], [.35, '#221610'], [1, '#140d0a']]);
+  b.fillRect(0, ty, w, h - ty);
+  b.fillStyle = rgr(b, w * .42, ty + 2, w * .5, [[0, 'rgba(214,150,80,.14)'], [1, 'rgba(214,150,80,0)']]);
+  b.fillRect(0, ty, w, h - ty);
+  for (let k = 0; k < 9; k++){ // 木目のかすかな筋
+    const y = ty + (h - ty) * R();
+    softE(b, w * R(), y, w * (.2 + R() * .3), 1 + R() * 2, `rgba(0,0,0,${.05 + R() * .06})`);
+  }
+  // 被写界深度：背景は後ろほどぼける
+  g.save();
+  g.filter = `blur(${Math.max(2, w * .008)}px)`;
+  g.drawImage(bg, -8, -8, w + 16, h + 16);
+  g.filter = 'none';
+  // 手前の卓はピント内に戻す
+  g.drawImage(bg, 0, ty + (h - ty) * .3, w, (h - ty) * .7, 0, ty + (h - ty) * .3, w, (h - ty) * .7);
+  g.restore();
+}
+function paintPlate(g, cx, cy, prx){
+  const pry = prx * .24;
+  // 皿の厚み（前縁）
+  ell(g, cx, cy + pry * .18, prx, pry, lg(g, 0, cy - pry, 0, cy + pry * 1.2, [[0, '#241f1a'], [1, '#120e0b']]));
+  // 皿面
+  ell(g, cx, cy, prx, pry, lg(g, cx - prx, cy - pry, cx + prx * .6, cy + pry, [[0, '#4a4035'], [.5, '#332b23'], [1, '#231d17']]));
+  ell(g, cx, cy + pry * .06, prx * .8, pry * .76, lg(g, 0, cy - pry, 0, cy + pry, [[0, '#2c251e'], [1, '#211b15']]));
+  // 縁のハイライト（左上半分だけ）
+  const ring = C(prx * 2.2, pry * 2.6), r = ring.getContext('2d');
+  const rcx = prx * 1.1, rcy = pry * 1.3;
+  r.beginPath(); r.ellipse(rcx, rcy, prx, pry, 0, 0, 7); r.fillStyle = 'rgba(255,238,212,.34)'; r.fill();
+  r.globalCompositeOperation = 'destination-out';
+  r.beginPath(); r.ellipse(rcx, rcy + prx * .012, prx * .985, pry * .95, 0, 0, 7); r.fill();
+  r.globalCompositeOperation = 'destination-in';
+  r.fillStyle = lg(r, 0, 0, prx * 2.2, pry * 2.2, [[0, 'rgba(0,0,0,1)'], [.55, 'rgba(0,0,0,.5)'], [1, 'rgba(0,0,0,0)']]);
+  r.fillRect(0, 0, prx * 2.2, pry * 2.6);
+  g.save(); g.filter = 'blur(1.1px)';
+  g.drawImage(ring, cx - prx * 1.1, cy - pry * 1.3);
+  g.restore();
+}
+// 接地影：芯は硬く濃く、外周は滲む
+function contactShadow(g, cx, y, W){
+  softE(g, cx, y, W * .55, W * .10, 'rgba(4,2,1,.38)');
+  softE(g, cx, y - W * .004, W * .37, W * .05, 'rgba(3,1,0,.55)');
+}
+
+/* ---------- 表紙 ---------- */
+const heroCv = document.getElementById('heroCanvas');
+const heroBtn = document.getElementById('heroBite');
+let heroBg, heroBurger, heroInner, heroView, bites = [], heroAnim = null;
+
+function heroLayout(){
+  const cw = heroCv.clientWidth || heroCv.parentElement.clientWidth;
+  const w = Math.round(cw * DPR), h = Math.round(w * 1.0);
+  return { w, h, cx: w * .5, W: w * .58, plateY: h * .845, prx: w * .40 };
+}
+function renderHero(){
+  const L = heroLayout();
+  if (heroCv.width !== L.w || heroCv.height !== L.h){ heroCv.width = L.w; heroCv.height = L.h; }
+  heroBg = C(L.w, L.h); heroBurger = C(L.w, L.h); heroView = C(L.w, L.h);
+  const g = heroBg.getContext('2d');
+  paintBackdrop(g, L.w, L.h, 5);
+  paintPlate(g, L.cx, L.plateY, L.prx);
+  contactShadow(g, L.cx, L.plateY - L.prx * .05, L.W);
+  const bg2 = heroBurger.getContext('2d');
+  drawStack(bg2, L.cx, L.plateY - L.prx * .06, BASE_STACK, L.W);
+  // 齧り穴の奥に見える「向こう側の断面」。輪郭内だけを暗い内側の色で
+  heroInner = C(L.w, L.h);
+  const gi = heroInner.getContext('2d');
+  gi.drawImage(heroBurger, 0, 0);
+  gi.globalCompositeOperation = 'source-in';
+  gi.fillStyle = lg(gi, 0, L.h * .3, 0, L.h, [[0, '#452a14'], [.6, '#331e0d'], [1, '#241407']]);
+  gi.fillRect(0, 0, L.w, L.h);
+  rebuildHeroView(L);
+  composeHero(L, 1);
+}
+// 齧り跡：中心円のまわりに歯形の小円を並べたスカラップで抜く
+function bitePath(g, bx, by, R0){
+  g.beginPath();
+  g.arc(bx, by, R0 * .78, 0, 7);
+  for (let k = 0; k < 9; k++){
+    const a = k / 9 * Math.PI * 2;
+    g.moveTo(bx + Math.cos(a) * R0 * .78 + R0 * .40, by + Math.sin(a) * R0 * .78);
+    g.arc(bx + Math.cos(a) * R0 * .78, by + Math.sin(a) * R0 * .78, R0 * .40, 0, 7);
+  }
+}
+function rebuildHeroView(L){
+  const g = heroView.getContext('2d');
+  g.clearRect(0, 0, L.w, L.h);
+  g.drawImage(heroBurger, 0, 0);
+  for (const b of bites){
+    g.save(); g.globalCompositeOperation = 'destination-out';
+    bitePath(g, b.x, b.y, b.r); g.fill(); g.restore();
+    // 齧り口の奥行き：残った断面へ内側の影を落とす
+    g.save(); g.globalCompositeOperation = 'source-atop';
+    g.shadowColor = 'rgba(26,10,3,.75)'; g.shadowBlur = L.w * .018;
+    g.shadowOffsetX = -9000;
+    g.translate(9000, 0);
+    bitePath(g, b.x, b.y, b.r * 1.01); g.fillStyle = '#000'; g.fill();
+    g.restore();
+  }
+  // 穴の奥に断面の壁を敷く（バーガーの輪郭外にはみ出た分は透けたまま）
+  if (bites.length){
+    g.save(); g.globalCompositeOperation = 'destination-over';
+    g.drawImage(heroInner, 0, L.h * .004);
+    g.restore();
+  }
+}
+function composeHero(L, squash, crumbs){
+  const g = heroCv.getContext('2d');
+  g.clearRect(0, 0, L.w, L.h);
+  g.drawImage(heroBg, 0, 0);
+  const py = L.plateY - L.prx * .06;
+  g.save();
+  g.translate(L.cx, py); g.scale(2 - squash, squash); g.translate(-L.cx, -py);
+  g.drawImage(heroView, 0, 0);
+  g.restore();
+  if (crumbs) for (const c of crumbs){
+    g.fillStyle = c.col; g.globalAlpha = c.a;
+    g.beginPath(); g.arc(c.x, c.y, c.r, 0, 7); g.fill(); g.globalAlpha = 1;
+  }
+  filmPass(g, L.w, L.h, .5);
+}
+function doBite(px, py){
+  const L = heroLayout();
+  if (bites.length >= 3){ bites = []; rebuildHeroView(L); composeHero(L, 1); return; }
+  // 齧る位置はバーガーの画素がある場所へ寄せる
+  const bg = heroBurger.getContext('2d');
+  let bx = px, by = py, ok = false;
+  for (let k = 0; k < 24 && !ok; k++){
+    const a = bg.getImageData(clamp(Math.round(bx), 0, L.w - 1), clamp(Math.round(by), 0, L.h - 1), 1, 1).data[3];
+    if (a > 40) ok = true;
+    else { bx += (L.cx - bx) * .18; by += (L.h * .6 - by) * .18; }
+  }
+  bites.push({ x: bx, y: by, r: L.W * .17 });
+  rebuildHeroView(L);
+  // つぶれて戻る＋パン屑
+  const R = mul32(bites.length * 7 + 1);
+  const crumbs = [];
+  for (let k = 0; k < 10; k++) crumbs.push({
+    x: bx + (R() - .5) * L.W * .2, y: by + (R() - .5) * L.W * .1,
+    vx: (R() - .5) * L.w * .004, vy: R() * -L.w * .002,
+    r: (1 + R() * 2.2) * DPR, a: 1,
+    col: ['#c98d4a', '#8a5320', '#e8cf9e', '#5c3319'][k & 3] });
+  if (REDUCE){ composeHero(L, 1); return; }
+  const t0 = performance.now();
+  cancelAnimationFrame(heroAnim);
+  const tick = now => {
+    const t = (now - t0) / 460;
+    if (t >= 1){ composeHero(L, 1); return; }
+    const sq = 1 - Math.sin(Math.min(1, t * 1.6) * Math.PI) * .055;
+    for (const c of crumbs){ c.x += c.vx * 16; c.y += c.vy * 16; c.vy += L.w * .00045; c.a = 1 - t; }
+    composeHero(L, sq, crumbs);
+    heroAnim = requestAnimationFrame(tick);
+  };
+  heroAnim = requestAnimationFrame(tick);
+}
+heroBtn.addEventListener('click', e => {
+  const r = heroCv.getBoundingClientRect();
+  const sc = heroCv.width / r.width;
+  if (e.clientX || e.clientY) doBite((e.clientX - r.left) * sc, (e.clientY - r.top) * sc);
+  else doBite(heroCv.width * .62, heroCv.height * .5); // キーボード発火
+});
+
+const BASE_STACK = ['bunB', 'sauce', 'patty', 'cheese', 'tomato', 'lettuce', 'bunT'];
+const LAYER_TEXT = [
+  ['バンズ（下）', '国産小麦。焼く前に一度冷やして、目を詰める。'],
+  ['特製ソース', '玉ねぎを飴色になるまで三時間。仕込みでいちばん長い。'],
+  ['パティ 150g', '粗挽き、つなぎなし。だから強く握らない。'],
+  ['チーズ', '鉄板の上で溶かしてから被せる。垂れるくらいでちょうどいい。'],
+  ['トマト', '厚さ 8mm。薄く切ると、他の味に消される。'],
+  ['レタス', '氷水に十分。しゃきっとさせてから挟む。'],
+  ['バンズ（上）', '白ごま。焼き面にバターを引いて、香りを立てる。'],
+];
+
+/* ---------- 組み立て（スクロール連動） ---------- */
+const buildCv = document.getElementById('buildCanvas');
+const buildSec = document.getElementById('build');
+const buildStage = buildSec.querySelector('.stage');
+let buildP = -1, buildCache = null;
+function renderBuild(p){
+  if (Math.abs(p - buildP) < .0008 && buildCv.width) return;
+  buildP = p;
+  const cw = buildCv.clientWidth || 500;
+  const w = Math.round(cw * DPR), h = Math.round(w * 1.0);
+  if (buildCv.width !== w || buildCv.height !== h){ buildCv.width = w; buildCv.height = h; buildCache = null; }
+  const g = buildCv.getContext('2d');
+  const cx = w * .5, W = w * .56, plateY = h * .86, prx = w * .38;
+  if (!buildCache){
+    const bg = C(w, h), bgg = bg.getContext('2d');
+    paintBackdrop(bgg, w, h, 9);
+    paintPlate(bgg, cx, plateY, prx);
+    buildCache = { bg, film: makeFilm(w, h, .48) };
+  }
+  g.drawImage(buildCache.bg, 0, 0);
+  const offs = [];
+  let vis = 0;
+  for (let i = 0; i < 7; i++){
+    const e = clamp(p * 7.6 - i, 0, 1);
+    const ee = easeOut(e);
+    offs.push({ dy: (1 - ee) * h * .16, a: ee < .02 ? 0 : Math.min(1, ee * 2.2) });
+    if (e > .02) vis = i;
+  }
+  contactShadow(g, cx, plateY - prx * .05, W * Math.min(1, offs[0].a + .3));
+  drawStack(g, cx, plateY - prx * .06, BASE_STACK, W, offs);
+  g.drawImage(buildCache.film, 0, 0);
+  // 説明の差し替え
+  const idx = clamp(vis, 0, 6);
+  if (renderBuild.idx !== idx){
+    renderBuild.idx = idx;
+    document.getElementById('buildNum').textContent = idx + 1;
+    document.getElementById('layerName').textContent = LAYER_TEXT[idx][0];
+    document.getElementById('layerDesc').textContent = LAYER_TEXT[idx][1];
+  }
+}
+// reduced-motion 用の一覧
+document.getElementById('layerList').innerHTML =
+  LAYER_TEXT.map(([n, d]) => `<li><h3>${n}</h3><p>${d}</p></li>`).join('');
+
+/* ---------- 焼き（スクロール連動） ---------- */
+const grillCv = document.getElementById('grillCanvas');
+const grillSec = document.getElementById('grill');
+const grillStage = grillSec.querySelector('.stage');
+let grillP = -1, rawSp = null, cookedSp = null, grillCache = null;
+function renderGrill(p){
+  if (Math.abs(p - grillP) < .0008 && grillCv.width) return;
+  grillP = p;
+  const cw = grillCv.clientWidth || 500;
+  const w = Math.round(cw * DPR), h = Math.round(w * .86);
+  if (grillCv.width !== w || grillCv.height !== h){ grillCv.width = w; grillCv.height = h; grillCache = null; }
+  if (!rawSp){ rawSp = paintPatty(UNIT, 0); cookedSp = sprite('patty'); }
+  const g = grillCv.getContext('2d');
+  const d = easeIO(p);
+  const gy = h * .40;
+  if (!grillCache){
+    const bg = C(w, h), b = bg.getContext('2d');
+    b.fillStyle = lg(b, 0, 0, 0, h, [[0, '#191412'], [1, '#0e0b09']]); b.fillRect(0, 0, w, h);
+    b.fillStyle = rgr(b, w * .3, h * .1, w * .8, [[0, 'rgba(190,120,55,.16)'], [1, 'rgba(190,120,55,0)']]);
+    b.fillRect(0, 0, w, h);
+    // 鉄板。使い込んだ鋼の面
+    b.fillStyle = lg(b, 0, gy, 0, h, [[0, '#3a3630'], [.18, '#2f2b26'], [.6, '#201d19'], [1, '#141210']]);
+    b.fillRect(0, gy, w, h - gy);
+    b.fillStyle = lg(b, 0, gy, 0, gy + h * .02, [[0, '#0a0908'], [1, 'rgba(10,9,8,0)']]);
+    b.fillRect(0, gy, w, h * .03);
+    const R2 = mul32(19);
+    for (let k = 0; k < 16; k++){ // ヘラの筋
+      const t = k / 16, y = gy + (h - gy) * (t * t * .9 + .05);
+      softE(b, w * (.2 + R2() * .6), y, w * (.25 + R2() * .3), .8 + t * 2.4, `rgba(168,150,126,${.04 + R2() * .05})`);
+    }
+    b.fillStyle = rgr(b, w * .36, gy + (h - gy) * .3, w * .5, [[0, 'rgba(224,196,160,.11)'], [1, 'rgba(224,196,160,0)']]);
+    b.fillRect(0, gy, w, h - gy);
+    grillCache = { bg, film: makeFilm(w, h, .5) };
+  }
+  g.drawImage(grillCache.bg, 0, 0);
+  const R = mul32(19);
+  // 熱で色づく鉄板（温度と連動して端がわずかに赤らむ）
+  g.fillStyle = rgr(g, w * .5, h * .78, w * .42, [[0, `rgba(210,80,20,${.10 * d})`], [1, 'rgba(210,80,20,0)']]);
+  g.fillRect(0, gy, w, h - gy);
+  // 油
+  const cx = w * .5, py = h * .72, W = w * .55;
+  softE(g, cx, py + W * .01, W * .75, W * .10, `rgba(20,16,12,${.4 + .2 * d})`);
+  softE(g, cx - W * .5, py + W * .02, W * .2, W * .035, `rgba(255,225,170,${.08 + .12 * d})`);
+  softE(g, cx + W * .48, py, W * .16, W * .03, `rgba(255,225,170,${.06 + .10 * d})`);
+  // パティ：生 → 焼き上がり。焼けるとわずかに縮む
+  contactShadow(g, cx, py + W * .005, W * .9);
+  const shrink = 1 - .04 * d;
+  const drawP = (sp, alpha) => {
+    if (alpha <= 0) return;
+    g.save(); g.globalAlpha = alpha;
+    const sw = W * shrink, sh = sp.height * (sw / sp.width);
+    g.drawImage(sp, cx - sw / 2, py - LAYERS.patty.bot * sw - 0, sw, sh);
+    g.restore();
+  };
+  drawP(rawSp, clamp(1 - d * 1.2, 0, 1));
+  drawP(cookedSp, clamp(d * 1.15, 0, 1));
+  // 縁で油が跳ねる
+  if (d > .2){
+    const nb = Math.round(26 * d);
+    for (let k = 0; k < nb; k++){
+      const a = R() * Math.PI * 2, rr = W * (.5 + R() * .1);
+      const x = cx + Math.cos(a) * rr, y = py + Math.sin(a) * rr * .18 + W * .01;
+      ell(g, x, y, (0.8 + R() * 1.6) * DPR, (0.6 + R()) * DPR, `rgba(255,240,214,${.14 + R() * .3 * d})`);
+    }
+  }
+  // 湯気
+  if (d > .38){
+    const sa = (d - .38) / .62;
+    for (let k = 0; k < 4; k++){
+      const sx = cx + (k - 1.5) * W * .2 + Math.sin(d * 9 + k * 2.2) * W * .05;
+      for (let s = 0; s < 5; s++){
+        const sy = py - W * .3 - s * W * .09 - sa * W * .12;
+        softE(g, sx + Math.sin(s * 1.4 + k + d * 8) * W * .05, sy,
+          W * (.07 + s * .028), W * (.05 + s * .02), `rgba(232,222,210,${.055 * sa * (1 - s / 5)})`);
+      }
+    }
+  }
+  g.drawImage(grillCache.film, 0, 0);
+  // 数値の連動
+  document.getElementById('numPlate').textContent = Math.round(20 + 230 * d);
+  document.getElementById('numSec').textContent = Math.round(90 * d);
+  document.getElementById('numCore').textContent = Math.round(11 + 53 * d);
+}
+
+/* ---------- お品書き ---------- */
+const MENU = [
+  ['ガブリ・バーガー', 1280, '基本の一個。迷ったらこれを食べてから、次を決めてください。',
+    ['bunB', 'sauce', 'patty', 'cheese', 'tomato', 'lettuce', 'bunT']],
+  ['ベーコンチーズ', 1580, 'ベーコンは自家製。塩漬けに七日、燻すのに四時間かけています。',
+    ['bunB', 'sauce', 'patty', 'cheese', 'bacon', 'lettuce', 'bunT']],
+  ['てりやきアボカド', 1480, '甘辛いタレとアボカドは、けんかしません。醤油は近所の蔵のもの。',
+    ['bunB', 'sauce', 'patty', 'avocado', 'tomato', 'lettuce', 'bunT']],
+  ['ダブル・ガブリ', 1880, 'パティ二枚。そのままでは口に入りません。上から潰してください。',
+    ['bunB', 'sauce', 'patty', 'cheese', 'patty', 'cheese', 'lettuce', 'bunT']],
+];
+const menuGrid = document.getElementById('menuGrid');
+menuGrid.innerHTML = MENU.map(([n, pr, d], i) => `
+  <article class="mCard">
+    <div class="ph"><canvas data-mi="${i}" role="img" aria-label="${n}の写真"></canvas></div>
+    <div class="mBody"><h3>${n}</h3><p class="p">¥${pr.toLocaleString()}</p><p class="d">${d}</p></div>
+  </article>`).join('');
+function renderMenuThumbs(){
+  menuGrid.querySelectorAll('canvas').forEach(cv => {
+    const i = +cv.dataset.mi, list = MENU[i][3];
+    const cw = cv.clientWidth || 260;
+    const w = Math.round(cw * DPR), h = Math.round(w * .8);
+    if (cv.width === w && cv.height === h) return;
+    cv.width = w; cv.height = h;
+    const g = cv.getContext('2d');
+    paintBackdrop(g, w, h, 21 + i * 7, .8);
+    const cx = w * .5, plateY = h * .90, prx = w * .42;
+    const W = Math.min(w * .62, (h * .82) / stackThickness(list));
+    paintPlate(g, cx, plateY, prx);
+    contactShadow(g, cx, plateY - prx * .05, W);
+    drawStack(g, cx, plateY - prx * .06, list, W);
+    filmPass(g, w, h, .55);
+  });
+}
+
+/* ---------- 自分で積む ---------- */
+const ADDONS = [
+  ['patty',   'パティ 150g', 400], ['cheese',  'チーズ', 150],
+  ['bacon',   'ベーコン', 250],   ['egg',     '目玉焼き', 180],
+  ['tomato',  'トマト', 120],     ['avocado', 'アボカド', 200],
+  ['pickle',  'ピクルス', 100],   ['lettuce', 'レタス', 100],
+];
+const NAME_OF = Object.fromEntries(ADDONS.map(([id, n]) => [id, n]));
+const PRICE_OF = Object.fromEntries(ADDONS.map(([id, , p]) => [id, p]));
+const towerCv = document.getElementById('towerCanvas');
+let picked = [], towerAnim = null;
+const ingBtns = document.getElementById('ingBtns');
+ingBtns.innerHTML = ADDONS.map(([id, n, p]) =>
+  `<button class="ing" data-ing="${id}"><b>${n}</b><i>+¥${p}</i></button>`).join('');
+
+function towerList(){ return ['bunB', 'sauce', ...picked, 'bunT']; }
+function renderTower(dropIdx, dropT){
+  const cw = towerCv.clientWidth || 520;
+  const w = Math.round(cw * DPR), h = Math.round(w * 1.12);
+  if (towerCv.width !== w || towerCv.height !== h){ towerCv.width = w; towerCv.height = h; }
+  const g = towerCv.getContext('2d');
+  const list = towerList();
+  // 12段積んでもはみ出さないよう、スタック幅を高さから決める
+  const W = Math.min(w * .58, (h * .78) / stackThickness(list));
+  const cx = w * .5, plateY = h * .93, prx = Math.max(w * .36, W * .62);
+  paintBackdrop(g, w, h, 33);
+  paintPlate(g, cx, plateY, prx);
+  contactShadow(g, cx, plateY - prx * .05, W);
+  const offs = list.map((t, i) => (i === dropIdx && dropT < 1)
+    ? { dy: (1 - easeOut(dropT)) * h * .14, a: Math.min(1, dropT * 2.5) } : { dy: 0, a: 1 });
+  drawStack(g, cx, plateY - prx * .06, list, W, offs);
+  filmPass(g, w, h, .5);
+}
+function updatePanel(){
+  const total = 980 + picked.reduce((s, id) => s + PRICE_OF[id], 0);
+  document.getElementById('total').textContent = '¥' + total.toLocaleString();
+  const ul = document.getElementById('pickedList');
+  ul.innerHTML = picked.map(id => `<li>${NAME_OF[id]}<i>+¥${PRICE_OF[id]}</i></li>`).join('');
+  document.getElementById('pickedEmpty').style.display = picked.length ? 'none' : '';
+  const warn = document.getElementById('warn');
+  const n = picked.length;
+  let msg = '';
+  if (n >= 12) msg = 'もう積めません。これ以上は皿です。';
+  else if (n > 9) msg = 'もう口に入りません。潰してください。';
+  else if (n > 6) msg = 'だいぶ背が高くなってきました。';
+  warn.textContent = msg;
+  warn.classList.toggle('on', !!msg);
+  ingBtns.querySelectorAll('.ing').forEach(b => { b.disabled = n >= 12; });
+}
+function addIngredient(id){
+  if (picked.length >= 12) return;
+  picked.push(id);
+  updatePanel();
+  const dropIdx = 2 + picked.length - 1;
+  if (REDUCE){ renderTower(-1, 1); return; }
+  cancelAnimationFrame(towerAnim);
+  const t0 = performance.now();
+  const tick = now => {
+    const t = Math.min(1, (now - t0) / 380);
+    renderTower(dropIdx, t);
+    if (t < 1) towerAnim = requestAnimationFrame(tick);
+  };
+  towerAnim = requestAnimationFrame(tick);
+}
+ingBtns.addEventListener('click', e => {
+  const b = e.target.closest('.ing');
+  if (b && !b.disabled) addIngredient(b.dataset.ing);
+});
+document.getElementById('allBtn').addEventListener('click', () => {
+  picked = ['patty', 'cheese', 'bacon', 'egg', 'tomato', 'lettuce', 'avocado', 'pickle'];
+  updatePanel(); renderTower(-1, 1);
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  picked = []; updatePanel(); renderTower(-1, 1);
+});
+
+/* ---------- 流れる帯 ---------- */
+const bandItems = '三軒茶屋 — TAKEOUT OK — 11:00–21:00 — 水曜定休 — パティは一日60枚 — カウンター8席 — ';
+document.getElementById('bandText').textContent = bandItems + bandItems;
+
+/* ---------- スクロールの配線 ---------- */
+function progressOf(sec, stage){
+  const travel = sec.offsetHeight - stage.offsetHeight;
+  if (travel <= 0) return 1;
+  return clamp((scrollY - sec.offsetTop) / travel, 0, 1);
+}
+let ticking = false;
+function onScroll(){
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    ticking = false;
+    renderBuild(progressOf(buildSec, buildStage));
+    renderGrill(progressOf(grillSec, grillStage));
+  });
+}
+function renderAll(){
+  renderHero();
+  if (REDUCE){ renderBuild(1); renderGrill(1); }
+  else { buildP = -1; grillP = -1; onScroll(); }
+  renderMenuThumbs();
+  renderTower(-1, 1);
+  updatePanel();
+}
+if (!REDUCE) addEventListener('scroll', onScroll, { passive: true });
+let rsT;
+addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(renderAll, 180); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => renderAll());
+renderAll();
+})();
+</script>
+
+</body>
+</html>

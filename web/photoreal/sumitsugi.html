@@ -1,0 +1,1568 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>墨継 SUMITSUGI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Jost:wght@300;400&display=swap">
+</head>
+<body>
+<style>
+/* 単一の写真的ルック（暗室の商品撮影）に固定する。テーマで絵は変えない */
+:root{
+  --bg:#151110;
+  --bg2:#1b1614;
+  --ink:#ece5d8;
+  --ink2:#cbc2b3;
+  --mut:#9d9080;
+  --acc:#c2a878;
+  --hair:rgba(236,229,216,.16);
+  --paper:#e9e2d1;
+  --onpaper:#292219;
+  --onpaper2:#4c4234;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  font-weight:400;
+  line-height:1.9;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(194,168,120,.35)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:3px}
+canvas{display:block}
+.lbl{
+  font-family:"Jost","Shippori Mincho",sans-serif;
+  font-weight:300;letter-spacing:.34em;text-transform:uppercase;
+  font-size:11px;color:var(--acc);
+}
+.sec-head{max-width:1100px;margin:0 auto;padding:0 6vw}
+h2{font-weight:500;font-size:clamp(22px,3.2vw,34px);letter-spacing:.08em;line-height:1.7}
+
+/* ---- 共通ステージ ---- */
+.tall{position:relative}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden}
+.stage>canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ---- 1 表紙 ---- */
+#hero{height:100svh;position:relative;overflow:hidden}
+#hero canvas{position:absolute;inset:0;width:100%;height:100%}
+.hero-copy{position:absolute;left:7vw;top:16svh;max-width:34em;z-index:2}
+.hero-copy h1{
+  font-weight:500;font-size:clamp(30px,4.6vw,54px);
+  letter-spacing:.1em;line-height:1.6;margin:.7em 0 .8em;
+  text-shadow:0 1px 22px rgba(0,0,0,.55);
+}
+.hero-copy p{color:var(--ink2);font-size:clamp(14px,1.25vw,16px);letter-spacing:.06em;text-shadow:0 1px 14px rgba(0,0,0,.6)}
+.cue{position:absolute;left:50%;bottom:4.5svh;transform:translateX(-50%);z-index:2;
+  display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--mut)}
+.cue span{font-size:10px;letter-spacing:.4em;font-family:"Jost",sans-serif}
+.cue i{display:block;width:1px;height:46px;background:linear-gradient(var(--mut),transparent);
+  animation:cue 2.6s ease-in-out infinite;transform-origin:top}
+@keyframes cue{0%{transform:scaleY(.2);opacity:0}35%{transform:scaleY(1);opacity:.9}100%{transform:scaleY(1);opacity:0}}
+
+/* ---- 2 落下 ---- */
+#fall{height:360svh}
+.fall-copy{position:absolute;z-index:2;left:8vw;top:24svh}
+.fall-copy .ln{
+  color:var(--onpaper);font-size:clamp(24px,3.4vw,40px);font-weight:500;
+  letter-spacing:.14em;line-height:2.15;
+  opacity:0;transform:translateY(14px);transition:opacity .9s ease,transform .9s ease;
+}
+.fall-copy .ln.on{opacity:1;transform:none}
+
+/* ---- 3 ペン先 ---- */
+#nib{height:360svh}
+#nib .sec-mark{position:absolute;z-index:2;left:7vw;top:7svh}
+#nib h2{margin-top:.6em;text-shadow:0 1px 16px rgba(0,0,0,.6);max-width:15em}
+.notes{position:absolute;z-index:3;inset:0;pointer-events:none}
+.note{
+  position:absolute;width:min(300px,38vw);
+  opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease;
+}
+.note.on{opacity:1;transform:none}
+.note b{display:block;font-weight:600;font-size:15px;letter-spacing:.12em;color:var(--ink)}
+.note small{display:block;font-size:12.5px;line-height:1.9;color:var(--ink2);letter-spacing:.04em}
+#nibLines{position:absolute;inset:0;z-index:2;pointer-events:none}
+
+/* ---- 4 インクの道 ---- */
+#flow{background:var(--bg);position:relative;padding:16svh 0 10svh}
+.flow-grid{display:grid;grid-template-columns:minmax(360px,46%) 1fr;max-width:1240px;margin:0 auto;gap:0 4vw;padding:0 5vw}
+.flow-fig{position:sticky;top:0;height:100svh;display:flex;align-items:center;justify-content:center}
+#feedC{width:min(480px,40vw);aspect-ratio:56/68}
+.flow-steps{padding-top:4svh}
+.flow-head{margin-bottom:10svh}
+.fstep{min-height:88svh;display:flex;flex-direction:column;justify-content:center;max-width:30em}
+.fstep .no{color:var(--acc);font-family:"Jost",sans-serif;font-weight:300;font-size:13px;letter-spacing:.3em}
+.fstep h3{font-weight:500;font-size:clamp(19px,2vw,24px);letter-spacing:.1em;margin:.5em 0 .9em}
+.fstep p{color:var(--ink2);font-size:14.5px;letter-spacing:.03em}
+
+/* ---- 5 一筆 ---- */
+#write{height:320svh}
+.write-copy{position:absolute;z-index:2;left:8vw;top:12svh;max-width:24em}
+.write-copy h2{color:var(--onpaper)}
+.write-note{position:absolute;z-index:2;right:8vw;bottom:12svh;max-width:21em;
+  color:var(--onpaper2);font-size:13.5px;letter-spacing:.05em;
+  opacity:0;transform:translateY(10px);transition:opacity .8s ease,transform .8s ease}
+.write-note.on{opacity:1;transform:none}
+
+/* ---- 6 分解 ---- */
+#parts{height:300svh}
+#parts .sec-mark{position:absolute;z-index:2;left:7vw;top:8svh}
+#parts h2{margin-top:.6em;text-shadow:0 1px 16px rgba(0,0,0,.6)}
+.plabel{position:absolute;z-index:2;transform:translateX(-50%);text-align:center;
+  opacity:0;transition:opacity .7s ease;pointer-events:none}
+.plabel.on{opacity:1}
+.plabel i{display:block;width:1px;height:26px;margin:0 auto 8px;background:var(--hair)}
+.plabel b{display:block;font-weight:600;font-size:14px;letter-spacing:.14em}
+.plabel small{display:block;font-size:11.5px;color:var(--mut);letter-spacing:.06em;margin-top:2px}
+
+/* ---- 7 十一日 ---- */
+#days{position:relative}
+#days .stage{background:var(--bg)}
+.days-head{position:absolute;z-index:2;left:7vw;top:9svh;max-width:36em}
+.days-head h2{margin-top:.6em}
+.track{position:absolute;left:0;top:42svh;display:flex;align-items:stretch;gap:5.5vw;
+  padding:0 12vw 0 40vw;will-change:transform}
+.dtl{position:absolute;left:0;top:38svh;height:1px;background:var(--hair);width:100%}
+.dcard{width:300px;flex:0 0 auto;padding-top:34px;position:relative}
+.dcard.wide{width:520px}
+.dcard::before{content:"";position:absolute;left:0;top:-4svh;width:1px;height:calc(4svh + 20px);background:var(--hair)}
+.dcard .day{font-family:"Jost","Shippori Mincho",serif;color:var(--acc);font-size:12px;letter-spacing:.28em}
+.dcard h3{font-weight:500;font-size:19px;letter-spacing:.12em;margin:.6em 0 .7em}
+.dcard p{color:var(--ink2);font-size:13.5px;line-height:2.05;letter-spacing:.03em}
+.chips{display:flex;gap:9px;margin-top:18px}
+.chips i{width:17px;height:17px;border-radius:50%;display:block;position:relative}
+.chips i::after{content:"";position:absolute;left:3px;top:3px;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle at 40% 40%,rgba(255,240,220,.55),rgba(255,255,255,0) 70%)}
+
+/* ---- 8 読み物 ---- */
+#book{background:var(--bg);padding:20svh 0 0}
+.bwrap{max-width:960px;margin:0 auto;padding:0 6vw}
+.mat{margin:8svh 0 0;display:grid;grid-template-columns:9em 1fr;gap:2em;padding:3.2em 0;border-top:1px solid var(--hair)}
+.mat:last-of-type{border-bottom:0}
+.mat h3{font-weight:600;font-size:17px;letter-spacing:.16em}
+.mat p{color:var(--ink2);font-size:14.5px;max-width:36em}
+.spec{margin-top:16svh}
+table{width:100%;border-collapse:collapse;margin-top:3em}
+td,th{padding:1.15em .2em;border-top:1px solid var(--hair);font-weight:400;text-align:left;
+  font-size:14.5px;letter-spacing:.05em;vertical-align:top}
+th{color:var(--mut);width:11em}
+td{color:var(--ink)}
+.num{font-family:"Jost","Shippori Mincho",serif;letter-spacing:.08em}
+.price{margin-top:18svh;padding:8svh 0 10svh;border-top:1px solid var(--hair);text-align:center}
+.price .when{color:var(--mut);letter-spacing:.3em;font-size:13px}
+.price .yen{font-family:"Jost","Shippori Mincho",serif;font-weight:300;font-size:clamp(40px,6vw,64px);
+  letter-spacing:.08em;margin:.35em 0 .4em;color:var(--ink)}
+.price .stock{color:var(--ink2);font-size:13.5px;max-width:26em;margin:0 auto 3.4em}
+#notify{
+  font:inherit;font-size:14px;letter-spacing:.3em;color:var(--ink);
+  background:none;border:1px solid rgba(236,229,216,.4);padding:1.1em 3.2em;cursor:pointer;
+  transition:background .4s ease,color .4s ease;
+}
+#notify:hover{background:rgba(236,229,216,.08)}
+#notify[disabled]{cursor:default;border-color:var(--hair);color:var(--mut);background:none;letter-spacing:.08em}
+footer{padding:6svh 6vw 7svh;border-top:1px solid var(--hair);display:flex;flex-wrap:wrap;gap:1em 3em;
+  justify-content:space-between;align-items:baseline}
+footer .fm{color:var(--mut);font-size:12px;letter-spacing:.06em}
+
+/* ---- モバイル ---- */
+@media (max-width:760px){
+  .hero-copy{left:7vw;right:7vw;top:11svh}
+  .fall-copy{top:14svh}
+  .flow-grid{grid-template-columns:1fr;gap:0}
+  .flow-fig{position:sticky;top:0;height:48svh;z-index:1;background:var(--bg)}
+  #feedC{width:min(300px,66vw)}
+  .fstep{min-height:52svh;justify-content:flex-end;padding-bottom:3svh}
+  .flow-head{margin-bottom:4svh}
+  .note{width:min(300px,84vw)}
+  .mat{grid-template-columns:1fr;gap:.6em;padding:2.4em 0}
+  .track{padding-left:8vw;top:40svh;gap:12vw}
+  .dcard{width:76vw}
+  .dcard.wide{width:80vw}
+  th{width:8.5em}
+}
+
+/* ---- reduced motion：固定を解き、完成形で静止 ---- */
+.rm .tall,.rm #days .tall{height:auto}
+.rm .stage{position:relative;height:100svh}
+.rm .cue i{animation:none;transform:none;opacity:.7}
+.rm .fall-copy .ln,.rm .note,.rm .write-note,.rm .plabel{opacity:1;transform:none;transition:none}
+.rm .flow-fig{position:relative;height:auto;padding:6svh 0}
+.rm .fstep{min-height:0;margin-bottom:9svh}
+.rm #days .stage{height:auto;padding-bottom:8svh}
+.rm .days-head{position:relative;left:auto;top:auto;padding:10svh 7vw 6svh}
+.rm .dtl{display:none}
+.rm .track{position:relative;top:auto;flex-direction:column;padding:0 8vw;gap:7svh;transform:none!important}
+.rm .dcard,.rm .dcard.wide{width:min(560px,86vw)}
+.rm .dcard::before{display:none}
+</style>
+
+<section id="hero" aria-label="表紙">
+  <canvas id="heroC"></canvas>
+  <div class="hero-copy">
+    <div class="lbl">FOUNTAIN PEN — 墨継 / SUMITSUGI</div>
+    <h1>インクは、<br>落ちていく。</h1>
+    <p>重力に任せて書く万年筆。押しつけず、置くだけで線が出ます。</p>
+  </div>
+  <div class="cue" aria-hidden="true"><span>SCROLL</span><i></i></div>
+</section>
+
+<section id="fall" class="tall" aria-label="落下">
+  <div class="stage">
+    <canvas id="fallC"></canvas>
+    <div class="fall-copy">
+      <div class="ln">書くというのは、</div>
+      <div class="ln">インクを</div>
+      <div class="ln">落とす行為だ。</div>
+    </div>
+  </div>
+</section>
+
+<section id="nib" class="tall" aria-label="ペン先">
+  <div class="stage">
+    <canvas id="nibC"></canvas>
+    <svg id="nibLines" aria-hidden="true"></svg>
+    <div class="sec-mark">
+      <div class="lbl">NIB — 14K</div>
+      <h2>14金のペン先が、紙の凹凸を拾う。</h2>
+    </div>
+    <div class="notes">
+      <div class="note" id="noteSlit"><b>切り割り</b><small>毛細管現象でインクを導く</small></div>
+      <div class="note" id="noteHole"><b>ハート穴</b><small>たわみを逃がし、割れを防ぐ</small></div>
+      <div class="note" id="notePoint"><b>ペンポイント</b><small>すり減りにくいイリジウム合金</small></div>
+    </div>
+  </div>
+</section>
+
+<section id="flow" aria-label="インクの道">
+  <div class="sec-head flow-head">
+    <div class="lbl">INK PATH</div>
+    <h2>インクが紙に届くまで</h2>
+  </div>
+  <div class="flow-grid">
+    <div class="flow-fig"><canvas id="feedC" data-step="1"></canvas></div>
+    <div class="flow-steps">
+      <div class="fstep" data-flow="1">
+        <div class="no">01</div>
+        <h3>押し出さず、吸い出す</h3>
+        <p>タンクのインクは、押し出されて出てくるのではありません。芯に刻まれた細い溝が、毛細管現象でインクを引き込みます。溝が細いほど、引く力は強くなります。</p>
+      </div>
+      <div class="fstep" data-flow="2">
+        <div class="no">02</div>
+        <h3>空気と入れ替える</h3>
+        <p>出ていったインクと同じ体積の空気が、タンクへ戻ります。櫛溝はその通り道であり、気温で膨らんだインクを一時的に受け止める場所でもあります。</p>
+      </div>
+      <div class="fstep" data-flow="3">
+        <div class="no">03</div>
+        <h3>切り割りへ移る</h3>
+        <p>芯を下ったインクは、ペン先の切り割りに移ります。ここから先でインクを支えているのは、金属と金属のあいだにある 0.02mm の隙間だけです。</p>
+      </div>
+      <div class="fstep" data-flow="4">
+        <div class="no">04</div>
+        <h3>紙に置く</h3>
+        <p>紙の繊維が切り割りに触れると、繊維の引く力のほうが強く、インクは紙へ移ります。筆圧はいりません。触れれば、線になります。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="write" class="tall" aria-label="一筆">
+  <div class="stage">
+    <canvas id="writeC"></canvas>
+    <div class="write-copy">
+      <div class="lbl" style="color:#5f4d33">ONE STROKE</div>
+      <h2>書き出しから書き終わりまで、線の濃さは変わらない。</h2>
+    </div>
+    <p class="write-note">A4を一枚書ききっても、最初の一画と最後の一画で濃さは同じです。</p>
+  </div>
+</section>
+
+<section id="parts" class="tall" aria-label="分解">
+  <div class="stage">
+    <canvas id="partsC"></canvas>
+    <div class="sec-mark">
+      <div class="lbl">FOUR PARTS</div>
+      <h2>部品は四つ。工具は要りません。</h2>
+    </div>
+    <div class="plabel" id="pl0"><i></i><b>キャップ</b><small>拭き漆エボナイト</small></div>
+    <div class="plabel" id="pl1"><i></i><b>首軸</b><small>ペン先を保持する</small></div>
+    <div class="plabel" id="pl2"><i></i><b>胴軸</b><small>一本から削り出す</small></div>
+    <div class="plabel" id="pl3"><i></i><b>コンバーター</b><small></small></div>
+  </div>
+</section>
+
+<section id="days" aria-label="十一日">
+  <div class="tall" id="daysTall">
+    <div class="stage">
+      <div class="days-head">
+        <div class="lbl">ELEVEN DAYS</div>
+        <h2>一本に十一日。うち七日は、乾くのを待つ時間です。</h2>
+      </div>
+      <div class="dtl" aria-hidden="true"></div>
+      <div class="track" id="dtrack">
+        <div class="dcard"><div class="day">一日目</div><h3>棒材を選ぶ</h3><p>エボナイトの丸棒を切り、断面を見ます。気泡の入った材はここで外します。使えるのは七割ほどです。</p></div>
+        <div class="dcard"><div class="day">二日目</div><h3>荒削り</h3><p>旋盤で外形を出します。削りすぎた分は戻せないので、仕上げ代を 0.3mm 残したところで一度止めます。</p></div>
+        <div class="dcard"><div class="day">三日目</div><h3>ねじを切る</h3><p>キャップと胴軸のねじ山を合わせます。三回転で閉まりきり、そのとき天冠の刻印が正面を向くようにしています。</p></div>
+        <div class="dcard wide"><div class="day">四〜十日目</div><h3>拭き漆を七回</h3><p>漆を塗り、乾ききる前に拭き取ります。これを一日一回、七日続けます。塗膜を重ねるのではなく、生地に色を沈ませていく作業です。</p>
+          <div class="chips" aria-hidden="true"></div></div>
+        <div class="dcard"><div class="day">十日目</div><h3>ペン先を調整する</h3><p>切り割りの幅を、ルーペで見ながら詰めます。左右のずれが 0.01mm あると、書き出しの線の立ち上がりが変わります。</p></div>
+        <div class="dcard"><div class="day">十一日目</div><h3>試し書き</h3><p>職人が一枚書きます。紙を三種類替えて、書き出しの一画目でインクが遅れないかを確かめます。</p></div>
+        <div class="dcard"><div class="day">十一日目</div><h3>検品と箱詰め</h3><p>軸に映り込んだ蛍光灯の線が、まっすぐ通っているかを見ます。歪んで見えるなら、削りの癖が残っています。</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="book" aria-label="素材と仕様と価格">
+  <div class="bwrap">
+    <div class="lbl">MATERIAL</div>
+    <h2>素材のこと</h2>
+    <div class="mat"><h3>エボナイト</h3><p>硬質ゴムを削り出した軸です。樹脂より手の熱を受けとるので、握ったときに冷たさがありません。使ううちに色が深くなります。</p></div>
+    <div class="mat"><h3>拭き漆</h3><p>漆を塗っては拭き取る工程を七度重ねます。塗膜を厚くせず、地の手ざわりを残したまま艶を出しています。</p></div>
+    <div class="mat"><h3>14金のペン先</h3><p>18金よりわずかに硬い14金です。筆圧をかけない設計なので、しなりすぎない硬さのほうが線は安定します。</p></div>
+
+    <div class="spec">
+      <div class="lbl">SPECIFICATIONS</div>
+      <h2>仕様</h2>
+      <table>
+        <tr><th>全長</th><td><span class="num">138.0 mm</span>（収納時）</td></tr>
+        <tr><th>筆記長</th><td><span class="num">152.4 mm</span></td></tr>
+        <tr><th>軸径</th><td><span class="num">12.8 mm</span></td></tr>
+        <tr><th>質量</th><td><span class="num">24.6 g</span>（インクを含む）</td></tr>
+        <tr><th>ペン先</th><td>14金・ロジウム仕上げ / EF・F・M</td></tr>
+        <tr><th>インクの入れ方</th><td>コンバーター・カートリッジ 両用</td></tr>
+        <tr><th>軸材</th><td>エボナイト（拭き漆 七回）</td></tr>
+        <tr><th>製作日数</th><td>1本あたり およそ <span class="num">11</span> 日</td></tr>
+      </table>
+    </div>
+
+    <div class="price">
+      <div class="when lbl">2026年 秋</div>
+      <div class="yen">￥48,000</div>
+      <p class="stock">初回は 300 本です。職人二名でつくるため、これ以上は増やせません。</p>
+      <button id="notify" type="button">入荷を知らせる</button>
+    </div>
+  </div>
+  <footer>
+    <div><b style="letter-spacing:.2em;font-weight:600">墨継 SUMITSUGI</b></div>
+    <div class="fm">架空の製品です。実装デモとして制作しました。実在の製品・ブランドとは関係ありません。</div>
+  </footer>
+</section>
+
+<script>
+document.documentElement.lang='ja';
+(()=>{
+'use strict';
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (RM) document.documentElement.classList.add('rm');
+const DPR = Math.min(2, window.devicePixelRatio || 1);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const sstep=t=>{t=clamp(t,0,1);return t*t*(3-2*t)};
+const $=s=>document.querySelector(s);
+
+/* 決定的な乱数（リロードしても同じ「写真」になるように） */
+function mulberry(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ============ 共通の描画素材 ============ */
+
+/* 粒子（フィルムグレイン）。overlay で薄く一回だけ */
+const grainTile=(()=>{
+  const c=document.createElement('canvas');c.width=c.height=192;
+  const g=c.getContext('2d');const d=g.createImageData(192,192);const r=mulberry(11);
+  for(let i=0;i<d.data.length;i+=4){const v=110+r()*72|0;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255}
+  g.putImageData(d,0,0);return c;
+})();
+function addGrain(g,w,h,a){
+  g.save();g.globalAlpha=a;g.globalCompositeOperation='overlay';
+  for(let y=0;y<h;y+=192)for(let x=0;x<w;x+=192)g.drawImage(grainTile,x,y);
+  g.restore();
+}
+function vignette(g,w,h,a){
+  const v=g.createRadialGradient(w*.48,h*.44,Math.min(w,h)*.32,w*.5,h*.5,Math.hypot(w,h)*.62);
+  v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,'+a+')');
+  g.fillStyle=v;g.fillRect(0,0,w,h);
+}
+
+/* 暗い机（撮影台）。左上からのキーライトの光だまり */
+function paintDesk(g,w,h,pool){
+  g.fillStyle='#171210';g.fillRect(0,0,w,h);
+  const px=pool?pool[0]:w*.42, py=pool?pool[1]:h*.36, pr=pool?pool[2]:Math.max(w,h)*.75;
+  let rg=g.createRadialGradient(px,py,pr*.05,px,py,pr);
+  rg.addColorStop(0,'rgba(148,118,88,.26)');rg.addColorStop(.45,'rgba(104,82,62,.13)');rg.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=rg;g.fillRect(0,0,w,h);
+  /* 台の微細なむら */
+  const r=mulberry(5);
+  g.save();g.globalAlpha=.05;
+  for(let i=0;i<Math.max(60,w*h/22000);i++){
+    const x=r()*w,y=r()*h,l=20+r()*90,a=r()*Math.PI;
+    g.strokeStyle=r()<.5?'#000':'#6b5844';g.lineWidth=.8;
+    g.beginPath();g.moveTo(x,y);g.lineTo(x+Math.cos(a)*l,y+Math.sin(a)*l);g.stroke();
+  }
+  g.restore();
+}
+
+/* 紙。クリーム地に繊維とわずかな照明勾配 */
+function makePaper(w,h){
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const g=c.getContext('2d');
+  g.fillStyle='#eae3d2';g.fillRect(0,0,w,h);
+  let lg=g.createLinearGradient(0,0,w,h);
+  lg.addColorStop(0,'rgba(255,252,242,.5)');lg.addColorStop(.55,'rgba(255,252,242,0)');
+  lg.addColorStop(1,'rgba(94,80,62,.22)');
+  g.fillStyle=lg;g.fillRect(0,0,w,h);
+  const r=mulberry(23);
+  g.save();
+  /* 漉きむら：大きく淡い斑 */
+  for(let i=0;i<w*h/70000;i++){
+    g.globalAlpha=.014+r()*.014;
+    g.fillStyle=r()<.5?'#cdc2a8':'#fbf7ea';
+    g.beginPath();g.ellipse(r()*w,r()*h,50+r()*140,30+r()*90,r()*Math.PI,0,7);g.fill();
+  }
+  /* 繊維：短い明暗のストローク（横方向に癖をつける） */
+  const n=Math.max(1400,w*h/520);
+  for(let i=0;i<n;i++){
+    const x=r()*w,y=r()*h,l=6+r()*28,a=(r()-.5)*.8+(r()<.14?Math.PI/2:0);
+    g.globalAlpha=.05+r()*.08;
+    g.strokeStyle=r()<.52?'#c3b89e':'#fdfaf0';
+    g.lineWidth=.5+r()*.7;
+    g.beginPath();g.moveTo(x,y);
+    g.quadraticCurveTo(x+Math.cos(a)*l*.5,y+Math.sin(a)*l*.5+(r()-.5)*3,x+Math.cos(a)*l,y+Math.sin(a)*l);
+    g.stroke();
+  }
+  /* 混入した繊維の斑点 */
+  for(let i=0;i<w*h/12000;i++){
+    g.globalAlpha=.06+r()*.08;g.fillStyle=r()<.5?'#a89a7f':'#8f8873';
+    g.beginPath();g.arc(r()*w,r()*h,.6+r()*1.1,0,7);g.fill();
+  }
+  g.restore();
+  addGrain(g,w,h,.05);
+  vignette(g,w,h,.12);
+  return c;
+}
+
+/* ============ 万年筆の部品スプライト ============ */
+/* 側面図・水平・ペン先は右向き・光は真上からやや手前。回転は±35°までに抑える */
+
+function lacquerGrad(g,cy,r){
+  /* 拭き漆のエボナイト：ほぼ黒。赤褐色は「深さ」としてだけ見える */
+  const lg=g.createLinearGradient(0,cy-r,0,cy+r);
+  lg.addColorStop(0,'#150d09');
+  lg.addColorStop(.07,'#1d120c');
+  lg.addColorStop(.30,'#301d12');
+  lg.addColorStop(.46,'#241509');
+  lg.addColorStop(.58,'#180f0a');
+  lg.addColorStop(.80,'#0e0806');
+  lg.addColorStop(.93,'#170f0b');
+  lg.addColorStop(1,'#0a0605');
+  return lg;
+}
+
+/* プロファイル（x→半径）からロッド形状のパスを作る */
+function rodPath(g,x0,x1,cy,prof){
+  const N=72,top=[],bot=[];
+  for(let i=0;i<=N;i++){
+    const t=i/N,x=lerp(x0,x1,t),r=prof(t);
+    top.push([x,cy-r]);bot.push([x,cy+r]);
+  }
+  g.beginPath();
+  g.moveTo(top[0][0],top[0][1]);
+  for(const p of top)g.lineTo(p[0],p[1]);
+  for(let i=N;i>=0;i--)g.lineTo(bot[i][0],bot[i][1]);
+  g.closePath();
+}
+
+/* 拭き漆のロッド：拡散＋窓の映り込み＋色の沈み（むら） */
+function paintLacquerRod(g,x0,x1,cy,prof,rmax,seed){
+  rodPath(g,x0,x1,cy,prof);
+  g.save();g.clip();
+  g.fillStyle=lacquerGrad(g,cy,rmax);
+  g.fillRect(x0-2,cy-rmax-2,x1-x0+4,rmax*2+4);
+  /* 拭き漆の色むら：広く淡い帯。塗膜でなく生地に沈んだ色 */
+  const r=mulberry(seed||31);
+  g.globalCompositeOperation='soft-light';
+  const mcols=['#8a5530','#5b3a22','#93613a'];
+  for(let i=0,n=(x1-x0)/70;i<n;i++){
+    const bx=x0+r()*(x1-x0),bw=40+r()*110;
+    g.globalAlpha=.08+r()*.10;
+    const col=mcols[(r()*mcols.length)|0];
+    let lg=g.createLinearGradient(bx,0,bx+bw,0);
+    lg.addColorStop(0,'rgba(0,0,0,0)');lg.addColorStop(.5,col);lg.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=lg;
+    g.fillRect(bx,cy-rmax,bw,rmax*2);
+  }
+  g.globalCompositeOperation='screen';
+  /* 窓の映り込み：柔らかい主帯＋芯のある細い帯。漆は金属より縁が柔らかい */
+  const hy=cy-rmax*.42;
+  let sg=g.createLinearGradient(0,hy-rmax*.24,0,hy+rmax*.24);
+  sg.addColorStop(0,'rgba(255,236,214,0)');sg.addColorStop(.5,'rgba(255,236,214,.34)');sg.addColorStop(1,'rgba(255,236,214,0)');
+  g.globalAlpha=1;g.fillStyle=sg;g.fillRect(x0,hy-rmax*.24,x1-x0,rmax*.48);
+  sg=g.createLinearGradient(0,hy-rmax*.07,0,hy+rmax*.07);
+  sg.addColorStop(0,'rgba(255,244,228,0)');sg.addColorStop(.5,'rgba(255,244,228,.42)');sg.addColorStop(1,'rgba(255,244,228,0)');
+  g.fillStyle=sg;g.fillRect(x0,hy-rmax*.07,x1-x0,rmax*.14);
+  /* 下面の照り返し（環境の弱い反射） */
+  const by=cy+rmax*.6;
+  sg=g.createLinearGradient(0,by-rmax*.12,0,by+rmax*.12);
+  sg.addColorStop(0,'rgba(150,140,150,0)');sg.addColorStop(.5,'rgba(150,140,150,.10)');sg.addColorStop(1,'rgba(150,140,150,0)');
+  g.fillStyle=sg;g.fillRect(x0,by-rmax*.12,x1-x0,rmax*.24);
+  /* 端の丸みで反射が回り込む減衰 */
+  g.globalCompositeOperation='multiply';
+  for(const [ex,dir] of [[x0,1],[x1,-1]]){
+    const cap=rmax*1.1;
+    let eg=g.createLinearGradient(ex,0,ex+dir*cap,0);
+    eg.addColorStop(0,'rgba(30,18,12,.85)');eg.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=eg;g.fillRect(Math.min(ex,ex+dir*cap),cy-rmax,cap,rmax*2);
+  }
+  g.restore();
+}
+
+/* 金属（ロジウム）のグラデーション：漆より段差が急で帯が多い */
+function metalGrad(g,cy,r){
+  const lg=g.createLinearGradient(0,cy-r,0,cy+r);
+  lg.addColorStop(0,'#63625f');
+  lg.addColorStop(.14,'#c9c9c6');
+  lg.addColorStop(.22,'#f5f4f0');
+  lg.addColorStop(.30,'#b4b4b1');
+  lg.addColorStop(.48,'#8d8d8b');
+  lg.addColorStop(.66,'#565755');
+  lg.addColorStop(.84,'#9c9c99');
+  lg.addColorStop(1,'#454644');
+  return lg;
+}
+
+/* パーツを個別のスプライトに描く。S=倍率 */
+function makePart(kind,S){
+  const r0=46*S;         /* 胴の基準半径 */
+  let W,H;
+  const pad=26*S;
+  const cy=()=>H/2;
+  let c,g;
+  function init(w,h){W=w;H=h;c=document.createElement('canvas');c.width=W;c.height=H;g=c.getContext('2d')}
+
+  if(kind==='cap'){
+    const L=330*S,r=50*S;
+    init(L+pad*2,r*2+pad*2);
+    const x0=pad,x1=pad+L,y=cy();
+    paintLacquerRod(g,x0,x1,y,t=>{
+      /* 左：天冠の丸み（楕円）／右：口の直線 */
+      const t0=.14;
+      if(t<t0){const u=(t0-t)/t0;return r*Math.sqrt(Math.max(0,1-u*u))*.995+r*.005}
+      return r*(1-.015*(t-t0));
+    },r,71);
+    /* 口元の細い銀の輪：漆の中で鈍く光る程度に */
+    const rx=x1-5*S;
+    g.save();
+    g.globalAlpha=.72;
+    g.beginPath();g.rect(rx-2.6*S,y-r*.93,3.4*S,r*1.86);g.clip();
+    g.fillStyle=metalGrad(g,y,r*.93);g.fillRect(rx-3*S,y-r,5*S,r*2);
+    g.restore();
+    return {c,w:W,h:H,axis:[pad,pad+L],r};
+  }
+
+  if(kind==='barrel'){
+    const L=640*S,r=r0;
+    init(L+pad*2,r*2+pad*2);
+    paintLacquerRod(g,pad,pad+L,cy(),t=>{
+      const t0=.09;
+      if(t<t0){const u=(t0-t)/t0;return r*Math.sqrt(Math.max(0,1-u*u))*.995+r*.005} /* 尾栓の丸み */
+      if(t>.94)return r*(1-.28*sstep((t-.94)/.06));                                  /* ねじ部へ細まる */
+      return r*(1-.03*(t-t0));
+    },r,72);
+    /* ねじ山 */
+    const tx=pad+L*0.955;
+    g.save();
+    for(let i=0;i<5;i++){
+      const x=tx+i*5.4*S;
+      g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=1.6*S;
+      g.beginPath();g.moveTo(x,cy()-r*.56);g.lineTo(x,cy()+r*.56);g.stroke();
+      g.strokeStyle='rgba(255,235,215,.16)';g.lineWidth=1*S;
+      g.beginPath();g.moveTo(x+1.8*S,cy()-r*.5);g.lineTo(x+1.8*S,cy()+r*.5);g.stroke();
+    }
+    g.restore();
+    return {c,w:W,h:H,axis:[pad,pad+L],r};
+  }
+
+  if(kind==='section'){
+    /* 首軸＋ペン先。ペン先は右へ */
+    const Ls=170*S,Ln=165*S,r=34*S;
+    init(Ls+Ln+pad*2,r*2+pad*2);
+    const x0=pad,x1=pad+Ls,y=cy();
+    paintLacquerRod(g,x0,x1,y,t=>{
+      /* ねじ径からゆるい凹面で細り、口先はそのまま。フレアはつけない */
+      return r*(.985-.12*sstep(Math.min(1,t*1.7)));
+    },r,73);
+    /* ペン先（側面）：薄い金属の舌。上縁に受光のエッジ */
+    const nx0=x1-6*S,ntipX=x1+Ln,ntipY=y+3*S,hh=21*S;
+    g.save();
+    g.beginPath();
+    g.moveTo(nx0,y-hh);
+    g.bezierCurveTo(nx0+Ln*.55,y-hh*.94,ntipX-22*S,ntipY-5*S,ntipX,ntipY);
+    g.bezierCurveTo(ntipX-26*S,ntipY+4*S,nx0+Ln*.45,y+hh*.55,nx0,y+hh*.6);
+    g.closePath();
+    g.clip();
+    const mg=g.createLinearGradient(nx0,0,ntipX,0);
+    mg.addColorStop(0,'#3c3c3a');mg.addColorStop(.3,'#9d9d99');mg.addColorStop(.55,'#c9c9c4');
+    mg.addColorStop(.8,'#84847f');mg.addColorStop(1,'#b4b4b0');
+    g.fillStyle=mg;g.fillRect(nx0,y-hh-2,Ln+10*S,hh*2+4);
+    let vg=g.createLinearGradient(0,y-hh,0,y+hh*.7);
+    vg.addColorStop(0,'rgba(255,255,255,.6)');vg.addColorStop(.26,'rgba(150,150,148,.06)');
+    vg.addColorStop(.6,'rgba(30,30,30,.44)');vg.addColorStop(1,'rgba(160,160,158,.28)');
+    g.fillStyle=vg;g.fillRect(nx0,y-hh-2,Ln+10*S,hh*2+4);
+    /* 中央のスリットの影 */
+    g.strokeStyle='rgba(20,20,22,.35)';g.lineWidth=1*S;
+    g.beginPath();g.moveTo(nx0+8*S,y-2*S);g.quadraticCurveTo(nx0+Ln*.6,y-1*S,ntipX-4*S,ntipY-1*S);g.stroke();
+    /* 首軸の影がペン先の根元に落ちる */
+    let sh=g.createLinearGradient(nx0,0,nx0+24*S,0);
+    sh.addColorStop(0,'rgba(10,6,4,.75)');sh.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=sh;g.fillRect(nx0,y-hh-2,26*S,hh*2+4);
+    g.restore();
+    /* ペンポイント：小さな球。書く道具の「点」 */
+    g.beginPath();g.arc(ntipX-1*S,ntipY-.3*S,2.6*S,0,7);
+    let pg=g.createRadialGradient(ntipX-1.9*S,ntipY-1.2*S,.3*S,ntipX-1*S,ntipY,2.8*S);
+    pg.addColorStop(0,'#ffffff');pg.addColorStop(.4,'#d6d7d4');pg.addColorStop(1,'#5f605d');
+    g.fillStyle=pg;g.fill();
+    return {c,w:W,h:H,axis:[pad,pad+Ls+Ln],r,tip:[ntipX,ntipY]};
+  }
+
+  if(kind==='conv'){
+    const L=300*S,r=26*S;
+    init(L+pad*2,r*2+pad*2);
+    const y=cy(),x0=pad;
+    /* 口金（金属） */
+    g.fillStyle=metalGrad(g,y,r*.92);
+    g.fillRect(x0,y-r*.92,44*S,r*1.84);
+    g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0+42*S,y-r*.92,2.5*S,r*1.84);
+    /* 透明タンク */
+    const tx0=x0+46*S,tx1=x0+218*S;
+    g.save();
+    g.beginPath();g.rect(tx0,y-r*.8,tx1-tx0,r*1.6);g.clip();
+    g.fillStyle='rgba(200,205,210,.10)';g.fillRect(tx0,y-r*.8,tx1-tx0,r*1.6);
+    /* 中のインク（六分目） */
+    const iw=(tx1-tx0)*.62;
+    let ig=g.createLinearGradient(0,y-r*.8,0,y+r*.8);
+    ig.addColorStop(0,'#2a3040');ig.addColorStop(.35,'#151d2c');ig.addColorStop(1,'#0b111d');
+    g.fillStyle=ig;g.fillRect(tx0,y-r*.66,iw,r*1.46);
+    /* 液面のメニスカス */
+    g.strokeStyle='rgba(160,175,200,.5)';g.lineWidth=1.4*S;
+    g.beginPath();g.moveTo(tx0+iw,y-r*.66);g.quadraticCurveTo(tx0+iw+5*S,y,tx0+iw,y+r*.8);g.stroke();
+    /* ガラスの縦筋ハイライト */
+    let gg=g.createLinearGradient(0,y-r*.8,0,y-r*.2);
+    gg.addColorStop(0,'rgba(255,255,255,0)');gg.addColorStop(.4,'rgba(255,255,255,.4)');gg.addColorStop(1,'rgba(255,255,255,0)');
+    g.fillStyle=gg;g.fillRect(tx0,y-r*.8,tx1-tx0,r*.6);
+    g.restore();
+    g.strokeStyle='rgba(190,200,210,.35)';g.lineWidth=1.2*S;
+    g.strokeRect(tx0,y-r*.8,tx1-tx0,r*1.6);
+    /* ノブ（ローレット） */
+    const kx=x0+222*S;
+    g.fillStyle=metalGrad(g,y,r);
+    g.fillRect(kx,y-r,L-222*S,r*2);
+    for(let x=kx+3*S;x<x0+L-2*S;x+=5*S){
+      g.strokeStyle='rgba(0,0,0,.42)';g.lineWidth=1.5*S;
+      g.beginPath();g.moveTo(x,y-r*.92);g.lineTo(x,y+r*.92);g.stroke();
+    }
+    return {c,w:W,h:H,axis:[x0,x0+L],r};
+  }
+}
+
+/* 組み上がった一本（キャップなし）。tip はペンポイントの座標 */
+function makePen(S){
+  const barrel=makePart('barrel',S),sect=makePart('section',S);
+  const bl=barrel.axis[1]-barrel.axis[0],sl=sect.axis[1]-sect.axis[0];
+  const W=Math.ceil(bl+sl+56),H=Math.max(barrel.h,sect.h);
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const g=c.getContext('2d');
+  const x0=24;
+  g.drawImage(barrel.c,x0-barrel.axis[0],(H-barrel.h)/2);
+  const sx=x0+bl-sect.axis[0]-2*S;
+  g.drawImage(sect.c,sx,(H-sect.h)/2);
+  const tip=[sx+sect.tip[0],(H-sect.h)/2+sect.tip[1]];
+  /* 被写界深度：胴軸側（左）だけをぼかした複製。ピントはペン先 */
+  const b=document.createElement('canvas');b.width=W;b.height=H;
+  const bg=b.getContext('2d');
+  bg.filter='blur(3px)';bg.drawImage(c,0,0);bg.filter='none';
+  bg.globalCompositeOperation='destination-in';
+  const mg=bg.createLinearGradient(x0,0,x0+bl*.72,0);
+  mg.addColorStop(0,'rgba(0,0,0,.85)');mg.addColorStop(1,'rgba(0,0,0,0)');
+  bg.fillStyle=mg;bg.fillRect(0,0,W,H);
+  return {c,blur:b,w:W,h:H,r:barrel.r,len:bl+sl,x0,tip,cy:H/2};
+}
+
+/* スプライトを机に置く：接地影＋本体＋（任意）ぼかし */
+function placePart(g,part,x,y,ang,opt){
+  opt=opt||{};
+  const s=opt.scale||1;
+  /* 接地影：芯は硬く、離れるほど柔らかい */
+  g.save();
+  g.translate(x,y);g.rotate(ang);
+  const L=(part.axis[1]-part.axis[0])*s,r=part.r*s;
+  g.save();
+  g.translate(-L/2+ (opt.shadowShift||0), r*.92);
+  g.scale(1,.22);
+  let sg=g.createRadialGradient(L/2,0,r*.2,L/2,0,L*.62);
+  sg.addColorStop(0,'rgba(0,0,0,.62)');sg.addColorStop(.5,'rgba(0,0,0,.3)');sg.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=sg;
+  g.beginPath();g.ellipse(L/2,6,L*.62,r*2.4,0,0,7);g.fill();
+  g.restore();
+  if(opt.blur)g.filter='blur('+opt.blur+'px)';
+  if(opt.alpha!=null)g.globalAlpha=opt.alpha;
+  g.drawImage(part.c,-part.w*s/2,-part.h*s/2,part.w*s,part.h*s);
+  g.restore();
+}
+
+/* ============ 1. 表紙 ============ */
+const heroC=$('#heroC');
+function drawHero(){
+  const w=heroC.clientWidth,h=heroC.clientHeight;
+  heroC.width=w*DPR;heroC.height=h*DPR;
+  const g=heroC.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  const mob=w<760;
+  paintDesk(g,w,h,[w*.40,h*.40,Math.max(w,h)*.9]);
+  const S=mob?w*.00120:w*.00082;
+  const pen=makePen(S);
+  const cap=makePart('cap',S);
+  /* キャップ：奥に外して置く。少しだけピントの外 */
+  placePart(g,cap,w*(mob?.16:.80),h*(mob?.84:.26),mob?.9:.26,{blur:2.2,alpha:.97});
+  /* 本体：ペン先を左下へ向けるため左右反転して回す */
+  const ang=mob?.86:.24;
+  g.save();
+  g.translate(w*(mob?.50:.56),h*(mob?.62:.70));
+  g.scale(-1,1);g.rotate(-ang);
+  /* 接地影（全体で一つ）：芯は濃く、端へ滲む */
+  g.save();
+  g.translate(0,pen.r*.9);g.scale(1,.22);
+  let sg=g.createRadialGradient(0,0,pen.r*.3,0,0,pen.len*.6);
+  sg.addColorStop(0,'rgba(0,0,0,.68)');sg.addColorStop(.55,'rgba(0,0,0,.32)');sg.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=sg;g.beginPath();g.ellipse(0,10,pen.len*.62,pen.r*2.6,0,0,7);g.fill();
+  g.restore();
+  g.drawImage(pen.c,-pen.x0-pen.len/2,-pen.cy);
+  g.drawImage(pen.blur,-pen.x0-pen.len/2,-pen.cy);
+  g.restore();
+  addGrain(g,w,h,.045);
+  vignette(g,w,h,.42);
+}
+
+/* ============ 2. 落下 ============ */
+const fallC=$('#fallC');
+let fallPaper=null,fallW=0,fallH=0;
+const blotN=(()=>{const r=mulberry(97);return Array.from({length:64},()=>r()*2-1)})();
+function bn(i){const a=blotN[(i|0)&63],b=blotN[((i|0)+1)&63];const t=i-(i|0);return lerp(a,b,t*t*(3-2*t))}
+/* 端はなだらかな瘤だけ。棘は作らない */
+function blotR(th){const t=th/(Math.PI*2)*64;return 1+.06*bn(t*2%64)+.028*bn((t*5+11)%64)}
+function drawFall(p){
+  const w=fallC.clientWidth,h=fallC.clientHeight;
+  if(fallC.width!==w*DPR){fallC.width=w*DPR;fallC.height=h*DPR;fallPaper=null}
+  const g=fallC.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  if(!fallPaper||fallW!==w){fallW=w;fallH=h;fallPaper=makePaper(w,h)}
+  g.drawImage(fallPaper,0,0,w,h);
+  const mob=w<760;
+  const bx=w*(mob?.62:.62),by=h*(mob?.66:.56);
+  const drop=clamp(p/.30,0,1);            /* 落ちる区間 */
+  const grow=sstep(clamp((p-.30)/.62,0,1)); /* 広がる区間 */
+  if(p<.30){
+    /* 落下中の一滴：先端の伸びた黒い雫。動きのぶれを縦に少し */
+    const y=lerp(-40,by-8,drop*drop);
+    const stretch=1+.9*(1-drop*.4);
+    g.save();g.translate(bx,y);g.scale(1,stretch);
+    let dg=g.createRadialGradient(-2,-3,1,0,0,9);
+    dg.addColorStop(0,'#3b414d');dg.addColorStop(.35,'#171c26');dg.addColorStop(1,'#0a0d14');
+    g.fillStyle=dg;
+    g.beginPath();
+    g.moveTo(0,-14);
+    g.bezierCurveTo(6,-6,8,2,0,8);
+    g.bezierCurveTo(-8,2,-6,-6,0,-14);
+    g.fill();
+    g.fillStyle='rgba(255,255,255,.75)';
+    g.beginPath();g.ellipse(-2.4,-4,1.5,2.4,-.5,0,7);g.fill();
+    g.restore();
+    /* 残像 */
+    g.save();g.globalAlpha=.12;
+    let tg=g.createLinearGradient(0,y-90,0,y);
+    tg.addColorStop(0,'rgba(20,24,34,0)');tg.addColorStop(1,'rgba(20,24,34,.8)');
+    g.fillStyle=tg;g.fillRect(bx-2.2,y-90,4.4,88);
+    g.restore();
+  }
+  if(p>=.28){
+    const R=lerp(9,Math.min(w,h)*(mob?.16:.15),grow);
+    const wet=1-grow;
+    /* 毛細管のヒゲ：細かく短く、繊維の向きに（実寸で描く） */
+    g.save();
+    const rr2=mulberry(41);
+    for(let i=0;i<260;i++){
+      const th=rr2()*Math.PI*2;
+      const horiz=(rr2()<.72);                 /* 横方向へ伸びやすい */
+      const a=horiz?(Math.cos(th)>0?0:Math.PI)+(rr2()-.5)*.9:th+(rr2()-.5)*1.2;
+      const r1=R*blotR(th),len=(1.6+rr2()*6)*(.5+grow*.6);
+      const x0=bx+Math.cos(th)*r1*.995,y0=by+Math.sin(th)*r1*.995;
+      g.strokeStyle='rgba(30,36,52,'+(.07+rr2()*.16)+')';
+      g.lineWidth=.4+rr2()*.5;
+      g.beginPath();g.moveTo(x0,y0);
+      g.lineTo(x0+Math.cos(a)*len,y0+Math.sin(a)*len);
+      g.stroke();
+    }
+    g.restore();
+    /* にじみ本体：ぼかしが要る層は縮小オフスクリーンで描いてから拡大する。
+       ぼかしのコストが 1/3 になり、拡大がさらに縁を柔らかくする */
+    const k=.55,D=Math.ceil(R*2*1.35*k)+12;
+    if(!drawFall.off||drawFall.off.width<D){
+      drawFall.off=document.createElement('canvas');
+      drawFall.off.width=drawFall.off.height=Math.max(D,64);
+    }
+    const off=drawFall.off,og=off.getContext('2d');
+    const key=(R*2|0)+'-'+(wet*24|0);
+    if(drawFall.key!==key){
+      drawFall.key=key;
+      og.setTransform(1,0,0,1,0,0);og.clearRect(0,0,off.width,off.height);
+      const oc=off.width/2,Rk=R*k;
+      const oshape=(scale,N)=>{
+        og.beginPath();
+        for(let i=0;i<=N;i++){const th=i/N*Math.PI*2,rr=Rk*scale*blotR(th);
+          const x=oc+Math.cos(th)*rr,y=oc+Math.sin(th)*rr;i?og.lineTo(x,y):og.moveTo(x,y)}
+        og.closePath();
+      };
+      /* 湿った紙のハロー */
+      og.filter='blur(4px)';
+      oshape(1.12,96);og.fillStyle='rgba(96,80,56,.30)';og.fill();
+      /* 羽毛状の縁 */
+      og.filter='blur(2px)';
+      oshape(1.04,128);og.fillStyle='rgba(38,45,64,.6)';og.fill();
+      /* 本体：中心ほど濃い */
+      og.filter='blur(.8px)';
+      oshape(1,128);
+      let bg=og.createRadialGradient(oc-Rk*.08,oc-Rk*.1,Rk*.05,oc,oc,Rk);
+      bg.addColorStop(0,'rgba(15,18,28,.99)');
+      bg.addColorStop(.6,'rgba(20,25,38,.96)');
+      bg.addColorStop(.88,'rgba(27,33,50,.88)');
+      bg.addColorStop(1,'rgba(32,38,56,.45)');
+      og.fillStyle=bg;og.fill();
+      /* 縁のピグメント溜まり：乾くと現れる */
+      if(grow>.5){
+        og.filter='blur(1px)';
+        og.strokeStyle='rgba(8,10,18,'+(.30*(grow-.5)*2)+')';og.lineWidth=2.2;
+        oshape(.985,128);og.stroke();
+      }
+      og.filter='none';
+      /* 濡れている間の照り */
+      if(wet>0.05){
+        og.globalCompositeOperation='screen';
+        let hg=og.createRadialGradient(oc-Rk*.3,oc-Rk*.34,1,oc-Rk*.3,oc-Rk*.34,Rk*.6);
+        hg.addColorStop(0,'rgba(210,220,238,'+(.30*wet)+')');
+        hg.addColorStop(1,'rgba(210,220,238,0)');
+        og.fillStyle=hg;
+        oshape(.96,96);og.fill();
+        og.globalCompositeOperation='source-over';
+      }
+    }
+    g.save();
+    g.globalCompositeOperation='multiply';
+    const half=off.width/(2*k);
+    g.drawImage(off,bx-half,by-half,off.width/k,off.width/k);
+    g.restore();
+  }
+  addGrain(g,w,h,.035);
+  /* 三行のコピー */
+  const lns=document.querySelectorAll('.fall-copy .ln');
+  const th=[.16,.40,.62];
+  lns.forEach((el,i)=>el.classList.toggle('on',RM||p>th[i]));
+}
+
+/* ============ 3. ペン先 ============ */
+/* 正面のマクロ。スプライト（縦・先端が上）を回転配置し、注記の座標も同じ行列で出す */
+const nibC=$('#nibC');
+let nibSprite=null,nibBlur=null;
+const NIB={L:1000,baseW:370,shW:480,shY:560,tipW:26,
+  slitY0:52,slitY1:414,holeY:470,holeR:52,tipY:24};
+function makeNibSprite(){
+  const s=1;                     /* スプライト内部解像度 */
+  const W=1100,H=1120,cx=W/2;
+  const c=document.createElement('canvas');c.width=W;c.height=H;
+  const g=c.getContext('2d');
+  const oy=30;                   /* 先端の余白 */
+  function outline(){
+    g.beginPath();
+    g.moveTo(cx-NIB.tipW/2,oy+NIB.tipY-14);
+    g.quadraticCurveTo(cx,oy-4,cx+NIB.tipW/2,oy+NIB.tipY-14);
+    g.bezierCurveTo(cx+140,oy+300,cx+NIB.shW/2,oy+NIB.shY-90,cx+NIB.shW/2,oy+NIB.shY);
+    g.bezierCurveTo(cx+NIB.shW/2,oy+NIB.shY+120,cx+NIB.baseW/2,oy+840,cx+NIB.baseW/2,oy+NIB.L+40);
+    g.lineTo(cx-NIB.baseW/2,oy+NIB.L+40);
+    g.bezierCurveTo(cx-NIB.baseW/2,oy+840,cx-NIB.shW/2,oy+NIB.shY+120,cx-NIB.shW/2,oy+NIB.shY);
+    g.bezierCurveTo(cx-NIB.shW/2,oy+NIB.shY-90,cx-140,oy+300,cx-NIB.tipW/2,oy+NIB.tipY-14);
+    g.closePath();
+  }
+  outline();g.save();g.clip();
+  /* 長手方向の基調（先端側が明るい） */
+  let lg=g.createLinearGradient(0,oy,0,oy+NIB.L);
+  lg.addColorStop(0,'#e9ebec');lg.addColorStop(.3,'#c9cbcc');lg.addColorStop(.56,'#a9abac');
+  lg.addColorStop(.82,'#7c7e80');lg.addColorStop(1,'#54565a');
+  g.fillStyle=lg;g.fillRect(0,0,W,H);
+  /* 幅方向の曲率（左がキーライト側） */
+  let wg=g.createLinearGradient(cx-NIB.shW/2,0,cx+NIB.shW/2,0);
+  wg.addColorStop(0,'rgba(46,48,50,.62)');wg.addColorStop(.18,'rgba(120,122,124,.12)');
+  wg.addColorStop(.42,'rgba(255,255,255,0)');wg.addColorStop(.78,'rgba(52,54,56,.34)');
+  wg.addColorStop(1,'rgba(24,26,28,.72)');
+  g.fillStyle=wg;g.fillRect(0,0,W,H);
+  /* ヘアライン（先端から扇状）：異方性の下地 */
+  g.save();g.globalAlpha=.05;
+  const rr=mulberry(61);
+  for(let i=0;i<130;i++){
+    const a=Math.PI/2+(rr()-.5)*.9;
+    g.strokeStyle=rr()<.5?'#fff':'#222';
+    g.lineWidth=.8;
+    g.beginPath();g.moveTo(cx+(rr()-.5)*20,oy+16);
+    g.lineTo(cx+Math.cos(a)*1300*(rr()>.5?1:-1)*.35,oy+16+Math.sin(a)*1300);
+    g.stroke();
+  }
+  g.restore();
+  /* 異方性の帯：筋目と直交する弧状のハイライト（遠い中心の radial で弧を作る） */
+  function band(yc,wd,a,mode){
+    const C=2600;
+    g.save();g.globalCompositeOperation=mode;
+    let rg=g.createRadialGradient(cx,oy+yc+C,C-wd,cx,oy+yc+C,C+wd);
+    const col=mode==='multiply'?'0,0,0':'255,255,255';
+    rg.addColorStop(0,'rgba('+col+',0)');rg.addColorStop(.5,'rgba('+col+','+a+')');rg.addColorStop(1,'rgba('+col+',0)');
+    g.fillStyle=rg;g.fillRect(0,0,W,H);
+    g.restore();
+  }
+  band(250,120,.5,'screen');      /* 主帯 */
+  band(120,60,.30,'multiply');    /* 主帯の上の暗い環境反射 */
+  band(640,150,.16,'screen');     /* 二次帯 */
+  band(880,120,.22,'multiply');
+  /* 刻印（打刻：光が左上なので上左が暗く下右が明るい） */
+  g.textAlign='center';
+  function stamp(txt,y,size,font){
+    g.font='300 '+size+'px '+(font||'"Jost", sans-serif');
+    g.fillStyle='rgba(30,30,32,.55)';g.fillText(txt,cx-1.2,y-1.2);
+    g.fillStyle='rgba(255,255,255,.4)';g.fillText(txt,cx+1.2,y+1.2);
+    g.fillStyle='rgba(90,92,94,.9)';g.fillText(txt,cx,y);
+  }
+  g.save();
+  g.letterSpacing='6px';
+  stamp('SUMITSUGI',oy+660,44);
+  stamp('14K · 585',oy+724,32);
+  g.restore();
+  /* 装飾の彫り線（肩に沿う二本の弧） */
+  for(const[ry,al]of[[600,.5],[622,.3]]){
+    g.strokeStyle='rgba(40,40,42,'+al+')';g.lineWidth=2.4;
+    g.beginPath();g.arc(cx,oy+ry+560,600,-Math.PI/2-.5,-Math.PI/2+.5);g.stroke();
+    g.strokeStyle='rgba(255,255,255,'+al*.5+')';g.lineWidth=1.2;
+    g.beginPath();g.arc(cx,oy+ry+563,600,-Math.PI/2-.5,-Math.PI/2+.5);g.stroke();
+  }
+  /* 切り割り：一定幅の細い割れ目。左縁が受光、右縁が影 */
+  g.strokeStyle='rgba(22,23,25,.92)';g.lineWidth=6;g.lineCap='round';
+  g.beginPath();g.moveTo(cx,oy+NIB.slitY0);g.lineTo(cx,oy+NIB.slitY1);g.stroke();
+  g.strokeStyle='rgba(255,255,255,.5)';g.lineWidth=1.6;
+  g.beginPath();g.moveTo(cx-4.4,oy+NIB.slitY0+6);g.lineTo(cx-4.4,oy+NIB.slitY1-4);g.stroke();
+  g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=2;
+  g.beginPath();g.moveTo(cx+4.6,oy+NIB.slitY0+6);g.lineTo(cx+4.6,oy+NIB.slitY1-4);g.stroke();
+  /* ハート穴：貫通孔。内壁の上側が影、下側の奥が受光 */
+  g.beginPath();g.arc(cx,oy+NIB.holeY,NIB.holeR,0,7);
+  g.fillStyle='#171310';g.fill();
+  let hg=g.createRadialGradient(cx,oy+NIB.holeY+NIB.holeR*.4,NIB.holeR*.2,cx,oy+NIB.holeY,NIB.holeR);
+  hg.addColorStop(0,'rgba(90,74,58,.35)');hg.addColorStop(1,'rgba(0,0,0,.5)');
+  g.fillStyle=hg;g.fill();
+  g.strokeStyle='rgba(255,255,255,.55)';g.lineWidth=2.2;
+  g.beginPath();g.arc(cx,oy+NIB.holeY,NIB.holeR+1.6,Math.PI*.15,Math.PI*.85);g.stroke();
+  g.strokeStyle='rgba(0,0,0,.6)';g.lineWidth=3;
+  g.beginPath();g.arc(cx,oy+NIB.holeY,NIB.holeR+1.2,Math.PI*1.1,Math.PI*1.95);g.stroke();
+  /* ペンポイント：鏡面。白い点光と暗い環境の映り */
+  const tipY=oy+NIB.tipY;
+  g.beginPath();g.ellipse(cx,tipY,26,30,0,0,7);
+  let tg=g.createRadialGradient(cx-8,tipY-10,2,cx,tipY,30);
+  tg.addColorStop(0,'#ffffff');tg.addColorStop(.35,'#dfe2e4');tg.addColorStop(.7,'#8f9294');tg.addColorStop(1,'#4c4e50');
+  g.fillStyle=tg;g.fill();
+  /* 鏡面に映る暗い部屋の帯 */
+  g.save();g.beginPath();g.ellipse(cx,tipY,26,30,0,0,7);g.clip();
+  g.fillStyle='rgba(30,26,24,.5)';
+  g.beginPath();g.ellipse(cx+6,tipY+10,24,10,-.5,0,7);g.fill();
+  g.fillStyle='rgba(255,255,255,.9)';
+  g.beginPath();g.ellipse(cx-9,tipY-11,4.5,6,-.4,0,7);g.fill();
+  g.restore();
+  g.restore(); /* clip解除 */
+  /* 根元に首軸の口（漆）が覆いかぶさる */
+  g.save();
+  g.beginPath();
+  g.moveTo(cx-W/2,oy+NIB.L+42);
+  g.quadraticCurveTo(cx,oy+NIB.L-96,cx+W/2,oy+NIB.L+42);
+  g.lineTo(cx+W/2,H);g.lineTo(cx-W/2,H);g.closePath();
+  g.clip();
+  let cg=g.createLinearGradient(0,oy+NIB.L-90,0,H);
+  cg.addColorStop(0,'#2c1b12');cg.addColorStop(.4,'#1a100b');cg.addColorStop(1,'#0e0806');
+  g.fillStyle=cg;g.fillRect(0,oy+NIB.L-100,W,H);
+  let cs=g.createLinearGradient(0,oy+NIB.L-96,0,oy+NIB.L-40);
+  cs.addColorStop(0,'rgba(255,232,210,.20)');cs.addColorStop(1,'rgba(255,232,210,0)');
+  g.fillStyle=cs;g.fillRect(0,oy+NIB.L-96,W,60);
+  g.restore();
+  /* 口の影がペン先の根元に落ちる */
+  outline();g.save();g.clip();
+  let os=g.createLinearGradient(0,oy+NIB.L-190,0,oy+NIB.L-60);
+  os.addColorStop(0,'rgba(0,0,0,0)');os.addColorStop(1,'rgba(0,0,0,.55)');
+  g.fillStyle=os;g.fillRect(0,oy+NIB.L-200,W,160);
+  g.restore();
+  /* 被写界深度：根元側だけをぼかした複製 */
+  const b=document.createElement('canvas');b.width=W;b.height=H;
+  const bg2=b.getContext('2d');
+  bg2.filter='blur(4px)';bg2.drawImage(c,0,0);
+  bg2.filter='none';
+  bg2.globalCompositeOperation='destination-in';
+  let mg=bg2.createLinearGradient(0,oy+300,0,oy+NIB.L);
+  mg.addColorStop(0,'rgba(0,0,0,0)');mg.addColorStop(1,'rgba(0,0,0,.9)');
+  bg2.fillStyle=mg;bg2.fillRect(0,0,W,H);
+  nibSprite={c,W,H,oy,cx};nibBlur=b;
+}
+let nibM=null; /* 直近の配置行列 {x,y,ang,sc} */
+function nibToScreen(lx,ly){
+  const m=nibM;
+  const dx=(lx-nibSprite.cx)*m.sc, dy=(ly)*m.sc;
+  const ca=Math.cos(m.ang),sa=Math.sin(m.ang);
+  return [m.x+dx*ca-(dy-m.pivY*m.sc)*sa, m.y+dx*sa+(dy-m.pivY*m.sc)*ca];
+}
+function drawNib(p){
+  const w=nibC.clientWidth,h=nibC.clientHeight;
+  if(nibC.width!==w*DPR){nibC.width=w*DPR;nibC.height=h*DPR}
+  const g=nibC.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  if(!nibSprite)makeNibSprite();
+  const mob=w<760;
+  paintDesk(g,w,h,[w*.6,h*.34,Math.max(w,h)*.8]);
+  const zoom=lerp(1,1.30,sstep(clamp(p*1.25,0,1)));
+  const base=mob?h*.00040:h*.00066;
+  const sc=base*zoom;
+  const ang=mob?.45:.52;               /* 先端を右上へ */
+  const x=w*(mob?.56:.62),y=h*(mob?.47:.58);
+  const pivY=nibSprite.oy+520;         /* ハート穴あたりを回転の芯に */
+  nibM={x,y,ang:-ang,sc,pivY};
+  /* 机に落ちる影（キーライトの反対＝右下へ） */
+  g.save();
+  g.translate(x+34,y+66);
+  g.rotate(-ang);
+  g.filter='blur(18px)';
+  g.fillStyle='rgba(0,0,0,.5)';
+  g.beginPath();g.ellipse(0,0,nibSprite.W*.28*sc,560*sc*.62,Math.PI/2,0,7);g.fill();
+  g.restore();
+  g.save();
+  g.translate(x,y);g.rotate(-ang);
+  g.drawImage(nibSprite.c,-nibSprite.cx*sc,-pivY*sc,nibSprite.W*sc,nibSprite.H*sc);
+  g.drawImage(nibBlur,-nibSprite.cx*sc,-pivY*sc,nibSprite.W*sc,nibSprite.H*sc);
+  g.restore();
+  addGrain(g,w,h,.05);
+  vignette(g,w,h,.5);
+  /* 注記と引き出し線 */
+  const svg=$('#nibLines');
+  svg.setAttribute('viewBox','0 0 '+w+' '+h);
+  const targets={
+    noteSlit:nibToScreen(nibSprite.cx,nibSprite.oy+(NIB.slitY0+NIB.slitY1)/2),
+    noteHole:nibToScreen(nibSprite.cx,nibSprite.oy+NIB.holeY),
+    notePoint:nibToScreen(nibSprite.cx,nibSprite.oy+NIB.tipY)
+  };
+  const on={noteSlit:RM||p>.30,noteHole:RM||p>.52,notePoint:RM||p>.74};
+  /* 注記の置き場：机の暗い左側に縦積み（モバイルは下部） */
+  const lines=[];
+  const dbg=[];
+  let i=0;
+  /* 上から：ペンポイント（先端）→切り割り→ハート穴。引き出し線が交差しない並び */
+  for(const id of['notePoint','noteSlit','noteHole']){
+    const el=document.getElementById(id);
+    let nx,ny;
+    if(mob){nx=w*.07;ny=h*.665+i*h*.100}
+    else{nx=w*.07;ny=h*.30+i*h*.17}
+    el.style.left=nx+'px';el.style.top=ny+'px';
+    el.classList.toggle('on',on[id]);
+    const t=targets[id];
+    const sx=nx+el.offsetWidth+14,sy=ny+14;
+    if(on[id]){
+      const mx=lerp(sx,t[0],.55);
+      const d='M'+sx+' '+sy+' L'+mx+' '+sy+' L'+t[0].toFixed(1)+' '+t[1].toFixed(1);
+      /* 明るい金属の上でも消えないよう、暗い縁取りを下に敷く */
+      lines.push('<path d="'+d+'" fill="none" stroke="rgba(26,19,13,.55)" stroke-width="2.6"/>'+
+        '<path d="'+d+'" fill="none" stroke="rgba(238,231,218,.75)" stroke-width="1"/>'+
+        '<circle cx="'+t[0].toFixed(1)+'" cy="'+t[1].toFixed(1)+'" r="3.6" fill="rgba(26,19,13,.5)"/>'+
+        '<circle cx="'+t[0].toFixed(1)+'" cy="'+t[1].toFixed(1)+'" r="2.4" fill="rgba(238,231,218,.95)"/>');
+      dbg.push({id,end:[t[0],t[1]],target:[t[0],t[1]]});
+    }
+    i++;
+  }
+  svg.innerHTML=lines.join('');
+  window.__nibDebug={targets,lines:dbg,
+    slit:targets.noteSlit,hole:targets.noteHole,point:targets.notePoint};
+}
+
+/* ============ 4. インクの道 ============ */
+const feedC=$('#feedC');
+let flowStep=0,flowAnim=null;
+const STEPS={
+  1:{tank:.10,ink:.42,air:0,pen:0,paperInk:0,gap:0},
+  2:{tank:.16,ink:.58,air:1,pen:0,paperInk:0,gap:0},
+  3:{tank:.24,ink:1,air:.4,pen:0,paperInk:0,gap:1},
+  4:{tank:.32,ink:1,air:.4,pen:1,paperInk:1,gap:0}
+};
+const flowState={tank:.10,ink:.42,air:0,pen:0,paperInk:0,gap:0};
+const flowGoal={...flowState};
+function setFlowStep(s){
+  if(s===flowStep)return;
+  flowStep=s;feedC.dataset.step=s;
+  Object.assign(flowGoal,STEPS[s]);
+  if(RM){Object.assign(flowState,flowGoal);drawFeed();return}
+  if(!flowAnim){
+    const tick=()=>{
+      let done=true;
+      for(const k in flowGoal){
+        const d=flowGoal[k]-flowState[k];
+        if(Math.abs(d)>.005){flowState[k]+=d*.14;done=false}
+        else flowState[k]=flowGoal[k];
+      }
+      drawFeed();
+      if(!done)flowAnim=requestAnimationFrame(tick);else flowAnim=null;
+    };
+    flowAnim=requestAnimationFrame(tick);
+  }
+}
+function drawFeed(){
+  const w=feedC.clientWidth,h=feedC.clientHeight;
+  if(!w)return;
+  if(feedC.width!==w*DPR){feedC.width=w*DPR;feedC.height=h*DPR}
+  const g=feedC.getContext('2d');g.setTransform(DPR*w/560,0,0,DPR*w/560,0,0);
+  const W=560,H=680;
+  g.clearRect(0,0,W,H);
+  const st=flowState;
+  const cx=250;
+  /* 撮影台のパネル：透明のままにせず、淡い光だまりを敷く */
+  let pg0=g.createRadialGradient(W*.46,H*.36,40,W*.5,H*.5,H*.72);
+  pg0.addColorStop(0,'#2b211a');pg0.addColorStop(.6,'#20180f');pg0.addColorStop(1,'#161009');
+  g.fillStyle=pg0;g.fillRect(0,0,W,H);
+  const dy=st.pen*27;              /* 第四段でペン全体が紙へ下りる */
+  g.save();g.translate(0,dy);
+  /* --- タンク --- */
+  const tank={x0:190,x1:310,y0:44,y1:198};
+  const inkTop=tank.y0+22+st.tank*46;
+  /* 部品の落とす影 */
+  g.save();g.filter='blur(10px)';
+  g.fillStyle='rgba(0,0,0,.4)';
+  g.fillRect(tank.x0+16,tank.y0+18,tank.x1-tank.x0+2,tank.y1-tank.y0);
+  g.fillRect(160,220,240,320);
+  g.restore();
+  g.fillStyle='rgba(190,198,206,.07)';
+  g.fillRect(tank.x0,tank.y0,tank.x1-tank.x0,tank.y1-tank.y0);
+  /* インク：円筒なので左右に暗く、左寄りに艶 */
+  let ig=g.createLinearGradient(tank.x0,0,tank.x1,0);
+  ig.addColorStop(0,'#101724');ig.addColorStop(.18,'#28324a');ig.addColorStop(.5,'#0d1320');
+  ig.addColorStop(.9,'#080d16');ig.addColorStop(1,'#141b2b');
+  g.fillStyle=ig;
+  g.fillRect(tank.x0+6,inkTop,tank.x1-tank.x0-12,tank.y1-inkTop-2);
+  g.strokeStyle='rgba(170,185,210,.5)';g.lineWidth=1.4;
+  g.beginPath();g.moveTo(tank.x0+6,inkTop);
+  g.quadraticCurveTo(cx,inkTop+5,tank.x1-6,inkTop);g.stroke();
+  /* 戻ってきた空気の泡 */
+  if(st.air>0){
+    g.save();g.globalAlpha=st.air;
+    for(const[bx,by,br]of[[cx+15,inkTop+46,4.4],[cx+7,inkTop+92,3.2],[cx+19,tank.y1-20,2.6]]){
+      g.beginPath();g.ellipse(bx,by,br*.86,br,0,0,7);
+      g.strokeStyle='rgba(185,200,222,.55)';g.lineWidth=1;g.stroke();
+      g.fillStyle='rgba(255,255,255,.5)';
+      g.beginPath();g.arc(bx-br*.3,by-br*.4,br*.24,0,7);g.fill();
+    }
+    g.restore();
+  }
+  /* タンクのガラス壁 */
+  g.strokeStyle='rgba(205,214,224,.42)';g.lineWidth=2;
+  g.strokeRect(tank.x0,tank.y0,tank.x1-tank.x0,tank.y1-tank.y0);
+  let gg=g.createLinearGradient(tank.x0+8,0,tank.x0+26,0);
+  gg.addColorStop(0,'rgba(255,255,255,0)');gg.addColorStop(.5,'rgba(255,255,255,.26)');gg.addColorStop(1,'rgba(255,255,255,0)');
+  g.fillStyle=gg;g.fillRect(tank.x0+8,tank.y0+4,18,tank.y1-tank.y0-8);
+  /* 口金 */
+  let mgg=g.createLinearGradient(0,tank.y1,0,tank.y1+30);
+  mgg.addColorStop(0,'#b9babd');mgg.addColorStop(.35,'#e8e9ea');mgg.addColorStop(.7,'#77797c');mgg.addColorStop(1,'#4a4c4f');
+  g.fillStyle=mgg;g.fillRect(tank.x0-10,tank.y1,tank.x1-tank.x0+20,30);
+  /* --- 首軸の壁（切断面）：円筒の名残の縦シェーディング --- */
+  for(const[wx0,wx1]of[[148,178],[322,352]]){
+    let wgg=g.createLinearGradient(wx0,0,wx1,0);
+    wgg.addColorStop(0,'#170d08');wgg.addColorStop(.35,'#301d10');wgg.addColorStop(.75,'#1d1109');wgg.addColorStop(1,'#120a06');
+    g.fillStyle=wgg;
+    g.fillRect(wx0,228,wx1-wx0,220);
+    g.fillStyle='rgba(255,228,200,.14)';g.fillRect(wx0+3,228,2,220); /* 切断面のエッジ光 */
+  }
+  /* --- 芯（フィード）本体：切断面はわずかに明るい艶消し黒 --- */
+  let fg=g.createLinearGradient(196,0,304,0);
+  fg.addColorStop(0,'#2a231c');fg.addColorStop(.45,'#1c1612');fg.addColorStop(1,'#120d0a');
+  g.fillStyle=fg;
+  g.fillRect(196,228,108,252);
+  /* 下部は先細り、ペン先の裏へ */
+  g.beginPath();
+  g.moveTo(196,480);g.lineTo(304,480);g.lineTo(258,588);g.lineTo(246,588);g.closePath();
+  g.fillStyle=fg;g.fill();
+  /* 櫛溝（フィン）：一枚ごとに影と受光の縁 */
+  for(let i=0;i<9;i++){
+    const fy=300+i*20;
+    g.fillStyle='#0b0705';
+    g.fillRect(196,fy,40,8);g.fillRect(264,fy,40,8);
+    g.fillStyle='rgba(140,112,84,.22)';
+    g.fillRect(196,fy+8,40,1.2);g.fillRect(264,fy+8,40,1.2);
+    if(st.air>0&&i>5){ /* 第二段：下の溝がインクを一時保持 */
+      g.fillStyle='rgba(18,24,38,'+(.9*st.air)+')';
+      g.fillRect(197,fy+1.6,38,5);g.fillRect(265,fy+1.6,38,5);
+    }
+  }
+  /* インク溝（中央の毛細管） */
+  const chTop=228;
+  const inkFront=lerp(chTop+26,568,Math.min(1,st.ink));
+  g.fillStyle='#070505';
+  g.fillRect(cx-4,chTop,8,340);
+  let cg2=g.createLinearGradient(0,chTop,0,Math.max(inkFront,chTop+1));
+  cg2.addColorStop(0,'#1b2436');cg2.addColorStop(1,'#0d1420');
+  g.fillStyle=cg2;
+  g.fillRect(cx-3,chTop,6,Math.max(0,inkFront-chTop));
+  g.fillStyle='rgba(190,205,230,.30)';
+  g.fillRect(cx-2.4,chTop,1.2,Math.max(0,inkFront-chTop)); /* 濡れた溝の照り */
+  /* 空気の通り道（溝の脇） */
+  g.fillStyle='rgba(150,170,195,'+(0.08+.35*st.air)+')';
+  g.fillRect(cx+9,chTop+30,2.2,300);
+  if(st.air>.5){
+    g.save();g.globalAlpha=(st.air-.5)*2;
+    g.fillStyle='rgba(190,205,225,.85)';
+    for(const by of[310,392,470]){g.beginPath();g.ellipse(cx+10.1,by,1.8,2.6,0,0,7);g.fill()}
+    g.restore();
+  }
+  /* --- ペン先：断面ではフィードに沿う一枚の薄い金属 --- */
+  g.save();
+  g.beginPath();
+  g.moveTo(318,440);
+  g.bezierCurveTo(298,488,271,542,256,591);
+  g.lineTo(248,591);
+  g.bezierCurveTo(261,534,283,470,306,436);
+  g.closePath();
+  let ng=g.createLinearGradient(316,440,250,591);
+  ng.addColorStop(0,'#77797b');ng.addColorStop(.4,'#c9cbcc');ng.addColorStop(.7,'#8f9193');ng.addColorStop(1,'#dedfe0');
+  g.fillStyle=ng;g.fill();
+  /* 受光のエッジ */
+  g.strokeStyle='rgba(255,255,255,.45)';g.lineWidth=1.1;
+  g.beginPath();g.moveTo(306,436);g.bezierCurveTo(283,470,261,534,249,589);g.stroke();
+  g.restore();
+  /* 切り割りへ移ったインク：フィードとペン先のあいだの膜 */
+  const slitInk=Math.max(0,st.ink-.82)/.18;
+  if(slitInk>0){
+    g.save();g.globalAlpha=slitInk;
+    g.strokeStyle='rgba(18,26,42,.95)';g.lineWidth=3.2;g.lineCap='round';
+    g.beginPath();g.moveTo(cx+6,470);g.quadraticCurveTo(cx+7,530,cx+3,588);g.stroke();
+    g.strokeStyle='rgba(180,195,225,.4)';g.lineWidth=1;
+    g.beginPath();g.moveTo(cx+5,474);g.quadraticCurveTo(cx+6,530,cx+2,584);g.stroke();
+    g.restore();
+  }
+  /* 0.02mm の注釈 */
+  if(st.gap>0){
+    g.save();g.globalAlpha=st.gap;
+    g.strokeStyle='rgba(194,168,120,.9)';g.lineWidth=1.2;
+    g.beginPath();g.moveTo(cx+26,540);g.lineTo(cx+64,540);g.stroke();
+    g.beginPath();g.moveTo(cx+14,540);g.lineTo(cx+26,540);g.stroke();
+    g.beginPath();g.moveTo(cx+20,532);g.lineTo(cx+14,540);g.lineTo(cx+20,548);g.stroke();
+    g.fillStyle='rgba(214,190,144,1)';
+    g.font='300 19px "Jost",sans-serif';g.textAlign='left';
+    g.fillText('0.02 mm',cx+70,547);
+    g.restore();
+  }
+  g.restore(); /* dy解除 */
+  /* --- 紙 --- */
+  const py=618,px0=100,px1=460;
+  /* 紙の接地影 */
+  g.save();g.filter='blur(6px)';
+  g.fillStyle='rgba(0,0,0,.5)';g.fillRect(px0+8,py+34,px1-px0-4,14);
+  g.restore();
+  let pgg=g.createLinearGradient(0,py,0,py+40);
+  pgg.addColorStop(0,'#ece5d4');pgg.addColorStop(.75,'#cfc4aa');pgg.addColorStop(1,'#9e9279');
+  g.fillStyle=pgg;g.fillRect(px0,py,px1-px0,40);
+  const rr=mulberry(19);
+  g.save();
+  for(let i=0;i<150;i++){
+    g.globalAlpha=.06+rr()*.12;
+    g.strokeStyle=rr()<.5?'#a3977c':'#fff';
+    g.lineWidth=.8;
+    const fx=px0+rr()*(px1-px0),fy=py+2+rr()*36,fl=4+rr()*14;
+    g.beginPath();g.moveTo(fx,fy);g.lineTo(fx+fl,fy+(rr()-.5)*3);g.stroke();
+  }
+  g.restore();
+  /* 第四段：接触と転写 */
+  if(st.paperInk>0){
+    g.save();g.globalAlpha=st.paperInk;
+    g.fillStyle='rgba(15,19,30,.95)';
+    g.beginPath();g.ellipse(cx+2,py+7,14,5.5,0,0,7);g.fill();
+    for(let i=0;i<9;i++){
+      g.strokeStyle='rgba(22,28,44,.45)';g.lineWidth=.9;
+      const a=(i/9-.5)*2.6;
+      g.beginPath();g.moveTo(cx+2,py+8);
+      g.lineTo(cx+2+Math.sin(a)*18,py+9+Math.cos(a)*5);g.stroke();
+    }
+    g.restore();
+  }
+  /* ラベル */
+  g.fillStyle='rgba(216,207,192,.9)';
+  g.font='500 17px "Shippori Mincho",serif';g.textAlign='left';
+  const lab=(t,lx,ly,tx,ty)=>{
+    g.fillText(t,lx,ly);
+    g.strokeStyle='rgba(216,207,192,.35)';g.lineWidth=1;
+    g.beginPath();g.moveTo(lx-8,ly-5);g.lineTo(tx,ty);g.stroke();
+  };
+  lab('タンク',390,96,314,104);
+  lab('櫛溝',390,318,308,324+dy);
+  lab('切り割り',396,586,cx+16,576+dy);
+  lab('紙',52,600,px0+16,py+8);
+  addGrain(g,W,H,.045);
+  vignette(g,W,H,.34);
+}
+
+/* ============ 5. 一筆 ============ */
+const writeC=$('#writeC');
+let wPaper=null,wPath=null,wLens=null,wNibPart=null;
+function buildWritePath(w,h){
+  /* ほんの少しだけ手の揺らぎのある長い横画。太さは変えない */
+  const x0=w*.12,x1=w*.88,y0=h*.55;
+  const pts=[];const N=140;
+  for(let i=0;i<=N;i++){
+    const t=i/N;
+    const x=lerp(x0,x1,t);
+    const y=y0+Math.sin(t*Math.PI)*(-h*.012)+Math.sin(t*9.2)*h*.0022+t*h*.028;
+    pts.push([x,y]);
+  }
+  const lens=[0];
+  for(let i=1;i<=N;i++)lens.push(lens[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
+  return{pts,lens,total:lens[N]};
+}
+function drawWrite(p){
+  const w=writeC.clientWidth,h=writeC.clientHeight;
+  if(writeC.width!==w*DPR){writeC.width=w*DPR;writeC.height=h*DPR;wPaper=null}
+  const g=writeC.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  if(!wPaper){wPaper=makePaper(w,h);wPath=buildWritePath(w,h);wNibPart=makePen(w<760?w*.00135:w*.00095)}
+  g.drawImage(wPaper,0,0,w,h);
+  const prog=sstep(clamp((p-.08)/.72,0,1));
+  const L=wPath.total*prog;
+  const lw=Math.max(4.5,w*.0052);
+  /* 引かれた分だけを等幅で描く */
+  let tip=null;
+  if(prog>0.001){
+    g.save();
+    g.globalCompositeOperation='multiply';
+    g.strokeStyle='rgba(28,36,52,.94)';
+    g.lineWidth=lw;g.lineCap='round';g.lineJoin='round';
+    g.beginPath();
+    g.moveTo(wPath.pts[0][0],wPath.pts[0][1]);
+    for(let i=1;i<wPath.pts.length;i++){
+      if(wPath.lens[i]>L){
+        const t=(L-wPath.lens[i-1])/(wPath.lens[i]-wPath.lens[i-1]);
+        tip=[lerp(wPath.pts[i-1][0],wPath.pts[i][0],t),lerp(wPath.pts[i-1][1],wPath.pts[i][1],t)];
+        g.lineTo(tip[0],tip[1]);break;
+      }
+      g.lineTo(wPath.pts[i][0],wPath.pts[i][1]);
+      if(i===wPath.pts.length-1)tip=wPath.pts[i];
+    }
+    g.stroke();
+    /* にじみの芯：中央がわずかに濃い（幅は同じ） */
+    g.strokeStyle='rgba(16,22,36,.35)';
+    g.lineWidth=lw*.55;
+    g.stroke();
+    g.restore();
+    /* 書きたての照り：先端の近くだけ */
+    if(prog<0.997&&tip){
+      g.save();
+      g.globalCompositeOperation='screen';
+      g.strokeStyle='rgba(200,212,235,.30)';
+      g.lineWidth=lw*.34;g.lineCap='round';
+      g.beginPath();
+      const Lw=Math.max(0,L-w*.05);
+      let started=false;
+      for(let i=1;i<wPath.pts.length;i++){
+        if(wPath.lens[i]<Lw)continue;
+        if(wPath.lens[i]>L)break;
+        if(!started){g.moveTo(wPath.pts[i][0],wPath.pts[i][1]-lw*.16);started=true}
+        else g.lineTo(wPath.pts[i][0],wPath.pts[i][1]-lw*.16);
+      }
+      g.stroke();
+      g.restore();
+    }
+  }
+  /* 書いているペン：軸は右上のフレーム外へ抜ける */
+  if(tip&&prog<0.997&&prog>0.001){
+    g.save();
+    g.translate(tip[0],tip[1]);
+    /* 紙に落ちる影：筆記角と同じ向きに伸びる */
+    g.save();g.rotate(-Math.PI*0.285);
+    g.filter='blur(9px)';
+    g.fillStyle='rgba(58,48,36,.34)';
+    g.beginPath();g.ellipse(wNibPart.len*.30,26,wNibPart.len*.34,wNibPart.r*.9,0,0,7);g.fill();
+    g.filter='blur(3px)';
+    g.fillStyle='rgba(48,40,30,.4)';
+    g.beginPath();g.ellipse(16,7,26,7,-.2,0,7);g.fill();
+    g.restore();
+    g.rotate(-Math.PI*0.285);         /* 約51度の筆記角 */
+    g.scale(-1,1);
+    const pt=wNibPart.tip;
+    g.drawImage(wNibPart.c,-pt[0],-pt[1]);
+    g.drawImage(wNibPart.blur,-pt[0],-pt[1]);
+    /* ペンポイントは書いている間インクを含んで暗い */
+    g.fillStyle='rgba(24,30,44,.85)';
+    g.beginPath();g.arc(0,0,3.4,0,7);g.fill();
+    g.restore();
+  }
+  addGrain(g,w,h,.035);
+  $('.write-note').classList.toggle('on',RM||p>.78);
+}
+
+/* ============ 6. 分解 ============ */
+const partsC=$('#partsC');
+let exParts=null;
+function drawParts(p){
+  const w=partsC.clientWidth,h=partsC.clientHeight;
+  if(partsC.width!==w*DPR){partsC.width=w*DPR;partsC.height=h*DPR;exParts=null}
+  const g=partsC.getContext('2d');g.setTransform(DPR,0,0,DPR,0,0);
+  const mob=w<760;
+  const S=mob?(h*.70)/1760:w/2200;
+  if(!exParts){
+    exParts=[makePart('cap',S),makePart('section',S),makePart('barrel',S),makePart('conv',S)];
+  }
+  paintDesk(g,w,h,[w*.5,h*.42,Math.max(w,h)*.85]);
+  const t=sstep(clamp((p-.12)/.66,0,1));
+  const widths=exParts.map(pt=>(pt.axis[1]-pt.axis[0]));
+  const gap0=8*S,gap1=(mob?110:95)*S;
+  const gap=lerp(gap0,gap1,t);
+  const totalW=widths.reduce((a,b)=>a+b,0)+gap*3;
+  const centers=[];
+  g.save();
+  let cy;
+  if(mob){
+    /* 縦持ちでは軸を縦に：90度回した座標系で同じ並びを描く */
+    g.translate(w*.44,h*.57);g.rotate(Math.PI/2);
+    cy=0;
+  }else{
+    g.translate(w/2,h*.54);
+    cy=0;
+  }
+  let x=-totalW/2;
+  for(let idx=0;idx<4;idx++){
+    const pt=exParts[idx];
+    const cw=widths[idx];
+    const cxp=x+cw/2;
+    centers.push(cxp);
+    g.save();
+    g.translate(cxp,cy);
+    /* 接地影 */
+    g.save();
+    g.translate(0,pt.r*.96);g.scale(1,.2);
+    let sg=g.createRadialGradient(0,0,pt.r*.3,0,0,cw*.7);
+    sg.addColorStop(0,'rgba(0,0,0,.6)');sg.addColorStop(.55,'rgba(0,0,0,.28)');sg.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=sg;g.beginPath();g.ellipse(0,8,cw*.66,pt.r*2.4,0,0,7);g.fill();
+    g.restore();
+    if(idx===1)g.scale(-1,1);      /* 首軸：ペン先をキャップ側（左）へ */
+    g.drawImage(pt.c,-(pt.axis[0]+pt.axis[1])/2,-pt.h/2);
+    g.restore();
+    x+=cw+gap;
+  }
+  g.restore();
+  addGrain(g,w,h,.045);
+  vignette(g,w,h,.46);
+  /* ラベル位置：部品の中心に合わせる */
+  const names=['pl0','pl1','pl2','pl3'];
+  names.forEach((id,i)=>{
+    const el=document.getElementById(id);
+    const tick=el.querySelector('i');
+    if(mob){
+      el.style.left=(w*.60)+'px';
+      el.style.top=(h*.57+centers[i]-14)+'px';
+      el.style.transform='none';
+      el.style.textAlign='left';
+      if(tick)tick.style.display='none';
+    }else{
+      el.style.left=centers[i]+w/2+'px';
+      el.style.top=(h*.54+exParts[i].r+34)+'px';
+      el.style.transform='';
+      el.style.textAlign='';
+      if(tick)tick.style.display='';
+    }
+    el.classList.toggle('on',RM||t>.55);
+  });
+}
+
+/* ============ 7. 十一日 ============ */
+const daysTall=$('#daysTall'),dtrack=$('#dtrack');
+function layoutDays(){
+  if(RM){daysTall.style.height='auto';return 0}
+  const over=Math.max(0,dtrack.scrollWidth-innerWidth);
+  daysTall.style.height=(innerHeight+over)+'px';
+  return over;
+}
+let daysOver=0;
+function drawDays(p){
+  if(RM)return;
+  dtrack.style.transform='translateX('+(-daysOver*p)+'px)';
+}
+/* 漆の七回：色見本のしずく */
+(()=>{
+  const chips=$('.chips');
+  const cols=['#7a5434','#6d4a2c','#5f3f24','#52351d','#452b16','#38220f','#2a180a'];
+  chips.innerHTML=cols.map(c=>'<i style="background:radial-gradient(circle at 38% 34%,'+c+' 55%,#160c05)"></i>').join('');
+})();
+
+/* ============ 8. 価格 ============ */
+$('#notify').addEventListener('click',function(){
+  if(this.disabled)return;
+  this.disabled=true;
+  this.textContent='承りました。……とはいえ、これは架空の製品です。';
+},{once:false});
+
+/* ============ シーン駆動 ============ */
+const scenes=[
+  {sec:$('#fall'),stage:$('#fall .stage'),draw:drawFall,last:-1},
+  {sec:$('#nib'),stage:$('#nib .stage'),draw:drawNib,last:-1},
+  {sec:$('#write'),stage:$('#write .stage'),draw:drawWrite,last:-1},
+  {sec:$('#parts'),stage:$('#parts .stage'),draw:drawParts,last:-1},
+  {sec:daysTall,stage:$('#days .stage'),draw:drawDays,last:-1},
+];
+let ticking=false;
+function frame(){
+  const vh=innerHeight;
+  for(const s of scenes){
+    const r=s.sec.getBoundingClientRect();
+    if(r.bottom<-80||r.top>vh+80)continue;
+    const travel=Math.max(1,s.sec.offsetHeight-s.stage.offsetHeight);
+    const p=RM?1:clamp(-r.top/travel,0,1);
+    if(Math.abs(p-s.last)>0.0012){s.last=p;s.draw(p)}
+  }
+  /* フロー：中央に最も近い段を有効に */
+  const blocks=document.querySelectorAll('.fstep');
+  let best=1,bd=1e9;
+  blocks.forEach(b=>{
+    const r=b.getBoundingClientRect();
+    const d=Math.abs((r.top+r.bottom)/2-vh*.5);
+    if(d<bd){bd=d;best=+b.dataset.flow}
+  });
+  const fr=$('#flow').getBoundingClientRect();
+  if(fr.bottom>0&&fr.top<vh)setFlowStep(best);
+}
+addEventListener('scroll',()=>{
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{ticking=false;frame()});
+},{passive:true});
+
+function rebuild(){
+  fallPaper=null;wPaper=null;exParts=null;nibSprite=null;
+  drawHero();
+  layoutDaysWrap();
+  for(const s of scenes)s.last=-1;
+  if(RM){
+    for(const s of scenes)s.draw(1);
+    Object.assign(flowState,STEPS[4]);feedC.dataset.step=4;drawFeed();
+  }else{
+    frame();
+    drawFeed();
+  }
+}
+function layoutDaysWrap(){daysOver=layoutDays()}
+let rsz=null;
+addEventListener('resize',()=>{clearTimeout(rsz);rsz=setTimeout(rebuild,180)});
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>{rebuild()});
+rebuild();
+})();
+</script>
+
+</body>
+</html>

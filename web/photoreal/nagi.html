@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ホテル凪 — 尾道</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap">
+</head>
+<body>
+<style>
+:root{
+  --paper:#f2eee5;
+  --card:#faf8f2;
+  --ink:#262119;
+  --ink2:#5d564a;
+  --line:#ddd6c7;
+  --sea:#33566b;
+  --sea-deep:#1e3648;
+  --night-cell:#c8dae3;
+  --full-txt:#8c2f1f;
+  --full-bg:#f4e7e1;
+  --plate:rgba(14,17,22,.84);
+  --plate-txt:#f4f1ea;
+  --plate-txt2:rgba(244,241,234,.80);
+}
+html{scroll-behavior:auto}
+body{margin:0;background:var(--paper);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+*{box-sizing:border-box}
+:focus-visible{outline:2px solid var(--sea);outline-offset:2px}
+
+/* ---------- 前半：一日 ---------- */
+.day{height:1300svh;position:relative;background:#0a1220}
+.stage{position:sticky;top:0;height:100svh;overflow:hidden}
+#view{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+.plate{background:var(--plate);color:var(--plate-txt);
+  -webkit-backdrop-filter:blur(7px);backdrop-filter:blur(7px);border-radius:2px}
+.brand{position:absolute;top:clamp(16px,3vh,30px);left:clamp(16px,3.4vw,36px);
+  padding:12px 18px 13px;display:flex;align-items:baseline;gap:14px}
+.brand .kanji{font-family:"Shippori Mincho",serif;font-weight:500;font-size:27px;line-height:1}
+.brand .en{font-family:"EB Garamond",serif;font-size:12.5px;letter-spacing:.34em;color:var(--plate-txt2)}
+.clock{position:absolute;top:clamp(16px,3vh,30px);right:clamp(16px,3.4vw,36px);
+  padding:9px 15px;font-family:"IBM Plex Mono",monospace;font-size:15px;
+  letter-spacing:.12em;font-variant-numeric:tabular-nums}
+
+.event{position:absolute;left:clamp(18px,4.6vw,72px);bottom:clamp(64px,13vh,128px);
+  width:min(408px,calc(100vw - 36px));padding:22px 26px 24px;
+  transition:opacity .5s ease,transform .5s ease}
+.event.swap{opacity:0;transform:translateY(8px);transition:none}
+.event .etime{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.22em;
+  color:var(--plate-txt2);margin:0 0 8px}
+.event h2{font-family:"Shippori Mincho",serif;font-weight:500;font-size:23px;
+  letter-spacing:.1em;margin:0 0 10px}
+.event p{font-size:14px;line-height:2.05;margin:0;color:var(--plate-txt)}
+.event .intro-en{font-family:"EB Garamond",serif;font-size:12px;letter-spacing:.3em;
+  color:var(--plate-txt2);margin:10px 0 0}
+
+.hint{position:absolute;left:50%;transform:translateX(-50%);
+  bottom:clamp(14px,3vh,26px);padding:7px 14px;font-family:"IBM Plex Mono",monospace;
+  font-size:11px;letter-spacing:.2em;color:var(--plate-txt2);transition:opacity .6s}
+.hint.gone{opacity:0}
+
+/* reduced motion では固定を解き、完成形（夕凪）で静止し、六つの出来事は日誌として並べる */
+.daylog{display:none}
+@media (prefers-reduced-motion:reduce){
+  .day{height:auto}
+  .stage{position:relative}
+  .hint{display:none}
+  .daylog{display:block;background:#101820;color:var(--plate-txt);padding:64px 24px 72px}
+  .daylog .inner{max-width:680px;margin:0 auto}
+  .daylog h2{font-family:"Shippori Mincho",serif;font-weight:500;letter-spacing:.14em;
+    font-size:22px;margin:0 0 34px}
+  .daylog ol{list-style:none;margin:0;padding:0}
+  .daylog li{padding:20px 0;border-top:1px solid rgba(244,241,234,.16)}
+  .daylog .etime{font-family:"IBM Plex Mono",monospace;font-size:12px;
+    letter-spacing:.22em;color:var(--plate-txt2);margin:0 0 6px}
+  .daylog h3{font-family:"Shippori Mincho",serif;font-weight:500;font-size:18px;
+    letter-spacing:.1em;margin:0 0 8px}
+  .daylog p{margin:0;font-size:14px;line-height:2;color:var(--plate-txt2)}
+}
+
+/* ---------- 後半：実務 ---------- */
+.latter{background:var(--paper)}
+.latter section{max-width:1140px;margin:0 auto;
+  padding:clamp(64px,9vw,112px) clamp(18px,4vw,32px)}
+.seclabel{font-family:"EB Garamond",serif;font-size:12.5px;letter-spacing:.34em;
+  color:var(--sea);margin:0 0 14px}
+h2.sec{font-family:"Shippori Mincho",serif;font-weight:600;letter-spacing:.16em;
+  font-size:clamp(25px,3.2vw,33px);margin:0 0 18px}
+.lead{font-size:14.5px;line-height:2.15;color:var(--ink2);max-width:41em;margin:0 0 44px}
+
+.rooms{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(18px,2.4vw,30px)}
+.room{background:var(--card);border:1px solid var(--line);border-radius:3px;overflow:hidden;
+  box-shadow:0 10px 30px -18px rgba(38,33,25,.35)}
+.room canvas{display:block;width:100%;aspect-ratio:8/5;background:#22303c}
+.room .body{padding:20px 22px 24px}
+.room .nm{display:flex;align-items:baseline;gap:12px;margin:0 0 4px}
+.room .nm b{font-family:"Shippori Mincho",serif;font-weight:600;font-size:21px;letter-spacing:.12em}
+.room .nm span{font-family:"EB Garamond",serif;font-size:12px;letter-spacing:.24em;color:var(--ink2)}
+.room .spec{font-size:12.5px;color:var(--ink2);letter-spacing:.06em;margin:0 0 12px}
+.room .spec b{color:var(--ink);font-weight:700;font-size:14px}
+.room .light{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;
+  letter-spacing:.14em;color:var(--sea);border:1px solid var(--line);
+  border-radius:2px;padding:3px 8px;margin:0 0 12px}
+.room p{margin:0;font-size:13.5px;line-height:2;color:var(--ink)}
+
+.bookwrap{display:grid;grid-template-columns:minmax(0,1fr) 372px;gap:clamp(24px,3.4vw,44px);align-items:start}
+.cal{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:18px 18px 14px}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin:0 0 14px}
+.cal-head .m{font-family:"Shippori Mincho",serif;font-weight:600;font-size:19px;letter-spacing:.1em}
+.cal-head button{width:36px;height:36px;border:1px solid var(--line);background:var(--card);
+  border-radius:50%;font-size:15px;color:var(--ink);cursor:pointer;line-height:1}
+.cal-head button:disabled{opacity:.32;cursor:default}
+.wd{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:0 0 4px}
+.wd span{text-align:center;font-size:11px;letter-spacing:.1em;color:var(--ink2);padding:4px 0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cell{position:relative;min-height:56px;border:1px solid var(--line);background:var(--card);
+  border-radius:3px;padding:5px 6px;text-align:left;font:inherit;cursor:pointer;color:var(--ink)}
+.cell .d{font-size:13px;font-weight:500}
+.cell .p{display:block;font-family:"IBM Plex Mono",monospace;font-size:10px;
+  letter-spacing:.02em;color:var(--ink2);margin-top:8px}
+.cell.blank{border-color:transparent;background:transparent;cursor:default}
+.cell.past{border-color:transparent;background:transparent;color:#6d675c;cursor:default}
+.cell.full{background:var(--full-bg);border-color:#e6d2c8;color:var(--full-txt);cursor:default}
+.cell.full .st{font-size:11px;font-weight:700;letter-spacing:.14em;margin-top:8px;display:block}
+.cell.night{background:var(--night-cell);border-color:#a9c2ce}
+.cell.night .p{color:#31414c}
+.cell.edge{background:var(--sea-deep);border-color:var(--sea-deep);color:#f4f1ea}
+.cell.edge .p{color:rgba(244,241,234,.82)}
+.cell.edge .dep{font-size:10px;letter-spacing:.1em;color:rgba(244,241,234,.82);display:block;margin-top:8px}
+.cell:not(:disabled):hover{border-color:var(--sea)}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin:14px 2px 0;font-size:11.5px;color:var(--ink2)}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:2px;vertical-align:-2px;
+  margin-right:6px;border:1px solid var(--line)}
+.legend .l-edge i{background:var(--sea-deep);border-color:var(--sea-deep)}
+.legend .l-night i{background:var(--night-cell);border-color:#a9c2ce}
+.legend .l-open i{background:var(--card)}
+.legend .l-full i{background:var(--full-bg);border-color:#e6d2c8}
+.calnote{font-size:11.5px;color:var(--ink2);margin:10px 2px 0}
+
+.sum{background:var(--card);border:1px solid var(--line);border-radius:3px;padding:22px 24px 24px}
+.sum h3{font-family:"Shippori Mincho",serif;font-weight:600;font-size:17px;
+  letter-spacing:.14em;margin:0 0 16px}
+.rsel{display:grid;gap:8px;margin:0 0 20px}
+.rsel button{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  border:1px solid var(--line);background:var(--card);border-radius:3px;
+  padding:10px 14px;font:inherit;font-size:13.5px;cursor:pointer;color:var(--ink)}
+.rsel button .en{font-family:"EB Garamond",serif;font-size:11px;letter-spacing:.18em;color:var(--ink2)}
+.rsel button .pr{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink2)}
+.rsel button[aria-pressed="true"]{border-color:var(--sea-deep);background:var(--sea-deep);color:#f4f1ea}
+.rsel button[aria-pressed="true"] .en,.rsel button[aria-pressed="true"] .pr{color:rgba(244,241,234,.85)}
+.sum .period{font-size:13.5px;margin:0 0 12px;min-height:1.5em}
+.sum .msg{font-size:13px;line-height:1.9;color:var(--full-txt);min-height:1.2em;margin:0 0 10px}
+.sum .msg.ok{color:var(--ink)}
+.breakdown{width:100%;border-collapse:collapse;margin:0 0 14px;font-size:12.5px}
+.breakdown td{padding:6px 2px;border-bottom:1px solid var(--line)}
+.breakdown td:last-child{text-align:right;font-family:"IBM Plex Mono",monospace}
+.breakdown .wk{color:var(--ink2);padding-left:8px}
+.totalrow{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 18px}
+.totalrow .lbl{font-size:12.5px;color:var(--ink2)}
+.totalrow .tt{font-family:"Shippori Mincho",serif;font-weight:600;font-size:24px;letter-spacing:.04em}
+.gobtn{width:100%;padding:14px;border:none;border-radius:3px;background:var(--sea-deep);
+  color:#f4f1ea;font:inherit;font-size:14px;letter-spacing:.2em;cursor:pointer}
+.gobtn:disabled{background:#b9b2a3;cursor:default}
+
+.infogrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:3px;overflow:hidden}
+.infogrid div{background:var(--card);padding:22px 24px 26px}
+.infogrid dt{font-family:"EB Garamond",serif;font-size:12px;letter-spacing:.28em;
+  color:var(--sea);margin:0 0 10px}
+.infogrid dd{margin:0;font-size:13.5px;line-height:2;color:var(--ink)}
+footer{border-top:1px solid var(--line);padding:44px 24px 56px;text-align:center;
+  font-size:12px;color:var(--ink2);line-height:2}
+
+@media (max-width:560px){
+  .brand .en{display:none}
+  .brand{padding:10px 15px}
+}
+@media (max-width:960px){
+  .rooms{grid-template-columns:1fr}
+  .bookwrap{grid-template-columns:1fr}
+  .infogrid{grid-template-columns:1fr}
+  .cell{min-height:50px;padding:4px 5px}
+  .cell .p{font-size:9px;letter-spacing:0}
+}
+</style>
+
+<div class="day" id="day">
+  <div class="stage" id="stage">
+    <canvas id="view"></canvas>
+    <header class="brand plate"><span class="kanji">凪</span><span class="en">HOTEL NAGI · ONOMICHI</span></header>
+    <div class="clock plate" id="clock">05:00</div>
+    <div class="event plate" id="eventCard">
+      <p class="etime" id="evTime">尾道の丘 — 全14室</p>
+      <h2 id="evHead">夕凪の宿</h2>
+      <p id="evBody">陸から吹く風と海から吹く風が入れ替わるとき、風が三十分だけ止まります。名前は、そこから取りました。窓の外は瀬戸内海。この画面のなかで、一日が経ちます。</p>
+    </div>
+    <div class="hint plate" id="hint">SCROLL — 一日が進みます</div>
+  </div>
+  <div class="daylog"><div class="inner">
+    <h2>一日の記録</h2>
+    <ol id="daylogList"></ol>
+  </div></div>
+</div>
+
+<main class="latter">
+  <section id="rooms">
+    <p class="seclabel">ROOMS</p>
+    <h2 class="sec">客室</h2>
+    <p class="lead">全14室。窓の向きが違うので、光の来る時間が部屋ごとに違います。絵は、その部屋の光がいちばんいい時刻のものです。</p>
+    <div class="rooms" id="roomCards"></div>
+  </section>
+
+  <section id="stay">
+    <p class="seclabel">RATES &amp; AVAILABILITY</p>
+    <h2 class="sec">料金と空室</h2>
+    <p class="lead">日付を選ぶと、泊数と合計が出ます。金・土と休前日は料金が上がります。「満」は満室です。</p>
+    <div class="bookwrap">
+      <div>
+        <div class="cal">
+          <div class="cal-head">
+            <button id="prevM" aria-label="前の月">‹</button>
+            <div class="m" id="monthLabel"></div>
+            <button id="nextM" aria-label="次の月">›</button>
+          </div>
+          <div class="wd"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+          <div class="grid" id="calGrid"></div>
+        </div>
+        <div class="legend">
+          <span class="l-edge"><i></i>選んだ日</span>
+          <span class="l-night"><i></i>宿泊する夜</span>
+          <span class="l-open"><i></i>空室あり</span>
+          <span class="l-full"><i></i>満室</span>
+        </div>
+        <p class="calnote">出発日は、その夜の料金がかかりません。</p>
+      </div>
+      <aside class="sum">
+        <h3>ご滞在</h3>
+        <div class="rsel" id="roomSel" role="group" aria-label="部屋タイプ"></div>
+        <p class="period" id="sumPeriod">日付を選んでください。一度目が泊まる日、二度目が出発日です。</p>
+        <p class="msg" id="sumMsg"></p>
+        <table class="breakdown" id="sumTable" hidden><tbody></tbody></table>
+        <div class="totalrow" id="sumTotal" hidden>
+          <span class="lbl" id="sumNights"></span><span class="tt" id="sumYen"></span>
+        </div>
+        <button class="gobtn" id="goBtn" disabled>この日程で問い合わせる</button>
+      </aside>
+    </div>
+  </section>
+
+  <section id="before">
+    <p class="seclabel">INFORMATION</p>
+    <h2 class="sec">泊まる前に</h2>
+    <dl class="infogrid">
+      <div><dt>CHECK IN</dt><dd>15:00 — 22:00 / チェックアウト 11:00</dd></div>
+      <div><dt>ROOMS</dt><dd>全14室 / 全室禁煙 / エレベーターは1基</dd></div>
+      <div><dt>ACCESS</dt><dd>JR尾道駅から徒歩12分。途中に坂と階段があります。大きな荷物は駅からお運びします。</dd></div>
+      <div><dt>PARKING</dt><dd>4台（要予約・無料）</dd></div>
+      <div><dt>BAR</dt><dd>18:00 — 24:00 / 宿泊されていない方も入れます。灯りは絞ってあります。</dd></div>
+      <div><dt>BREAKFAST</dt><dd>7:00 — 10:00 / ¥2,200 / パンは坂の下のパン屋から届きます。</dd></div>
+    </dl>
+  </section>
+
+  <footer>架空のホテルです。実装デモとして制作しました。実在の施設・ブランドとは関係ありません。</footer>
+</main>
+
+<script>
+document.documentElement.lang = 'ja';
+'use strict';
+
+/* ================= 描画（WebGL / 部屋のレイキャスト） =================
+   部屋・窓・家具を解析的に交差判定し、太陽光は「点から太陽方向へ伸ばした線が
+   窓の開口を通るか」で判定する。床の光の帯・桟の影・壁を昇る光・家具の影が、
+   すべて同じひとつの太陽から自動的に導かれる。 */
+
+const VERT = `
+attribute vec2 aP; void main(){ gl_Position = vec4(aP,0.,1.); }`;
+
+const FRAG = `
+precision highp float;
+uniform vec2  uRes;
+uniform float uT;        // 時刻（5〜23）
+uniform vec3  uCam;      // カメラ位置
+uniform float uYaw, uPitch, uFocal;
+uniform vec3  uSunDir;   // 太陽へ向かう単位ベクトル（水平線下も許す）
+uniform float uSunAz, uElRaw, uSunI;
+uniform vec3  uSunCol, uZen, uHor, uAmb, uSeaC;
+uniform float uGlow, uLamp, uShore, uExpo;
+
+/* 部屋の寸法 */
+const float WX0=-2.05, WX1=1.55, WY0=0.40, WY1=2.52; /* 窓開口 */
+const float MX1=-0.85, MX2=0.75, MW=0.030;           /* 縦桟 */
+const vec3 RMIN = vec3(-3.4, 0.0, 0.0);
+const vec3 RMAX = vec3( 2.2, 3.0, 7.2);
+/* 家具 */
+const vec3 BED0 = vec3( 0.68, 0.00, 2.44), BED1 = vec3( 2.14, 0.30, 4.70);
+const vec3 DUV0 = vec3( 0.62, 0.30, 2.36), DUV1 = vec3( 2.20, 0.58, 4.78);
+const vec3 PIL0 = vec3( 0.95, 0.58, 2.52), PIL1 = vec3( 1.85, 0.72, 2.98);
+const vec3 BEN0 = vec3(-2.25, 0.00, 0.55), BEN1 = vec3(-1.15, 0.33, 1.00);
+const vec3 POL0 = vec3(-2.93, 0.00, 1.07), POL1 = vec3(-2.87, 1.16, 1.13);
+const vec3 SHD0 = vec3(-3.08, 1.08, 0.92), SHD1 = vec3(-2.72, 1.46, 1.28);
+const vec3 LAMPP = vec3(-2.90, 1.27, 1.10);
+/* 右手の薄いリネンカーテン */
+const float CZ = 0.14, CX0 = 1.16, CX1 = 1.80, CY0 = 0.30, CY1 = 2.62;
+
+float h21(vec2 p){ p=fract(p*vec2(123.34,345.45)); p+=dot(p,p+34.345); return fract(p.x*p.y); }
+float vnoise(vec2 p){
+  vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+  float a=h21(i), b=h21(i+vec2(1.,0.)), c=h21(i+vec2(0.,1.)), d=h21(i+vec2(1.,1.));
+  return mix(mix(a,b,f.x), mix(c,d,f.x), f.y);
+}
+float fbm(vec2 p){
+  float v=0., a=.5;
+  for(int i=0;i<4;i++){ v+=a*vnoise(p); p=p*2.03+vec2(17.,9.); a*=.5; }
+  return v;
+}
+float rectSoft(vec2 p, vec2 a, vec2 b, float w){
+  return smoothstep(-w,w,p.x-a.x)*smoothstep(-w,w,b.x-p.x)
+       * smoothstep(-w,w,p.y-a.y)*smoothstep(-w,w,b.y-p.y);
+}
+float sdRect(vec2 p, vec2 a, vec2 b){
+  vec2 c=(a+b)*.5, h=(b-a)*.5, q=abs(p-c)-h;
+  return length(max(q,0.)) + min(max(q.x,q.y),0.);
+}
+
+/* 開口＋桟。w は半影の幅（窓から離れるほど柔らかく） */
+float apertureVis(vec2 q, float w){
+  float v = rectSoft(q, vec2(WX0,WY0), vec2(WX1,WY1), w);
+  v *= 1.0 - smoothstep(MW+w, MW-w, abs(q.x-MX1));
+  v *= 1.0 - smoothstep(MW+w, MW-w, abs(q.x-MX2));
+  return clamp(v, 0., 1.);
+}
+/* p から太陽が見えるか（窓開口を通るか） */
+float sunVis(vec3 p){
+  if(uSunDir.z > -0.02) return 0.;
+  float t = p.z / (-uSunDir.z);
+  vec2 q = p.xy + uSunDir.xy * t;
+  float w = 0.008 + 0.009*t; /* 太陽の視直径ぶんだけ、離れるほど滲む */
+  float v = apertureVis(q, w);
+  if(p.z > CZ){ /* カーテン越しの光は落とす（帯とカーテンの明るさが食い違わないように） */
+    float t2 = (p.z - CZ) / (-uSunDir.z);
+    vec2 q2 = p.xy + uSunDir.xy * t2;
+    float c = rectSoft(q2, vec2(CX0,CY0), vec2(CX1,CY1), 0.02 + 0.012*t2);
+    v *= 1.0 - 0.68*c;
+  }
+  return v;
+}
+/* 床に落ちる家具の影（箱を高さ方向に3点サンプルして面光源ふうに） */
+float boxShadowFloor(vec2 xz, vec2 a, vec2 b, float hTop){
+  if(uSunDir.y < 0.03) return 0.;
+  vec2 off = -uSunDir.xz / uSunDir.y;
+  float occ = 0.;
+  for(int i=0;i<3;i++){
+    float k = 0.18 + 0.37*float(i);
+    float y = hTop*k;
+    float w = 0.02 + 0.14*y*length(off)*0.4 + 0.02*y;
+    occ = max(occ, rectSoft(xz - off*y, a, b, w));
+  }
+  return occ;
+}
+vec2 boxHit(vec3 ro, vec3 rd, vec3 b0, vec3 b1, out vec3 n){
+  vec3 inv = 1.0/rd;
+  vec3 t0=(b0-ro)*inv, t1=(b1-ro)*inv;
+  vec3 tsm=min(t0,t1), tbg=max(t0,t1);
+  float tN=max(max(tsm.x,tsm.y),tsm.z);
+  float tF=min(min(tbg.x,tbg.y),tbg.z);
+  n = -sign(rd) * step(tsm.yzx,tsm.xyz) * step(tsm.zxy,tsm.xyz);
+  return vec2(tN,tF);
+}
+
+/* ---- 屋外 ---- */
+float hillH(float a){
+  float gap = 1.0 - exp(-pow((a+0.31)/0.14,2.)) * 1.0 - exp(-pow((a-0.26)/0.14,2.)) * 1.0;
+  gap = clamp(gap, 0., 1.);
+  return (0.010 + 0.026*fbm(vec2(a*2.6+11.0, 3.0))) * gap;
+}
+vec3 skyCol(vec3 d){
+  float y = max(d.y, 0.0);
+  vec3 c = mix(uHor, uZen, pow(clamp(y*1.9,0.,1.), 0.72));
+  float cs = max(dot(d, uSunDir), 0.);
+  c += uSunCol * uGlow * (0.26*pow(cs,3.) + 0.55*pow(cs,24.));
+  return c;
+}
+vec3 outside(vec3 d){
+  float a = atan(d.x, -d.z);
+  float hills = hillH(a);
+  vec3 col;
+  float dayL = clamp(length(uAmb)*4.2, 0., 1.);
+  if(d.y >= hills){
+    col = skyCol(d);
+    /* 暗くなったら、かすかな星 */
+    float night = clamp(-uElRaw*6.-0.15, 0., 1.);
+    vec2 sc = floor(vec2(a*800., d.y*800.));
+    float star = step(0.9987, h21(sc)) * h21(sc+3.1);
+    col += vec3(.9,.93,1.) * star * night * smoothstep(0.03, 0.22, d.y) * 0.30;
+    if(uElRaw > -0.02){ /* 太陽は水平線から。海には潜らせない（海・島の画素では描かない） */
+      float cs = dot(d, uSunDir);
+      float disk = smoothstep(0.99974, 0.99988, cs);
+      float dint = mix(0.85, 3.2, smoothstep(0.02, 0.35, uElRaw));
+      col += uSunCol * disk * dint;
+      col += uSunCol * 0.85 * pow(max(cs,0.), 140.) * clamp(uElRaw*20.+0.4,0.2,1.);
+    }
+  } else if(d.y >= 0.0){
+    /* 対岸の山なみ */
+    float f = clamp(d.y/max(hills,1e-4), 0., 1.);
+    vec3 isl = mix(vec3(.28,.315,.31), vec3(.17,.225,.215), f) * (0.28+0.8*dayL) * (0.93+0.07*fbm(vec2(a*40., f*5.)));
+    isl = mix(isl, skyCol(vec3(d.x, 0.003, d.z)), 0.42 + 0.2*(1.-dayL));
+    float sp = step(.93, h21(floor(vec2(a*230., f*26.)))) * smoothstep(.3,.05,f);
+    isl += vec3(.5,.48,.44)*sp*0.16*dayL;
+    col = isl;
+    /* 対岸の家々の明かり */
+    float cell = floor(a*240.);
+    float gate = step(0.45, h21(vec2(cell,23.)));
+    float lx = (cell + 0.2+0.6*h21(vec2(cell,7.)))/240.;
+    float ly = h21(vec2(cell,13.)) * hillH(lx)*0.55;
+    vec2 dd = vec2((a-lx)*620., (d.y-ly)*620.);
+    col += vec3(1.,.72,.42) * exp(-dot(dd,dd)) * uShore * gate * (0.4+0.6*h21(vec2(cell,3.)));
+  } else {
+    /* 海 */
+    float mu = -d.y;
+    vec3 skyR = mix(uHor, uZen, pow(clamp(mu*2.6,0.,1.), .8));
+    col = mix(skyR*0.94, uSeaC, clamp(mu*4.6, .14, .90));
+    /* 波は横へ走る帯。水平線際は鏡になるので模様を消す */
+    float per = 1.0/(mu+0.035);
+    float amp = smoothstep(0.004, 0.05, mu);
+    float st  = vnoise(vec2(a*26.,     per*1.4 + uT*0.5));
+    float st2 = vnoise(vec2(a*90.+31., per*3.6 - uT*0.35));
+    col *= 1.0 + (0.065*(st-0.5) + 0.05*(st2-0.5))*2.0*amp;
+    if(uElRaw > -0.01){
+      /* 太陽の照り返しの道 */
+      float da = a - uSunAz;
+      float path = exp(-da*da/(0.0030 + mu*0.16));
+      float g = pow(vnoise(vec2(a*170., min(per*4.5, 90.) + uT*1.7)), 8.);
+      float gi = exp(-max(uElRaw,0.)*3.0) * clamp(uElRaw*40.+0.25, 0., 1.);
+      col += uSunCol * path * gi * uSunI * amp * (0.35 + 2.3*g);
+      col += uSunCol * gi * uSunI * 0.4 * exp(-da*da/0.002) * exp(-mu*40.);
+    }
+    /* 夜：対岸の灯が水面に細く伸びる */
+    float cell = floor(a*240.);
+    float gate = step(0.45, h21(vec2(cell,23.)));
+    float lx = (cell + 0.2+0.6*h21(vec2(cell,7.)))/240.;
+    float dxa = (a-lx)*430.;
+    col += vec3(1.,.70,.40) * exp(-dxa*dxa) * exp(-mu*34.) * uShore * gate
+           * 0.22 * (0.5+0.5*st2);
+    col = mix(col, mix(uHor,uZen,.08), exp(-mu*26.)*0.5);
+  }
+  return col;
+}
+
+/* ---- 室内の共通ライティング ---- */
+vec3 lightAt(vec3 p, vec3 n, float svis, float ceilCut){
+  float nd = max(dot(n, uSunDir), 0.);
+  vec3 direct = uSunCol * uSunI * 1.9 * pow(nd, 0.42) * svis;
+  vec3 wc = vec3(clamp(p.x,WX0,WX1), clamp(p.y,WY0,WY1), 0.);
+  vec3 tw = normalize(wc - p + vec3(0.,0.,-.001));
+  float geom = 0.34 + 0.66*max(dot(n,tw),0.);
+  float dist = length(wc - p);
+  vec3 amb = uAmb * geom * (2.1/(1.1 + 0.28*dist)) * 3.0 * ceilCut;
+  /* 床で撥ねた光が立面の下寄りをわずかに温める */
+  float bounce = max(0.7*(1.0-abs(n.y)) - 0.3*n.y, 0.) * exp(-max(p.y-0.2,0.)*1.1);
+  amb += uAmb * vec3(1.06,1.0,0.92) * bounce * 0.9 * clamp(uSunI,0.,1.);
+  vec3 lp = LAMPP - p; float ld = length(lp);
+  vec3 lamp = vec3(1.,.72,.42) * uLamp * max(dot(n, lp/max(ld,1e-4)),0.) * (1.35/(1.0+0.85*ld*ld));
+  return direct + amb + lamp;
+}
+
+void main(){
+  vec2 uv = (2.*gl_FragCoord.xy - uRes)/uRes.y;
+  float cy=cos(uYaw), sy=sin(uYaw), cp=cos(uPitch), sp=sin(uPitch);
+  vec3 d = normalize(vec3(uv.x, uv.y, -uFocal));
+  d = vec3(d.x, d.y*cp - d.z*sp, d.y*sp + d.z*cp);
+  d = vec3(d.x*cy + d.z*sy, d.y, -d.x*sy + d.z*cy);
+  vec3 ro = uCam;
+
+  /* 部屋の6面のうち最初に当たる面 */
+  float tHit = 1e5; int id = -1; vec3 n = vec3(0.);
+  if(d.y<0.){ float t=(RMIN.y-ro.y)/d.y; if(t>0.&&t<tHit){tHit=t;id=0;n=vec3(0,1,0);} }
+  if(d.y>0.){ float t=(RMAX.y-ro.y)/d.y; if(t>0.&&t<tHit){tHit=t;id=1;n=vec3(0,-1,0);} }
+  if(d.x<0.){ float t=(RMIN.x-ro.x)/d.x; if(t>0.&&t<tHit){tHit=t;id=2;n=vec3(1,0,0);} }
+  if(d.x>0.){ float t=(RMAX.x-ro.x)/d.x; if(t>0.&&t<tHit){tHit=t;id=3;n=vec3(-1,0,0);} }
+  if(d.z<0.){ float t=(RMIN.z-ro.z)/d.z; if(t>0.&&t<tHit){tHit=t;id=4;n=vec3(0,0,1);} }
+  if(d.z>0.){ float t=(RMAX.z-ro.z)/d.z; if(t>0.&&t<tHit){tHit=t;id=5;n=vec3(0,0,-1);} }
+
+  /* 家具 */
+  vec3 bn;
+  vec2 bt = boxHit(ro,d,BED0,BED1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=10;n=bn;}
+  bt = boxHit(ro,d,DUV0,DUV1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=11;n=bn;}
+  bt = boxHit(ro,d,PIL0,PIL1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=12;n=bn;}
+  bt = boxHit(ro,d,BEN0,BEN1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=13;n=bn;}
+  bt = boxHit(ro,d,POL0,POL1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=14;n=bn;}
+  bt = boxHit(ro,d,SHD0,SHD1,bn); if(bt.x<bt.y&&bt.x>0.&&bt.x<tHit){tHit=bt.x;id=15;n=bn;}
+  /* カーテン（薄布の面） */
+  if(d.z < 0.){
+    float tc = (CZ - ro.z)/d.z;
+    if(tc > 0. && tc < tHit){
+      vec3 pc = ro + d*tc;
+      if(pc.x>CX0 && pc.x<CX1 && pc.y>CY0 && pc.y<CY1){ tHit=tc; id=20; n=vec3(0.,0.,1.); }
+    }
+  }
+
+  vec3 p = ro + d*tHit;
+  vec3 col;
+
+  bool glass = false;
+  if(id==4){
+    float ap = apertureVis(p.xy, 0.004);
+    if(ap > 0.5) glass = true;
+  }
+
+  if(glass){
+    col = outside(d);
+    /* 窓ガラス：フレネル分だけ室内が映る。夜はランプの虚像。 */
+    float fres = 0.035 + 0.10*pow(1.-abs(d.z), 3.);
+    vec3 r = vec3(d.x, d.y, -d.z);
+    vec3 toL = LAMPP - vec3(p.xy, 0.); toL.z = -toL.z; /* 虚像 */
+    vec3 tld = normalize(vec3(toL.x, toL.y, -abs(toL.z)));
+    float lg = pow(max(dot(-r, -tld), 0.), 400.);
+    col += vec3(1.,.72,.42) * uLamp * (lg*1.6 + 0.05) * (fres*8.);
+    col += uAmb * fres * 1.2;
+    /* 上端のわずかな映り込みの筋 */
+    col += vec3(.9,.95,1.) * fres * smoothstep(2.0, 2.5, p.y) * 0.25 * clamp(length(uAmb)*3.,0.,1.);
+  } else {
+    float svis = sunVis(p);
+    vec3 alb; float glossRefl = 0.;
+    if(id==0){
+      /* 床：オーク材。板目・節・継ぎ目。 */
+      float px = p.x + 3.4;
+      float plank = floor(px/0.162);
+      float pf = fract(px/0.162);
+      float tint = 0.90 + 0.20*h21(vec2(plank, 1.7));
+      float grain = fbm(vec2(px*34.0, p.z*2.6 + plank*7.3));
+      float joint = fract(p.z*0.55 + h21(vec2(plank,9.))*0.9);
+      float seamZ = smoothstep(0.0,0.012,joint)*smoothstep(1.0,0.988,joint);
+      float seamX = smoothstep(0.0,0.045,pf)*smoothstep(1.0,0.955,pf);
+      float focus = clamp(tHit*0.55, 0.4, 1.0); /* 手前はピントが浅い体で木目を弱める */
+      alb = vec3(.560,.435,.315) * tint * (0.90 + 0.16*grain*focus);
+      alb *= 0.86 + 0.14*min(seamZ,1.)*min(seamX,1.);
+      glossRefl = 0.5 + 0.3*grain;
+      /* 家具の影と接地の締まり */
+      float occ = max(boxShadowFloor(p.xz, DUV0.xz, DUV1.xz, DUV1.y),
+                      boxShadowFloor(p.xz, BEN0.xz, BEN1.xz, BEN1.y));
+      svis *= 1.0 - 0.9*occ;
+      float aoB = exp(-max(sdRect(p.xz, DUV0.xz, DUV1.xz),0.)*5.5);
+      float aoT = exp(-max(sdRect(p.xz, BEN0.xz, BEN1.xz),0.)*6.5);
+      float aoW = exp(-(p.z)*1.4)*0.5 + exp(-(RMAX.x-p.x)*2.4)*0.5 + exp(-(p.x-RMIN.x)*2.4)*0.5;
+      alb *= 1.0 - 0.34*aoB - 0.30*aoT - 0.11*clamp(aoW,0.,1.);
+    } else if(id==1){
+      alb = vec3(.845,.825,.79)*(0.95+0.05*fbm(p.xz*1.4));
+      alb *= 1.0 - 0.24*exp(-(p.z)*1.1);
+    } else if(id==2 || id==3){
+      /* 漆喰の壁 */
+      alb = vec3(.845,.815,.762)*(0.955+0.05*fbm(vec2(p.z*2.1, p.y*2.1)));
+      alb *= 1.0 - 0.22*exp(-p.y*2.6) - 0.14*exp(-(RMAX.y-p.y)*2.2) - 0.18*exp(-p.z*1.2);
+    } else if(id==4 || id==5){
+      /* 窓枠・窓壁（開口外）／背面壁 */
+      float fr = 1.0 - rectSoft(p.xy, vec2(WX0-0.075,WY0-0.075), vec2(WX1+0.075,WY1+0.075), 0.004);
+      float inAp = rectSoft(p.xy, vec2(WX0,WY0), vec2(WX1,WY1), 0.004);
+      if(id==4 && fr < 0.5){
+        alb = vec3(.10,.098,.094); /* 焦茶の枠・桟 */
+        if(inAp>0.5){ /* 桟そのもの */
+          alb = vec3(.085,.083,.080);
+        }
+      } else {
+        alb = vec3(.845,.815,.762)*(0.955+0.05*fbm(p.xy*2.1));
+        alb *= 1.0 - 0.22*exp(-p.y*2.6);
+        if(id==4){
+          /* 窓まわりは外光のまわり込みでわずかに明るい */
+          float halo = exp(-max(sdRect(p.xy, vec2(WX0,WY0), vec2(WX1,WY1)),0.)*2.6);
+          alb *= 1.0 + 0.05*halo;
+        }
+      }
+    } else if(id==10){
+      alb = vec3(.26,.19,.13)*(0.92+0.10*fbm(p.xz*7.));
+      alb *= 0.72 + 0.28*smoothstep(0.0, 0.16, p.y);
+    } else if(id==11){
+      /* 掛け布のリネン：たわみを法線の揺らぎで */
+      float wr = fbm(vec2(p.x*7.5, p.z*6.5)) + 0.5*fbm(vec2(p.x*22., p.z*19.));
+      alb = vec3(.815,.782,.735)*(0.95+0.05*wr);
+      vec2 e = min(p.xz - DUV0.xz, DUV1.xz - p.xz);
+      float edge = smoothstep(0.0, 0.13, min(e.x, e.y));
+      if(n.y>0.5){
+        float e0 = fbm(vec2(p.x*5.2, p.z*4.6));
+        float ex = fbm(vec2(p.x*5.2+0.09, p.z*4.6)) - e0;
+        float ez = fbm(vec2(p.x*5.2, p.z*4.6+0.09)) - e0;
+        float k = 0.55 * clamp(uSunDir.y*2.2 + 0.15, 0.15, 1.0);
+        n = normalize(vec3(-ex*k, 1.0, -ez*k));
+        alb *= 0.86 + 0.14*edge;
+      } else alb *= 0.90 + 0.06*wr;
+    } else if(id==12){
+      /* 枕 */
+      float wr = fbm(vec2(p.x*16., p.z*16.));
+      alb = vec3(.85,.835,.80)*(0.95+0.06*wr);
+      vec2 e = min(p.xz - PIL0.xz, PIL1.xz - p.xz);
+      float ed = min(e.x, e.y);
+      if(n.y>0.5){
+        float e0 = fbm(vec2(p.x*9., p.z*9.));
+        float ex = fbm(vec2(p.x*9.+0.07, p.z*9.)) - e0;
+        float ez = fbm(vec2(p.x*9., p.z*9.+0.07)) - e0;
+        /* 縁に向かって落ちる丸み＋しわ */
+        vec2 c = (PIL0.xz+PIL1.xz)*0.5;
+        vec2 dir = normalize(p.xz - c + 1e-4);
+        float round_ = 1.0 - smoothstep(0.0, 0.10, ed);
+        float k2 = clamp(uSunDir.y*2.2 + 0.15, 0.15, 1.0);
+        n = normalize(vec3((dir.x*round_*0.7 - ex*0.9)*k2, 1.0, (dir.y*round_*0.7 - ez*0.9)*k2));
+      }
+      alb *= 0.88 + 0.12*smoothstep(0.0, 0.07, ed);
+    } else if(id==13){
+      /* 窓辺のベンチ（オーク） */
+      alb = vec3(.50,.385,.265)*(0.92+0.12*fbm(vec2(p.x*30.,p.z*5.)));
+      alb *= 0.74 + 0.26*smoothstep(0.0, 0.14, p.y);
+    } else if(id==14){
+      alb = vec3(.13,.12,.11);
+    } else if(id==15){
+      /* 和紙のシェード：夜は自発光 */
+      alb = vec3(.86,.82,.74);
+    } else {
+      /* カーテン：襞と透過光 */
+      float fold = 0.5+0.5*sin(p.x*30.0 + 1.9*sin(p.x*8.3+1.2) + 0.35*fbm(vec2(p.x*6.,p.y*1.3))*6.);
+      alb = vec3(.83,.805,.765)*(0.76+0.24*fold);
+      alb *= 0.90 + 0.10*smoothstep(CY0, CY0+0.25, p.y);
+    }
+    float ceilCut = (id==1) ? 0.68 : 1.0;
+    col = alb * lightAt(p, n, svis, ceilCut);
+    if(id==20){
+      /* 布を透ける太陽と空 */
+      float t3 = p.z / (-min(uSunDir.z,-0.05));
+      vec2 q3 = p.xy + uSunDir.xy * t3;
+      float thr = apertureVis(q3, 0.03);
+      col += alb * uSunCol * uSunI * 1.4 * thr;
+      col += alb * uAmb * 2.2;
+    }
+    if(id==15){
+      col += vec3(1.,.76,.47) * uLamp * (1.35 + 0.35*fbm(p.xy*14.));
+    }
+    if(id==0 && glossRefl>0.){
+      /* 床の照り返し：床で反射した視線が窓を見るなら、外の光をぼかして足す */
+      vec3 rr = vec3(d.x, -d.y, d.z);
+      if(rr.z < -0.01){
+        float t2 = p.z/(-rr.z);
+        vec2 q = vec2(p.x + rr.x*t2, rr.y*t2);
+        float ap2 = apertureVis(q, 0.55);
+        float fres = pow(1.-abs(d.y), 5.);
+        col += skyCol(normalize(vec3(rr.x, max(rr.y,0.01), rr.z))) * ap2 * fres * glossRefl * 0.65;
+      }
+    }
+  }
+
+  /* カメラの痕跡：トーン・周辺減光・粒子 */
+  col = 1.0 - exp(-col*1.55*uExpo);
+  vec2 vuv = (2.*gl_FragCoord.xy - uRes)/uRes;
+  col *= 1.0 - 0.34*pow(length(vuv*vec2(.78,1.))*0.72, 2.7);
+  float gr = h21(gl_FragCoord.xy + fract(uT*3.7)*41.7) - 0.5;
+  col += gr * 0.042;
+  col = clamp(col, 0., 1.);
+  col = pow(col, vec3(0.94)) * 0.988 + 0.012; /* わずかな黒浮き＝フィルムのフェード */
+  gl_FragColor = vec4(col, 1.);
+}`;
+
+/* ---- 一日の色（CPU側キーフレーム。値は 0-255 → /255） ---- */
+const KEYS = [
+  [5.00,{zen:[10,19,34], hor:[40,55,74],  sun:[255,170,110],sunI:0,   glow:0,   amb:[.052,.062,.082],sea:[10,18,26]}],
+  [5.30,{zen:[16,28,46], hor:[76,80,92],  sun:[255,158,98], sunI:0,   glow:0.30,amb:[.058,.068,.088],sea:[14,24,33]}],
+  [5.62,{zen:[40,60,88], hor:[172,142,120],sun:[255,166,94],sunI:0.55,glow:0.95,amb:[.098,.094,.100], sea:[24,38,50]}],
+  [6.40,{zen:[88,128,168],hor:[218,199,176],sun:[255,199,132],sunI:1.0,glow:0.55,amb:[.175,.158,.138], sea:[36,66,86]}],
+  [8.00,{zen:[102,148,192],hor:[215,226,232],sun:[255,238,214],sunI:1.15,glow:0.30,amb:[.215,.215,.212],sea:[46,88,112]}],
+  [12.0,{zen:[122,168,206],hor:[228,236,240],sun:[255,248,238],sunI:1.25,glow:0.22,amb:[.24,.25,.265],sea:[60,102,126]}],
+  [15.5,{zen:[112,158,198],hor:[226,230,232],sun:[255,240,222],sunI:1.15,glow:0.24,amb:[.22,.226,.236],sea:[56,96,120]}],
+  [17.6,{zen:[100,132,170],hor:[232,214,188],sun:[255,214,158],sunI:1.0,glow:0.42,amb:[.19,.172,.150],sea:[48,76,96]}],
+  [18.5,{zen:[86,110,148],hor:[240,192,140],sun:[255,180,110],sunI:0.85,glow:0.78,amb:[.165,.138,.112],sea:[44,62,80]}],
+  [18.95,{zen:[64,86,122],hor:[242,166,112],sun:[255,150,88],sunI:0.40,glow:0.95,amb:[.128,.106,.090],sea:[34,46,62]}],
+  [19.5,{zen:[40,58,92], hor:[168,122,110],sun:[255,140,90], sunI:0,   glow:0.50,amb:[.078,.074,.074],sea:[22,32,46]}],
+  [20.4,{zen:[20,32,54], hor:[74,84,104], sun:[255,150,100],sunI:0,   glow:0.12,amb:[.050,.055,.070],sea:[13,21,32]}],
+  [21.5,{zen:[12,22,40], hor:[50,62,82],  sun:[60,50,40],   sunI:0,   glow:0.04,amb:[.042,.048,.062],sea:[9,16,26]}],
+  [23.0,{zen:[9,17,32],  hor:[40,52,70],  sun:[40,35,30],   sunI:0,   glow:0,   amb:[.040,.045,.058],sea:[8,14,23]}],
+];
+const RISE=5.58, SET=18.93, MAXEL=1.0;
+function lerp(a,b,u){ return a+(b-a)*u; }
+function lerp3(a,b,u){ return [lerp(a[0],b[0],u),lerp(a[1],b[1],u),lerp(a[2],b[2],u)]; }
+function palette(t){
+  t = Math.min(23, Math.max(5, t));
+  let i = 0;
+  while(i < KEYS.length-2 && KEYS[i+1][0] <= t) i++;
+  const [t0,A] = KEYS[i], [t1,B] = KEYS[i+1];
+  let u = Math.min(1, Math.max(0, (t - t0)/(t1 - t0)));
+  u = 0.5 - 0.5*Math.cos(Math.PI*u);
+  const c255 = k => lerp3(A[k],B[k],u).map(v=>v/255);
+  return {
+    zen:c255('zen'), hor:c255('hor'), sun:c255('sun'), sea:c255('sea'),
+    amb:lerp3(A.amb,B.amb,u),
+    sunI:lerp(A.sunI,B.sunI,u), glow:lerp(A.glow,B.glow,u),
+  };
+}
+function sunState(t){
+  const s = (t-RISE)/(SET-RISE);
+  const el = Math.sin(Math.PI*Math.min(1.18, Math.max(-0.18, s)))*MAXEL;
+  const az = lerp(-0.30, 0.25, Math.min(1, Math.max(0, s)));
+  const dir = [Math.sin(az)*Math.cos(el), Math.sin(el), -Math.cos(az)*Math.cos(el)];
+  return {el, az, dir};
+}
+const lampLv  = t => Math.min(1, Math.max(0, (t-18.9)/0.9));
+const shoreLv = t => {
+  const eve = Math.min(1, Math.max(0, (t-19.0)/1.0));
+  const pre = Math.min(1, Math.max(0, (5.5-t)/0.35));
+  return Math.max(eve, pre*0.85);
+};
+
+/* ---- GL 基盤 ---- */
+function makeRenderer(canvas){
+  const gl = canvas.getContext('webgl', {antialias:false, preserveDrawingBuffer:false});
+  if(!gl) return null;
+  function sh(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if(!gl.getShaderParameter(s, gl.COMPILE_STATUS))
+      throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG));
+  gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+  gl.useProgram(prog);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'aP');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = {};
+  ['uRes','uT','uCam','uYaw','uPitch','uFocal','uSunDir','uSunAz','uElRaw','uSunI',
+   'uSunCol','uZen','uHor','uAmb','uSeaC','uGlow','uLamp','uShore','uExpo']
+   .forEach(n => U[n] = gl.getUniformLocation(prog, n));
+  function draw(t, cam){
+    const p = palette(t), s = sunState(t);
+    gl.viewport(0,0,canvas.width,canvas.height);
+    gl.uniform2f(U.uRes, canvas.width, canvas.height);
+    gl.uniform1f(U.uT, t);
+    gl.uniform3f(U.uCam, cam.x, cam.y, cam.z);
+    gl.uniform1f(U.uYaw, cam.yaw); gl.uniform1f(U.uPitch, cam.pitch);
+    gl.uniform1f(U.uFocal, cam.focal);
+    gl.uniform3fv(U.uSunDir, s.dir);
+    gl.uniform1f(U.uSunAz, s.az); gl.uniform1f(U.uElRaw, s.el);
+    gl.uniform1f(U.uSunI, p.sunI * Math.min(1, Math.max(0, s.el*30+0.1)));
+    gl.uniform3fv(U.uSunCol, p.sun); gl.uniform3fv(U.uZen, p.zen);
+    gl.uniform3fv(U.uHor, p.hor); gl.uniform3fv(U.uAmb, p.amb);
+    gl.uniform3fv(U.uSeaC, p.sea);
+    gl.uniform1f(U.uGlow, p.glow);
+    gl.uniform1f(U.uLamp, lampLv(t)); gl.uniform1f(U.uShore, shoreLv(t));
+    gl.uniform1f(U.uExpo, cam.expo || 1.0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  return {gl, draw};
+}
+
+/* ---- メインビュー ---- */
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('view');
+const R = makeRenderer(canvas);
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+let camMain = null;
+function layoutCanvas(){
+  const w = stage.clientWidth, h = stage.clientHeight;
+  let s = Math.min(devicePixelRatio || 1, 2);
+  if(w*h*s*s > 2.4e6) s = Math.sqrt(2.4e6/(w*h)); // 写実は画素あたりが重いので上限を切る
+  canvas.width = Math.round(w*s); canvas.height = Math.round(h*s);
+  const aspect = w/h;
+  camMain = {
+    x:-0.35, y:1.45, z: aspect > 1 ? 5.0 : 5.9,
+    yaw:0.02, pitch:-0.05,
+    focal: Math.min(2.1, Math.max(1.25, 0.9 + 0.7*aspect)),
+  };
+}
+
+/* ---- スクロール＝時刻 ---- */
+const daySec = document.getElementById('day');
+const clockEl = document.getElementById('clock');
+const evCard = document.getElementById('eventCard');
+const evTime = document.getElementById('evTime');
+const evHead = document.getElementById('evHead');
+const evBody = document.getElementById('evBody');
+const hintEl = document.getElementById('hint');
+
+const EVENTS = [
+  {t:5+21/60, tl:'5:21', h:'夜が明ける', b:'空より先に、海の色が変わります。この時間に起きられるのは、旅先にいるあいだだけです。'},
+  {t:7+12/60, tl:'7:12', h:'朝食', b:'パンは坂の下のパン屋から、7時に届きます。焼きあがりの時間に合わせて配達をお願いしています。'},
+  {t:10+36/60,tl:'10:36',h:'光が壁を昇る', b:'床にあった光が離れて、壁を昇りはじめます。掃除はこの時間に。部屋にはどなたも入れません。'},
+  {t:14+12/60,tl:'14:12',h:'テラスが開く', b:'庇の影ができるのは、この時間からです。日が回りきるまで、ここがいちばん涼しい場所になります。'},
+  {t:18+42/60,tl:'18:42',h:'夕凪', b:'陸から吹く風と、海から吹く風が入れ替わる三十分。そのあいだ、風がぴたりと止まります。この宿の名前は、ここから取りました。'},
+  {t:21+12/60,tl:'21:12',h:'バー', b:'灯りは絞ってあります。対岸の家々の明かりが、そのぶんよく見えます。24時まで。'},
+];
+const T0 = 5.0, T1 = 22.99;
+let travel = 1;
+function measureTravel(){ travel = Math.max(1, daySec.offsetHeight - stage.offsetHeight); }
+const timeAt = sc => T0 + (T1 - T0) * Math.min(1, Math.max(0, sc/travel));
+function eventIndexAt(t){
+  let idx = -1;
+  for(let i=0;i<EVENTS.length;i++) if(EVENTS[i].t <= t + 1e-9) idx = i;
+  return idx;
+}
+let shownEv = -2, lastT = -1;
+function setEvent(idx){
+  if(idx === shownEv) return;
+  shownEv = idx;
+  evCard.classList.add('swap');
+  requestAnimationFrame(()=>{
+    if(idx < 0){
+      evTime.textContent = '尾道の丘 — 全14室';
+      evHead.textContent = '夕凪の宿';
+      evBody.textContent = '陸から吹く風と海から吹く風が入れ替わるとき、風が三十分だけ止まります。名前は、そこから取りました。窓の外は瀬戸内海。この画面のなかで、一日が経ちます。';
+    } else {
+      const e = EVENTS[idx];
+      evTime.textContent = e.tl + ' — 日誌より';
+      evHead.textContent = e.h;
+      evBody.textContent = e.b;
+    }
+    requestAnimationFrame(()=>evCard.classList.remove('swap'));
+  });
+}
+function setClock(t){
+  const hh = Math.floor(t), mm = Math.floor((t-hh)*60);
+  clockEl.textContent = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
+}
+function renderAt(t){
+  if(!R) return;
+  setClock(t);
+  setEvent(eventIndexAt(t));
+  if(Math.abs(t - lastT) > 0.0004){ R.draw(t, camMain); lastT = t; }
+}
+
+let dirty = true;
+addEventListener('scroll', ()=>{ dirty = true; }, {passive:true});
+function frame(){
+  if(dirty){
+    dirty = false;
+    const t = timeAt(scrollY);
+    renderAt(t);
+    hintEl.classList.toggle('gone', scrollY > 40);
+  }
+  requestAnimationFrame(frame);
+}
+
+function relayout(){
+  layoutCanvas(); measureTravel();
+  lastT = -1; dirty = true;
+  if(reduced) renderAt(18.7);
+}
+addEventListener('resize', relayout);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+
+layoutCanvas(); measureTravel();
+if(reduced){
+  // 完成形（夕凪）で静止。出来事は日誌として一覧に。
+  renderAt(18.7);
+  setEvent(4);
+  const ol = document.getElementById('daylogList');
+  ol.innerHTML = EVENTS.map(e =>
+    `<li><p class="etime">${e.tl}</p><h3>${e.h}</h3><p>${e.b}</p></li>`).join('');
+} else {
+  renderAt(5.0);
+  requestAnimationFrame(frame);
+}
+
+/* ---- 客室カード（同じ描画系で、部屋ごとの時刻の静止画を焼く） ---- */
+const ROOMS = [
+  {id:'asa', name:'朝凪', en:'ASA-NAGI', type:'ダブル', size:'26㎡', base:22000, time:'5:40',
+   t:5.72, cam:{x:-1.35,y:1.30,z:6.35,yaw:-0.36,pitch:-0.05,focal:1.5,expo:1.75},
+   body:'東向き。5時40分ごろ、枕元まで光が届きます。朝に強い人のための部屋です。'},
+  {id:'nagi', name:'凪', en:'NAGI', type:'ツイン', size:'32㎡', base:28000, time:'14:00',
+   t:14.0, cam:{x:-0.3,y:1.45,z:5.1,yaw:0.02,pitch:-0.05,focal:1.65},
+   body:'海に正対しています。昼のあいだ、光は床の手前で止まります。奥まで届くのは夕方から。'},
+  {id:'yu', name:'夕凪', en:'YU-NAGI', type:'スイート', size:'48㎡', base:46000, time:'18:42',
+   t:18.70, cam:{x:-0.55,y:1.42,z:5.4,yaw:0.06,pitch:-0.04,focal:1.55,expo:1.35},
+   body:'角部屋で窓が二面あります。光が一日じゅう部屋を回るので、時間の経つのが見えます。'},
+];
+const yen = n => '¥' + n.toLocaleString('ja-JP');
+const roomCardsEl = document.getElementById('roomCards');
+roomCardsEl.innerHTML = ROOMS.map(r => `
+  <article class="room">
+    <canvas id="rc-${r.id}" width="816" height="510" aria-label="${r.name}の${r.time}の光"></canvas>
+    <div class="body">
+      <p class="nm"><b>${r.name}</b><span>${r.en}</span></p>
+      <p class="spec">${r.type} · ${r.size} · <b>${yen(r.base)}</b><span style="font-size:11px"> /泊〜</span></p>
+      <span class="light">${r.time} の光</span>
+      <p>${r.body}</p>
+    </div>
+  </article>`).join('');
+
+function bakeRoomStills(){
+  const off = document.createElement('canvas');
+  off.width = 816; off.height = 510;
+  const R2 = makeRenderer(off);
+  if(!R2) return;
+  for(const r of ROOMS){
+    R2.draw(r.t, r.cam);
+    const dst = document.getElementById('rc-' + r.id);
+    dst.getContext('2d').drawImage(off, 0, 0);
+  }
+  const lose = R2.gl.getExtension('WEBGL_lose_context');
+  if(lose) lose.loseContext();
+}
+requestAnimationFrame(bakeRoomStills);
+
+/* ================= 予約UI ================= */
+const state = { room: ROOMS[1], selIn: null, selOut: null, month: 0, confirmed: false };
+const today = new Date(); today.setHours(0,0,0,0);
+const firstMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+const MONTHS = 11; // 今月から10か月先まで
+const WKN = ['日','月','火','水','木','金','土'];
+const key = d => d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+function isFull(d){
+  // 満室は日付から決まる。乱数にすると読み込むたびに変わって嘘になる。
+  const s = key(d); let h = 0;
+  for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) | 0;
+  return ((h >>> 0) % 13) === 0;
+}
+function priceFor(d, base){
+  const w = d.getDay();
+  const k = w===5 ? 1.25 : w===6 ? 1.40 : w===0 ? 1.10 : 1.00;
+  return Math.round(base*k/500)*500;
+}
+const dOnly = d => { const x = new Date(d); x.setHours(0,0,0,0); return x; };
+const addD = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+
+const calGrid = document.getElementById('calGrid');
+const monthLabel = document.getElementById('monthLabel');
+const prevM = document.getElementById('prevM'), nextM = document.getElementById('nextM');
+const sumPeriod = document.getElementById('sumPeriod');
+const sumMsg = document.getElementById('sumMsg');
+const sumTable = document.getElementById('sumTable');
+const sumTotal = document.getElementById('sumTotal');
+const sumNights = document.getElementById('sumNights');
+const sumYen = document.getElementById('sumYen');
+const goBtn = document.getElementById('goBtn');
+const roomSelEl = document.getElementById('roomSel');
+
+roomSelEl.innerHTML = ROOMS.map(r => `
+  <button type="button" data-room="${r.id}" aria-pressed="${r===state.room}">
+    <span>${r.name} <span class="en">${r.en}</span></span>
+    <span class="pr">${yen(r.base)}/泊〜</span>
+  </button>`).join('');
+roomSelEl.addEventListener('click', e => {
+  const b = e.target.closest('button[data-room]');
+  if(!b) return;
+  state.room = ROOMS.find(r => r.id === b.dataset.room);
+  state.confirmed = false;
+  roomSelEl.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', String(x===b)));
+  renderCal(); renderSum();
+});
+
+function monthOf(i){ return new Date(firstMonth.getFullYear(), firstMonth.getMonth()+i, 1); }
+function renderCal(){
+  const m0 = monthOf(state.month);
+  monthLabel.textContent = m0.getFullYear() + '年 ' + (m0.getMonth()+1) + '月';
+  prevM.disabled = state.month <= 0;
+  nextM.disabled = state.month >= MONTHS-1;
+  const nDays = new Date(m0.getFullYear(), m0.getMonth()+1, 0).getDate();
+  const lead = m0.getDay();
+  let html = '';
+  for(let i=0;i<lead;i++) html += '<span class="cell blank" aria-hidden="true"></span>';
+  for(let d=1; d<=nDays; d++){
+    const dt = new Date(m0.getFullYear(), m0.getMonth(), d);
+    const past = dt < today;
+    const full = isFull(dt);
+    const inSel = state.selIn && dt.getTime() === state.selIn.getTime();
+    const outSel = state.selOut && dt.getTime() === state.selOut.getTime();
+    const night = state.selIn && state.selOut && dt >= state.selIn && dt < state.selOut;
+    let cls = 'cell', inner = `<span class="d">${d}</span>`, dis = '';
+    if(past){ cls += ' past'; dis = 'disabled'; }
+    else if(full){ cls += ' full'; dis = 'disabled'; inner += '<span class="st">満</span>'; }
+    else {
+      const pr = priceFor(dt, state.room.base);
+      if(inSel || outSel){
+        cls += ' edge';
+        /* 出発日の夜は請求しないので、そのセルには料金を出さない */
+        inner += outSel && !inSel ? '<span class="dep">出発</span>'
+                                  : `<span class="p">${yen(pr)}</span>`;
+      } else {
+        if(night) cls += ' night';
+        inner += `<span class="p">${yen(pr)}</span>`;
+      }
+    }
+    html += `<button type="button" class="${cls}" data-date="${key(dt)}" ${dis}
+      aria-label="${m0.getMonth()+1}月${d}日${full?' 満室':past?'':' 空室あり'}">${inner}</button>`;
+  }
+  calGrid.innerHTML = html;
+}
+prevM.addEventListener('click', ()=>{ if(state.month>0){ state.month--; renderCal(); } });
+nextM.addEventListener('click', ()=>{ if(state.month<MONTHS-1){ state.month++; renderCal(); } });
+
+calGrid.addEventListener('click', e => {
+  const b = e.target.closest('button.cell:not(:disabled)');
+  if(!b || !b.dataset.date) return;
+  const [y,m,d] = b.dataset.date.split('-').map(Number);
+  const dt = new Date(y, m-1, d);
+  state.confirmed = false;
+  let msg = '';
+  if(!state.selIn || (state.selIn && state.selOut)){
+    state.selIn = dt; state.selOut = null;
+  } else if(dt <= state.selIn){
+    state.selIn = dt;
+  } else {
+    let block = null;
+    for(let x = dOnly(state.selIn); x < dt; x = addD(x,1)){
+      if(isFull(x)){ block = x; break; }
+    }
+    if(block){
+      msg = (block.getMonth()+1) + '月' + block.getDate() + '日が満室です。この日をまたぐ日程は取れません。';
+      state.selIn = dt; state.selOut = null;
+    } else {
+      state.selOut = dt;
+    }
+  }
+  renderCal(); renderSum(msg);
+});
+
+const fmtD = d => (d.getMonth()+1) + '月' + d.getDate() + '日（' + WKN[d.getDay()] + '）';
+function renderSum(msg){
+  sumMsg.classList.remove('ok');
+  sumMsg.textContent = msg || '';
+  const tb = sumTable.tBodies[0];
+  if(state.selIn && state.selOut){
+    let rows = '', total = 0, n = 0;
+    for(let x = dOnly(state.selIn); x < state.selOut; x = addD(x,1)){
+      const pr = priceFor(x, state.room.base);
+      total += pr; n++;
+      rows += `<tr><td>${(x.getMonth()+1)}/${x.getDate()}<span class="wk">${WKN[x.getDay()]}</span></td><td>${yen(pr)}</td></tr>`;
+    }
+    tb.innerHTML = rows;
+    sumTable.hidden = false; sumTotal.hidden = false;
+    sumPeriod.textContent = state.room.name + ' — ' + fmtD(state.selIn) + ' から ' + fmtD(state.selOut) + ' まで';
+    sumNights.textContent = n + '泊 · 出発日の料金はかかりません';
+    sumYen.textContent = yen(total);
+    goBtn.disabled = false;
+  } else {
+    tb.innerHTML = '';
+    sumTable.hidden = true; sumTotal.hidden = true;
+    sumPeriod.textContent = state.selIn
+      ? state.room.name + ' — ' + fmtD(state.selIn) + ' から。次に出発日を選んでください。'
+      : '日付を選んでください。一度目が泊まる日、二度目が出発日です。';
+    goBtn.disabled = true;
+  }
+  if(state.confirmed){
+    sumMsg.classList.add('ok');
+    sumMsg.textContent = '承りました。……とはいえ、これは架空のホテルです。';
+    goBtn.disabled = true;
+  }
+}
+goBtn.addEventListener('click', ()=>{
+  state.confirmed = true;
+  renderSum();
+});
+renderCal(); renderSum();
+
+/* ---- 検証用フック（表示には関与しない） ---- */
+window.__nagi = {
+  timeAt, eventIndexAt, EVENTS, T0, T1,
+  travel: () => travel,
+  setT(t){ renderAt(t); },
+  readRect(cx, cy, cw, ch, fresh){
+    // CSS座標の矩形をGLのバッキング解像度に直し、描画直後に読む
+    if(!R) return null;
+    const sx = canvas.width / stage.clientWidth, sy = canvas.height / stage.clientHeight;
+    const x = Math.max(0, Math.round(cx*sx)), w = Math.max(1, Math.round(cw*sx));
+    const h = Math.max(1, Math.round(ch*sy));
+    const y = Math.max(0, canvas.height - Math.round((cy+ch)*sy));
+    if(fresh !== false) R.draw(lastT < 0 ? 5 : lastT, camMain);
+    const buf = new Uint8Array(w*h*4);
+    R.gl.readPixels(x, y, w, h, R.gl.RGBA, R.gl.UNSIGNED_BYTE, buf);
+    let mx = 0, mn = 255;
+    const lum = (r,g,b) => 0.2126*r + 0.7152*g + 0.0722*b;
+    let maxPix = [0,0,0], minPix = [255,255,255];
+    for(let i=0;i<buf.length;i+=4){
+      const L = lum(buf[i],buf[i+1],buf[i+2]);
+      if(L > mx){ mx = L; maxPix = [buf[i],buf[i+1],buf[i+2]]; }
+      if(L < mn){ mn = L; minPix = [buf[i],buf[i+1],buf[i+2]]; }
+    }
+    return {maxPix, minPix};
+  },
+  isFull, priceFor, key,
+};
+</script>
+
+</body>
+</html>
